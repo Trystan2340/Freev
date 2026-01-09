@@ -227,7 +227,7 @@
 
             <!-- Projets Terminés -->
             <h3 class="text-2xl font-heading font-bold mb-6 text-white border-l-4 border-green-500 pl-4 reveal">Disponibles maintenant</h3>
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mb-16">
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-16">
                 
                 <!-- CodeMaster V2 -->
                 <div class="glass-card p-8 rounded-2xl reveal group">
@@ -254,43 +254,83 @@
                         <i class="fa-solid fa-play mr-2"></i> Lancer le logiciel
                     </a>
                 </div>
-            </div>
 
-            <!-- Projets en Création -->
-            <h3 class="text-2xl font-heading font-bold mb-6 text-white border-l-4 border-yellow-500 pl-4 reveal">En cours de création</h3>
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
-                
-                <!-- New 1: Freev TaskFlow (Replaces Freev Cloud) -->
-                <div class="glass-card p-8 rounded-2xl reveal opacity-90 border border-yellow-500/20">
-                    <span class="dev-badge"><i class="fa-solid fa-hammer mr-1"></i> Création</span>
+                <!-- Freev TaskFlow (Previously In Dev) -->
+                <div class="glass-card p-8 rounded-2xl reveal group" style="transition-delay: 200ms;">
+                    <div class="absolute top-0 left-0 w-full h-1 bg-yellow-500 transform scale-x-0 group-hover:scale-x-100 transition-transform duration-500"></div>
                     <div class="w-14 h-14 bg-yellow-500/20 rounded-lg flex items-center justify-center mb-6 text-yellow-500 text-2xl">
                         <i class="fa-solid fa-list-check"></i>
                     </div>
                     <h3 class="text-xl font-bold mb-3">Freev TaskFlow</h3>
                     <p class="text-gray-400 mb-6 text-sm">Gestionnaire de tâches type Kanban. Organisez vos projets et sauvegardez votre progression localement dans votre navigateur.</p>
-                    <button class="w-full py-2 border border-yellow-500/30 text-gray-500 rounded-lg cursor-not-allowed bg-brand-dark/50" disabled>Bientôt disponible</button>
+                    <a href="freev taskfiow.html" target="_blank" class="block w-full py-3 bg-yellow-500 text-brand-dark font-bold rounded-lg text-center hover:bg-yellow-400 transition-all shadow-lg shadow-yellow-500/20">
+                        <i class="fa-solid fa-rocket mr-2"></i> Lancer l'outil
+                    </a>
                 </div>
 
-                <!-- New 2: Freev Sketch (Replaces NetWeaver) -->
-                <div class="glass-card p-8 rounded-2xl reveal opacity-90 border border-yellow-500/20" style="transition-delay: 100ms;">
-                    <span class="dev-badge"><i class="fa-solid fa-hammer mr-1"></i> Création</span>
+                <!-- Freev Sketch (Previously In Dev) -->
+                <div class="glass-card p-8 rounded-2xl reveal group" style="transition-delay: 300ms;">
+                    <div class="absolute top-0 left-0 w-full h-1 bg-purple-500 transform scale-x-0 group-hover:scale-x-100 transition-transform duration-500"></div>
                     <div class="w-14 h-14 bg-purple-500/20 rounded-lg flex items-center justify-center mb-6 text-purple-400 text-2xl">
                         <i class="fa-solid fa-pen-ruler"></i>
                     </div>
-                    <h3 class="text-xl font-bold mb-3">Freev Sketch</h3>
-                    <p class="text-gray-400 mb-6 text-sm">Tableau blanc numérique interactif. Dessinez des schémas, prenez des notes manuscrites et exportez vos créations.</p>
-                    <button class="w-full py-2 border border-purple-500/30 text-gray-500 rounded-lg cursor-not-allowed bg-brand-dark/50" disabled>Bientôt disponible</button>
+                    <h3 class="text-xl font-bold mb-3">Freev Sketch Pro</h3>
+                    <p class="text-gray-400 mb-6 text-sm">Tableau blanc numérique et modélisation 3D basique. Dessinez, concevez et exportez vos créations artistiques.</p>
+                    <a href="freevsketchpro.html" target="_blank" class="block w-full py-3 bg-purple-500 text-white font-bold rounded-lg text-center hover:bg-purple-400 transition-all shadow-lg shadow-purple-500/20">
+                        <i class="fa-solid fa-rocket mr-2"></i> Lancer l'outil
+                    </a>
                 </div>
 
-                <!-- New 3: DataVault (Kept but description updated for feasibility) -->
-                <div class="glass-card p-8 rounded-2xl reveal opacity-90 border border-yellow-500/20" style="transition-delay: 200ms;">
-                    <span class="dev-badge"><i class="fa-solid fa-hammer mr-1"></i> Création</span>
+                <!-- DataVault (Previously In Dev) -->
+                <div class="glass-card p-8 rounded-2xl reveal group" style="transition-delay: 400ms;">
+                    <div class="absolute top-0 left-0 w-full h-1 bg-green-500 transform scale-x-0 group-hover:scale-x-100 transition-transform duration-500"></div>
                     <div class="w-14 h-14 bg-green-500/20 rounded-lg flex items-center justify-center mb-6 text-green-400 text-2xl">
                         <i class="fa-solid fa-file-shield"></i>
                     </div>
                     <h3 class="text-xl font-bold mb-3">DataVault</h3>
                     <p class="text-gray-400 mb-6 text-sm">Coffre-fort numérique personnel. Chiffrez vos notes et mots de passe localement (AES-GCM) sans aucun serveur.</p>
-                    <button class="w-full py-2 border border-green-500/30 text-gray-500 rounded-lg cursor-not-allowed bg-brand-dark/50" disabled>Bientôt disponible</button>
+                    <a href="coffre.html" target="_blank" class="block w-full py-3 bg-green-500 text-white font-bold rounded-lg text-center hover:bg-green-400 transition-all shadow-lg shadow-green-500/20">
+                        <i class="fa-solid fa-rocket mr-2"></i> Lancer l'outil
+                    </a>
+                </div>
+
+            </div>
+
+            <!-- Projets en Création (Nouveaux) -->
+            <h3 class="text-2xl font-heading font-bold mb-6 text-white border-l-4 border-yellow-500 pl-4 reveal">En cours de création</h3>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                
+                <!-- New 1: Freev Convert -->
+                <div class="glass-card p-8 rounded-2xl reveal opacity-90 border border-yellow-500/20">
+                    <span class="dev-badge"><i class="fa-solid fa-hammer mr-1"></i> Création</span>
+                    <div class="w-14 h-14 bg-pink-500/20 rounded-lg flex items-center justify-center mb-6 text-pink-500 text-2xl">
+                        <i class="fa-solid fa-right-left"></i>
+                    </div>
+                    <h3 class="text-xl font-bold mb-3">Freev Convert</h3>
+                    <p class="text-gray-400 mb-6 text-sm">Un convertisseur universel ultra-rapide (Devises, Unités, Fichiers) fonctionnant entièrement hors ligne.</p>
+                    <button class="w-full py-2 border border-pink-500/30 text-gray-500 rounded-lg cursor-not-allowed bg-brand-dark/50" disabled>Bientôt disponible</button>
+                </div>
+
+                <!-- New 2: PixelForge -->
+                <div class="glass-card p-8 rounded-2xl reveal opacity-90 border border-yellow-500/20" style="transition-delay: 100ms;">
+                    <span class="dev-badge"><i class="fa-solid fa-hammer mr-1"></i> Création</span>
+                    <div class="w-14 h-14 bg-indigo-500/20 rounded-lg flex items-center justify-center mb-6 text-indigo-400 text-2xl">
+                        <i class="fa-solid fa-border-all"></i>
+                    </div>
+                    <h3 class="text-xl font-bold mb-3">PixelForge</h3>
+                    <p class="text-gray-400 mb-6 text-sm">Éditeur de Pixel Art intuitif pour créer des sprites de jeux ou des avatars, avec export PNG/GIF.</p>
+                    <button class="w-full py-2 border border-indigo-500/30 text-gray-500 rounded-lg cursor-not-allowed bg-brand-dark/50" disabled>Bientôt disponible</button>
+                </div>
+
+                <!-- New 3: FocusBreath -->
+                <div class="glass-card p-8 rounded-2xl reveal opacity-90 border border-yellow-500/20" style="transition-delay: 200ms;">
+                    <span class="dev-badge"><i class="fa-solid fa-hammer mr-1"></i> Création</span>
+                    <div class="w-14 h-14 bg-teal-500/20 rounded-lg flex items-center justify-center mb-6 text-teal-400 text-2xl">
+                        <i class="fa-solid fa-lungs"></i>
+                    </div>
+                    <h3 class="text-xl font-bold mb-3">FocusBreath</h3>
+                    <p class="text-gray-400 mb-6 text-sm">Outil de cohérence cardiaque et de relaxation visuelle pour réduire le stress avant les examens.</p>
+                    <button class="w-full py-2 border border-teal-500/30 text-gray-500 rounded-lg cursor-not-allowed bg-brand-dark/50" disabled>Bientôt disponible</button>
                 </div>
             </div>
         </div>
@@ -313,14 +353,12 @@
                 <!-- Game 1: Pacman -->
                 <div class="glass-card rounded-2xl overflow-hidden group relative reveal h-80 border-2 border-brand-secondary/30">
                     <div class="absolute inset-0 bg-black flex items-center justify-center">
-                         <!-- Placeholder visuel pour Pacman -->
                         <div class="text-center">
                             <i class="fa-solid fa-ghost text-6xl text-yellow-400 mb-4 animate-bounce"></i>
                             <h3 class="text-3xl font-bold font-heading text-white">PAC-MAN</h3>
                             <p class="text-gray-400 mt-2">Le classique revisité</p>
                         </div>
                     </div>
-                    <!-- Overlay au survol -->
                     <div class="absolute inset-0 bg-brand-secondary/90 flex flex-col items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300">
                         <h3 class="text-3xl font-bold mb-4 text-white">Pac-Man Ultimate</h3>
                         <a href="pacman.html" target="_blank" class="px-8 py-3 bg-white text-brand-secondary font-bold rounded-full hover:scale-105 transition-transform shadow-lg">
@@ -332,14 +370,12 @@
                 <!-- Game 2: Tron -->
                 <div class="glass-card rounded-2xl overflow-hidden group relative reveal h-80 border-2 border-brand-accent/30" style="transition-delay: 100ms;">
                     <div class="absolute inset-0 bg-black flex items-center justify-center">
-                        <!-- Placeholder visuel pour Tron -->
                         <div class="text-center">
                             <i class="fa-solid fa-motorcycle text-6xl text-brand-accent mb-4 animate-pulse"></i>
                             <h3 class="text-3xl font-bold font-heading text-white">TRON</h3>
                             <p class="text-gray-400 mt-2">Course de motos légères</p>
                         </div>
                     </div>
-                     <!-- Overlay au survol -->
                     <div class="absolute inset-0 bg-brand-accent/90 flex flex-col items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300">
                         <h3 class="text-3xl font-bold mb-4 text-brand-dark">Tron Legacy</h3>
                         <a href="tron.html" target="_blank" class="px-8 py-3 bg-white text-brand-accent font-bold rounded-full hover:scale-105 transition-transform shadow-lg">
@@ -347,36 +383,70 @@
                         </a>
                     </div>
                 </div>
-            </div>
 
-            <!-- Jeux en développement -->
-            <h3 class="text-2xl font-heading font-bold mb-6 text-white border-l-4 border-pink-500 pl-4 reveal">Jeux à venir</h3>
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
-                 <!-- New Game 1: CyberPong -->
-                 <div class="glass-card p-6 rounded-2xl reveal flex items-center gap-6 border border-pink-500/20">
-                    <div class="w-20 h-20 bg-pink-500/20 rounded-lg flex items-center justify-center flex-shrink-0">
-                        <i class="fa-solid fa-table-tennis-paddle-ball text-3xl text-pink-500"></i>
-                    </div>
-                    <div>
-                        <div class="flex items-center gap-3 mb-2">
-                            <h3 class="text-xl font-bold">CyberPong 3D</h3>
-                            <span class="text-[10px] bg-pink-500/20 text-pink-400 border border-pink-500/50 px-2 py-0.5 rounded-full uppercase font-bold">En dév</span>
+                <!-- Game 3: CyberPong 3D (Previously In Dev) -->
+                <div class="glass-card rounded-2xl overflow-hidden group relative reveal h-80 border-2 border-pink-500/30">
+                    <div class="absolute inset-0 bg-black flex items-center justify-center">
+                        <div class="text-center">
+                            <i class="fa-solid fa-table-tennis-paddle-ball text-6xl text-pink-500 mb-4 animate-spin-slow"></i>
+                            <h3 class="text-3xl font-bold font-heading text-white">CYBER PONG</h3>
+                            <p class="text-gray-400 mt-2">Duel 3D Néo-Retro</p>
                         </div>
-                        <p class="text-gray-400 text-sm">Une réinvention du classique Pong avec des graphismes néon, une physique 3D et un mode multijoueur local.</p>
+                    </div>
+                    <div class="absolute inset-0 bg-pink-500/90 flex flex-col items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                        <h3 class="text-3xl font-bold mb-4 text-white">CyberPong 3D</h3>
+                        <a href="cyberpong&.html" target="_blank" class="px-8 py-3 bg-white text-pink-500 font-bold rounded-full hover:scale-105 transition-transform shadow-lg">
+                            <i class="fa-solid fa-play mr-2"></i> JOUER
+                        </a>
                     </div>
                 </div>
 
-                <!-- New Game 2: AstroMiner -->
-                <div class="glass-card p-6 rounded-2xl reveal flex items-center gap-6 border border-blue-500/20" style="transition-delay: 100ms;">
-                    <div class="w-20 h-20 bg-blue-500/20 rounded-lg flex items-center justify-center flex-shrink-0">
-                        <i class="fa-solid fa-shuttle-space text-3xl text-blue-500"></i>
+                <!-- Game 4: AstroMiner (Previously In Dev) -->
+                <div class="glass-card rounded-2xl overflow-hidden group relative reveal h-80 border-2 border-blue-500/30">
+                    <div class="absolute inset-0 bg-black flex items-center justify-center">
+                        <div class="text-center">
+                            <i class="fa-solid fa-shuttle-space text-6xl text-blue-500 mb-4 animate-pulse"></i>
+                            <h3 class="text-3xl font-bold font-heading text-white">ASTRO MINER</h3>
+                            <p class="text-gray-400 mt-2">Survie & Exploration</p>
+                        </div>
+                    </div>
+                    <div class="absolute inset-0 bg-blue-500/90 flex flex-col items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                        <h3 class="text-3xl font-bold mb-4 text-white">AstroMiner v3</h3>
+                        <a href="astrominer.html" target="_blank" class="px-8 py-3 bg-white text-blue-500 font-bold rounded-full hover:scale-105 transition-transform shadow-lg">
+                            <i class="fa-solid fa-play mr-2"></i> JOUER
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Jeux en développement (Nouveaux) -->
+            <h3 class="text-2xl font-heading font-bold mb-6 text-white border-l-4 border-pink-500 pl-4 reveal">Jeux à venir</h3>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                 <!-- New Game 1: Neon Snake -->
+                 <div class="glass-card p-6 rounded-2xl reveal flex items-center gap-6 border border-green-400/20">
+                    <div class="w-20 h-20 bg-green-400/20 rounded-lg flex items-center justify-center flex-shrink-0">
+                        <i class="fa-solid fa-staff-snake text-3xl text-green-400"></i>
                     </div>
                     <div>
                         <div class="flex items-center gap-3 mb-2">
-                            <h3 class="text-xl font-bold">AstroMiner</h3>
-                            <span class="text-[10px] bg-blue-500/20 text-blue-400 border border-blue-500/50 px-2 py-0.5 rounded-full uppercase font-bold">En dév</span>
+                            <h3 class="text-xl font-bold">Neon Snake</h3>
+                            <span class="text-[10px] bg-green-400/20 text-green-400 border border-green-400/50 px-2 py-0.5 rounded-full uppercase font-bold">En dév</span>
                         </div>
-                        <p class="text-gray-400 text-sm">Jeu de gestion et de survie spatiale. Récoltez des ressources sur des astéroïdes tout en évitant les dangers du vide.</p>
+                        <p class="text-gray-400 text-sm">Le jeu légendaire avec une esthétique néon moderne, des power-ups et un classement mondial.</p>
+                    </div>
+                </div>
+
+                <!-- New Game 2: Tower Block -->
+                <div class="glass-card p-6 rounded-2xl reveal flex items-center gap-6 border border-orange-500/20" style="transition-delay: 100ms;">
+                    <div class="w-20 h-20 bg-orange-500/20 rounded-lg flex items-center justify-center flex-shrink-0">
+                        <i class="fa-solid fa-cubes-stacked text-3xl text-orange-500"></i>
+                    </div>
+                    <div>
+                        <div class="flex items-center gap-3 mb-2">
+                            <h3 class="text-xl font-bold">Tower Block</h3>
+                            <span class="text-[10px] bg-orange-500/20 text-orange-400 border border-orange-500/50 px-2 py-0.5 rounded-full uppercase font-bold">En dév</span>
+                        </div>
+                        <p class="text-gray-400 text-sm">Jeu d'adresse et de physique. Empilez les blocs le plus haut possible sans faire tomber la tour.</p>
                     </div>
                 </div>
             </div>
