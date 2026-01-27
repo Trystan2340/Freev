@@ -70,10 +70,11 @@
 
         /* Glassmorphism */
         .glass {
-            background: rgba(15, 23, 42, 0.6);
-            backdrop-filter: blur(12px);
-            -webkit-backdrop-filter: blur(12px);
+            background: rgba(15, 23, 42, 0.7);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
             border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
         }
 
         .glass-card {
@@ -131,49 +132,74 @@
 </head>
 <body class="font-sans antialiased selection:bg-brand-accent selection:text-brand-dark">
 
-    <!-- Header / Navbar -->
-    <header class="fixed w-full z-50 transition-all duration-300 glass" id="navbar">
-        <div class="container mx-auto px-6 py-4 flex justify-between items-center">
+    <!-- Navbar "Pilule" Flottante -->
+    <!-- Desktop: Top, Mobile: Bottom -->
+    <header class="fixed left-1/2 transform -translate-x-1/2 z-50 transition-all duration-300
+                   bottom-6 w-[90%] md:w-auto md:top-6 md:bottom-auto
+                   glass rounded-full border border-white/10 shadow-2xl shadow-brand-primary/10" id="navbar">
+        
+        <div class="px-6 py-3 flex justify-between items-center md:gap-8">
+            <!-- Logo -->
             <div class="flex items-center gap-2">
-                <i class="fa-solid fa-cube text-2xl text-brand-accent animate-pulse"></i>
-                <a href="#" class="text-2xl font-heading font-bold tracking-wider">FREEV<span class="text-brand-primary">.</span></a>
+                <i class="fa-solid fa-cube text-xl text-brand-accent animate-pulse"></i>
+                <a href="#" class="text-xl font-heading font-bold tracking-wider">FREEV<span class="text-brand-primary">.</span></a>
             </div>
             
             <!-- Desktop Menu -->
-            <nav class="hidden md:flex gap-8 font-medium text-sm tracking-wide items-center">
-                <a href="#home" class="hover:text-brand-accent transition-colors">ACCUEIL</a>
-                <a href="#logiciels" class="hover:text-brand-accent transition-colors">LOGICIELS</a>
-                <a href="#jeux" class="hover:text-brand-accent transition-colors">JEUX</a>
-                <a href="#ia" class="hover:text-brand-accent transition-colors">OUTILS IA</a>
-                <a href="#etudiants" class="hover:text-brand-accent transition-colors">ÉTUDIANTS</a>
+            <nav class="hidden md:flex gap-6 font-medium text-sm tracking-wide items-center">
+                <a href="#home" class="hover:text-brand-accent transition-colors relative group">
+                    ACCUEIL
+                    <span class="absolute -bottom-1 left-0 w-0 h-0.5 bg-brand-accent transition-all group-hover:w-full"></span>
+                </a>
+                <a href="#logiciels" class="hover:text-brand-accent transition-colors relative group">
+                    LOGICIELS
+                    <span class="absolute -bottom-1 left-0 w-0 h-0.5 bg-brand-accent transition-all group-hover:w-full"></span>
+                </a>
+                <a href="#jeux" class="hover:text-brand-accent transition-colors relative group">
+                    JEUX
+                    <span class="absolute -bottom-1 left-0 w-0 h-0.5 bg-brand-accent transition-all group-hover:w-full"></span>
+                </a>
+                <a href="#ia" class="hover:text-brand-accent transition-colors relative group">
+                    OUTILS IA
+                    <span class="absolute -bottom-1 left-0 w-0 h-0.5 bg-brand-accent transition-all group-hover:w-full"></span>
+                </a>
+                <a href="#etudiants" class="hover:text-brand-accent transition-colors relative group">
+                    ÉTUDIANTS
+                    <span class="absolute -bottom-1 left-0 w-0 h-0.5 bg-brand-accent transition-all group-hover:w-full"></span>
+                </a>
             </nav>
 
-            <div class="hidden md:flex gap-4 items-center">
-                 <a href="#" class="text-sm font-bold text-gray-300 hover:text-white transition-colors flex items-center gap-2 border border-white/10 px-4 py-2 rounded-full hover:bg-white/5">
-                    <i class="fa-solid fa-user-astronaut"></i> Se connecter
+            <!-- Actions Desktop -->
+            <div class="hidden md:flex gap-3 items-center">
+                 <a href="#" class="text-xs font-bold text-gray-300 hover:text-white transition-colors flex items-center gap-2 border border-white/10 px-3 py-1.5 rounded-full hover:bg-white/5">
+                    <i class="fa-solid fa-user-astronaut"></i> Login
                 </a>
-                <a href="mailto:trystan.bonnin27@icloud.com" class="px-5 py-2 rounded-full bg-gradient-to-r from-brand-primary to-brand-secondary hover:opacity-90 transition-opacity font-bold text-sm shadow-lg shadow-brand-primary/20">
-                    Contact
+                <a href="mailto:trystan.bonnin27@icloud.com" class="w-8 h-8 flex items-center justify-center rounded-full bg-gradient-to-r from-brand-primary to-brand-secondary hover:opacity-90 transition-opacity shadow-lg shadow-brand-primary/20">
+                    <i class="fa-solid fa-envelope text-white text-xs"></i>
                 </a>
             </div>
 
             <!-- Mobile Menu Button -->
-            <button class="md:hidden text-2xl focus:outline-none" id="mobile-menu-btn">
+            <button class="md:hidden text-xl focus:outline-none p-2" id="mobile-menu-btn">
                 <i class="fa-solid fa-bars"></i>
             </button>
         </div>
 
-        <!-- Mobile Menu Overlay -->
-        <div class="md:hidden hidden bg-brand-dark/95 absolute w-full border-b border-white/10" id="mobile-menu">
-            <div class="flex flex-col p-6 space-y-4 text-center">
-                <a href="#home" class="mobile-link">ACCUEIL</a>
-                <a href="#logiciels" class="mobile-link">LOGICIELS</a>
-                <a href="#jeux" class="mobile-link">JEUX</a>
-                <a href="#ia" class="mobile-link">OUTILS IA</a>
-                <a href="#etudiants" class="mobile-link">ÉTUDIANTS</a>
-                <hr class="border-white/10">
-                <a href="#" class="mobile-link flex items-center justify-center gap-2 text-brand-accent"><i class="fa-solid fa-user-astronaut"></i> Connexion Freev</a>
-                <a href="mailto:trystan.bonnin27@icloud.com" class="mobile-link text-brand-primary">Contact</a>
+        <!-- Mobile Menu Overlay (Bulle flottante au-dessus de la barre sur mobile) -->
+        <div class="hidden md:hidden absolute bottom-full left-0 w-full mb-4 origin-bottom transition-all duration-300 transform scale-95 opacity-0" id="mobile-menu">
+            <div class="glass rounded-2xl p-4 mx-auto border border-white/10 bg-brand-dark/95 shadow-xl">
+                <div class="flex flex-col space-y-3 text-center">
+                    <a href="#home" class="mobile-link py-2 hover:bg-white/5 rounded-lg">ACCUEIL</a>
+                    <a href="#logiciels" class="mobile-link py-2 hover:bg-white/5 rounded-lg">LOGICIELS</a>
+                    <a href="#jeux" class="mobile-link py-2 hover:bg-white/5 rounded-lg">JEUX</a>
+                    <a href="#ia" class="mobile-link py-2 hover:bg-white/5 rounded-lg">OUTILS IA</a>
+                    <a href="#etudiants" class="mobile-link py-2 hover:bg-white/5 rounded-lg">ÉTUDIANTS</a>
+                    <hr class="border-white/10">
+                    <div class="flex justify-center gap-4 pt-2">
+                         <a href="#" class="text-brand-accent"><i class="fa-solid fa-user-astronaut text-xl"></i></a>
+                         <a href="mailto:trystan.bonnin27@icloud.com" class="text-brand-primary"><i class="fa-solid fa-envelope text-xl"></i></a>
+                    </div>
+                </div>
             </div>
         </div>
     </header>
@@ -205,7 +231,7 @@
         </div>
 
         <!-- Scroll Indicator -->
-        <div class="absolute bottom-10 left-1/2 transform -translate-x-1/2 animate-bounce opacity-70">
+        <div class="absolute bottom-24 md:bottom-10 left-1/2 transform -translate-x-1/2 animate-bounce opacity-70">
             <i class="fa-solid fa-chevron-down text-2xl"></i>
         </div>
     </section>
@@ -257,7 +283,8 @@
                     </div>
                     <h3 class="text-xl font-bold mb-3">Freev TaskFlow</h3>
                     <p class="text-gray-400 mb-6 text-sm">Gestionnaire de tâches type Kanban. Organisez vos projets et sauvegardez votre progression localement dans votre navigateur.</p>
-                    <a href="freev taskfiow.html" target="_blank" class="block w-full py-3 bg-yellow-500 text-brand-dark font-bold rounded-lg text-center hover:bg-yellow-400 transition-all shadow-lg shadow-yellow-500/20">
+                    
+                    <a href="freev-taskflow.html" target="_blank" class="block w-full py-3 bg-yellow-500 text-brand-dark font-bold rounded-lg text-center hover:bg-yellow-400 transition-all shadow-lg shadow-yellow-500/20">
                         <i class="fa-solid fa-rocket mr-2"></i> Lancer l'outil
                     </a>
                 </div>
@@ -395,7 +422,8 @@
                     </div>
                     <div class="absolute inset-0 bg-pink-500/90 flex flex-col items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300">
                         <h3 class="text-3xl font-bold mb-4 text-white">CyberPong 3D</h3>
-                        <a href="cyberpong&.html" target="_blank" class="px-8 py-3 bg-white text-pink-500 font-bold rounded-full hover:scale-105 transition-transform shadow-lg">
+                        <!-- LINK CORRECTION -->
+                        <a href="cyberpong.html" target="_blank" class="px-8 py-3 bg-white text-pink-500 font-bold rounded-full hover:scale-105 transition-transform shadow-lg">
                             <i class="fa-solid fa-play mr-2"></i> JOUER
                         </a>
                     </div>
@@ -474,7 +502,8 @@
                         <button onclick="document.getElementById('api-settings').classList.toggle('hidden')" class="px-6 py-3 border border-white/20 rounded-full hover:bg-white/10 transition-all flex items-center gap-2">
                             <i class="fa-solid fa-gear"></i> Configurer Clé API
                         </button>
-                         <a href="TéléchargementFreevIA.html" class="px-6 py-3 bg-gradient-to-r from-brand-primary to-brand-secondary text-white font-bold rounded-full hover:opacity-90 transition-all shadow-lg shadow-brand-primary/20 flex items-center gap-2">
+                        <!-- LINK CORRECTION: Pointing to telechargementfreevia.html -->
+                         <a href="telechargementfreevia.html" class="px-6 py-3 bg-gradient-to-r from-brand-primary to-brand-secondary text-white font-bold rounded-full hover:opacity-90 transition-all shadow-lg shadow-brand-primary/20 flex items-center gap-2">
                             <i class="fa-solid fa-download"></i> App Desktop
                         </a>
                     </div>
@@ -582,7 +611,7 @@
     </section>
 
     <!-- Footer -->
-    <footer id="contact" class="bg-black border-t border-white/10 pt-16 pb-8">
+    <footer id="contact" class="bg-black border-t border-white/10 pt-16 pb-24 md:pb-8">
         <div class="container mx-auto px-6">
             <div class="grid grid-cols-1 md:grid-cols-4 gap-12 mb-12">
                 <div class="col-span-1 md:col-span-1">
@@ -693,23 +722,28 @@
 
         document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
 
-        // --- 3. Navbar Interaction ---
-        const nav = document.getElementById('navbar');
-        window.addEventListener('scroll', () => {
-            if (window.scrollY > 50) {
-                nav.classList.add('shadow-lg');
-                nav.classList.replace('bg-transparent', 'bg-brand-dark/90');
-            }
-        });
-
+        // --- 3. Navbar Interaction (Updated for Floating Pill) ---
         // Mobile Menu
         const btn = document.getElementById('mobile-menu-btn');
         const menu = document.getElementById('mobile-menu');
+        
         btn.addEventListener('click', () => {
             menu.classList.toggle('hidden');
+            setTimeout(() => {
+                menu.classList.toggle('opacity-0');
+                menu.classList.toggle('scale-95');
+                menu.classList.toggle('translate-y-4'); // Slight movement
+            }, 10);
         });
+
+        // Close menu when clicking a link
         document.querySelectorAll('.mobile-link').forEach(link => {
-            link.addEventListener('click', () => menu.classList.add('hidden'));
+            link.addEventListener('click', () => {
+                menu.classList.add('opacity-0', 'scale-95');
+                setTimeout(() => {
+                     menu.classList.add('hidden');
+                }, 300);
+            });
         });
 
         // --- 4. GEMINI AI LOGIC (Google Generative AI) ---
