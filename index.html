@@ -1056,6 +1056,41 @@
 
 
 
-    <script type="module" src="./main.js"></script>
+
+    
+    <script>
+      const modal = document.getElementById('login-modal');
+      const openDesktop = document.getElementById('open-login-modal');
+      const openMobile = document.getElementById('open-login-modal-mobile');
+      const closeModal = document.getElementById('close-login-modal');
+
+      const openModal = () => modal.classList.remove('hidden');
+      const close = () => modal.classList.add('hidden');
+
+      openDesktop?.addEventListener('click', openModal);
+      openMobile?.addEventListener('click', openModal);
+      closeModal?.addEventListener('click', close);
+      modal?.addEventListener('click', (e) => {
+        if (e.target === modal) close();
+      });
+    </script>
+
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+
+  const firebaseConfig = {
+    apiKey: "AIzaSyDND_w-tLaTZtkSYwA_BIYLM7ZuHfrQJ9w",
+    authDomain: "freevy-aedd1.firebaseapp.com",
+    projectId: "freevy-aedd1",
+    storageBucket: "freevy-aedd1.firebasestorage.app",
+    messagingSenderId: "975923868184",
+    appId: "1:975923868184:web:0ae089fb3b73303445096d",
+    measurementId: "G-4YHTHZR9G8"
+  };
+
+  const app = initializeApp(firebaseConfig);
+
+  console.log("Firebase connecté 🔥", app);
+</script>
 </body>
 </html>
