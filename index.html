@@ -149,7 +149,7 @@
     <!-- Navbar "Pilule" Flottante -->
     <!-- Desktop: Top, Mobile: Bottom -->
     <header class="fixed left-1/2 transform -translate-x-1/2 z-50 transition-all duration-300
-                   bottom-6 w-[90%] md:w-auto md:top-6 md:bottom-auto
+                   top-6 w-[90%] md:w-auto
                    glass rounded-full border border-white/10 shadow-2xl shadow-brand-primary/10" id="navbar">
         
         <div class="px-6 py-3 flex justify-between items-center md:gap-8">
@@ -181,9 +181,9 @@
 
             <!-- Actions Desktop -->
             <div class="hidden md:flex gap-3 items-center">
-                 <a href="#" class="text-xs font-bold text-gray-300 hover:text-white transition-colors flex items-center gap-2 border border-white/10 px-3 py-1.5 rounded-full hover:bg-white/5">
-                    <i class="fa-solid fa-user-astronaut"></i> Login
-                </a>
+                 <button type="button" id="open-login-modal" class="text-xs font-bold text-gray-300 hover:text-white transition-colors flex items-center gap-2 border border-white/10 px-3 py-1.5 rounded-full hover:bg-white/5">
+                    <i class="fa-solid fa-user-astronaut"></i> Connexion
+                </button>
                 <a href="#" class="email-link w-8 h-8 flex items-center justify-center rounded-full bg-gradient-to-r from-brand-primary to-brand-secondary hover:opacity-90 transition-opacity shadow-lg shadow-brand-primary/20">
                     <i class="fa-solid fa-envelope text-white text-xs"></i>
                 </a>
@@ -205,13 +205,34 @@
                     <a href="#ia" class="mobile-link py-2 hover:bg-white/5 rounded-lg">OUTILS IA</a>
                     <hr class="border-white/10">
                     <div class="flex justify-center gap-4 pt-2">
-                         <a href="#" class="text-brand-accent"><i class="fa-solid fa-user-astronaut text-xl"></i></a>
+                         <button type="button" id="open-login-modal-mobile" class="text-brand-accent"><i class="fa-solid fa-user-astronaut text-xl"></i></button>
                          <a href="#" class="email-link text-brand-primary"><i class="fa-solid fa-envelope text-xl"></i></a>
                     </div>
                 </div>
             </div>
         </div>
     </header>
+
+    <!-- Fenêtre de connexion -->
+    <div id="login-modal" class="hidden fixed inset-0 z-[60] bg-black/70 backdrop-blur-sm px-4">
+        <div class="min-h-full flex items-start justify-center pt-24">
+            <div class="glass w-full max-w-md rounded-2xl p-6 border border-white/15">
+                <div class="flex items-center justify-between mb-4">
+                    <h2 class="text-xl font-heading font-bold">Connexion Freev</h2>
+                    <button type="button" id="close-login-modal" class="text-gray-400 hover:text-white">
+                        <i class="fa-solid fa-xmark"></i>
+                    </button>
+                </div>
+                <p class="text-sm text-gray-400 mb-4">Connectez-vous pour synchroniser vos données avec Firebase (offre gratuite Spark).</p>
+                <form class="space-y-3">
+                    <input type="email" placeholder="Email" class="w-full bg-slate-900/80 border border-white/10 rounded-lg px-4 py-2 focus:outline-none focus:border-brand-primary">
+                    <input type="password" placeholder="Mot de passe" class="w-full bg-slate-900/80 border border-white/10 rounded-lg px-4 py-2 focus:outline-none focus:border-brand-primary">
+                    <button type="button" class="w-full py-2 bg-gradient-to-r from-brand-primary to-brand-secondary rounded-lg font-semibold">Se connecter</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
 
     <!-- Hero Section -->
     <section id="home" class="relative h-screen flex items-center justify-center overflow-hidden">
@@ -1031,5 +1052,39 @@
         });
 
     </script>
+
+
+    <script type="module">
+        // Configuration Firebase (offre gratuite Spark)
+        // 1) Crée un projet dans Firebase Console (nom conseillé: freev)
+        // 2) Active Authentication (Email/Mot de passe) et Firestore
+        // 3) Remplace les valeurs ci-dessous par ta vraie config
+        const firebaseConfig = {
+            apiKey: "REMPLACE_API_KEY",
+            authDomain: "freev.firebaseapp.com",
+            projectId: "freev",
+            storageBucket: "freev.appspot.com",
+            messagingSenderId: "REMPLACE_SENDER_ID",
+            appId: "REMPLACE_APP_ID"
+        };
+
+        console.info('Firebase prêt à configurer (plan gratuit Spark).', firebaseConfig);
+
+        const modal = document.getElementById('login-modal');
+        const openDesktop = document.getElementById('open-login-modal');
+        const openMobile = document.getElementById('open-login-modal-mobile');
+        const closeModal = document.getElementById('close-login-modal');
+
+        const openModal = () => modal.classList.remove('hidden');
+        const close = () => modal.classList.add('hidden');
+
+        openDesktop?.addEventListener('click', openModal);
+        openMobile?.addEventListener('click', openModal);
+        closeModal?.addEventListener('click', close);
+        modal?.addEventListener('click', (e) => {
+            if (e.target === modal) close();
+        });
+    </script>
+
 </body>
 </html>
