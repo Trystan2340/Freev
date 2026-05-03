@@ -1054,37 +1054,8 @@
     </script>
 
 
-    <script type="module">
-        // Configuration Firebase (offre gratuite Spark)
-        // 1) Crée un projet dans Firebase Console (nom conseillé: freev)
-        // 2) Active Authentication (Email/Mot de passe) et Firestore
-        // 3) Remplace les valeurs ci-dessous par ta vraie config
-        const firebaseConfig = {
-            apiKey: "REMPLACE_API_KEY",
-            authDomain: "freev.firebaseapp.com",
-            projectId: "freev",
-            storageBucket: "freev.appspot.com",
-            messagingSenderId: "REMPLACE_SENDER_ID",
-            appId: "REMPLACE_APP_ID"
-        };
 
-        console.info('Firebase prêt à configurer (plan gratuit Spark).', firebaseConfig);
 
-        const modal = document.getElementById('login-modal');
-        const openDesktop = document.getElementById('open-login-modal');
-        const openMobile = document.getElementById('open-login-modal-mobile');
-        const closeModal = document.getElementById('close-login-modal');
-
-        const openModal = () => modal.classList.remove('hidden');
-        const close = () => modal.classList.add('hidden');
-
-        openDesktop?.addEventListener('click', openModal);
-        openMobile?.addEventListener('click', openModal);
-        closeModal?.addEventListener('click', close);
-        modal?.addEventListener('click', (e) => {
-            if (e.target === modal) close();
-        });
-    </script>
-
+    <script type="module" src="./main.js"></script>
 </body>
 </html>
