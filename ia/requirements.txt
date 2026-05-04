@@ -1,12 +1,2 @@
-# FreevBrain v7 — Dépendances
-# Cœur (Python standard library uniquement) :
-# - re, json, math, random, os, sys, time, datetime, pathlib, collections, heapq, zlib, base64, urllib
-
-# DeepSeek V4 Pro via NVIDIA API
-openai
-
-# Optionnel : Moteur Vocal (voice.py / main.py --vocal)
-pyttsx3
-SpeechRecognition
-pyaudio
-pycaw
+# FreevBrain v5 — stdlib Python uniquement, aucune dépendance externe
+# Ce fichier est requis par Render même s'il est vide
