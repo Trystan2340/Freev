@@ -808,7 +808,7 @@
         // Vérifier connexion au serveur local au démarrage
         async function checkServer() {
             try {
-                const r = await fetch(FREEV_SERVER + '/status', { signal: AbortSignal.timeout(1500) });
+                const r = await fetch(FREEV_SERVER + '/status', { signal: AbortSignal.timeout(20000) });
                 const data = await r.json();
                 serverConnected = data.ok;
                 updateServerBadge(data);
@@ -824,17 +824,19 @@
             if (currentAiMode !== 'freev') return;
 
             if (serverConnected && data) {
-                badge.innerHTML = '<i class="fa-solid fa-circle text-green-400 text-xs"></i> Freev AI — Local actif · ' + data.pairs + ' paires';
+                badge.innerHTML = '<i class="fa-solid fa-circle text-green-400 text-xs"></i> Freev AI — En ligne · ' + data.pairs + ' paires';
                 badge.className = 'inline-flex items-center gap-2 px-3 py-1 rounded-full bg-green-500/10 text-green-400 text-xs font-bold mb-4 border border-green-500/20';
             } else {
-                badge.innerHTML = '<i class="fa-solid fa-circle text-red-400 text-xs animate-pulse"></i> Freev AI — Serveur hors ligne';
-                badge.className = 'inline-flex items-center gap-2 px-3 py-1 rounded-full bg-red-500/10 text-red-400 text-xs font-bold mb-4 border border-red-500/20';
+                badge.innerHTML = '<i class="fa-solid fa-circle text-yellow-400 text-xs animate-pulse"></i> Freev AI — Réveil du serveur...';
+                badge.className = 'inline-flex items-center gap-2 px-3 py-1 rounded-full bg-yellow-500/10 text-yellow-400 text-xs font-bold mb-4 border border-yellow-500/20';
             }
         }
 
         // Vérifier toutes les 30 secondes (serveur en ligne)
         checkServer();
         setInterval(checkServer, 30000);
+        // Render Free se réveille en ~50s — on refait un check rapide après 40s
+        setTimeout(checkServer, 40000);
 
         async function generateFreev() {
             const input  = document.getElementById('ai-input');
@@ -851,9 +853,10 @@
             if (!serverConnected) {
                 output.innerHTML += `
                     <div class="mt-3 p-4 bg-slate-800/80 rounded-xl border border-yellow-500/30">
-                        <p class="text-yellow-400 font-bold mb-2"><i class="fa-solid fa-triangle-exclamation mr-2"></i>Freev AI hors ligne</p>
-                        <p class="text-gray-400 text-sm mb-3">Le serveur FreevBrain n'est pas accessible. Vérifie que le déploiement Render/Railway est actif.</p>
-                        <p class="text-gray-500 text-xs mt-2">Ou bascule sur <strong class="text-brand-primary">Gemini</strong> pour une IA disponible immédiatement.</p>
+                        <p class="text-yellow-400 font-bold mb-2"><i class="fa-solid fa-hourglass-half mr-2"></i>Freev AI se réveille...</p>
+                        <p class="text-gray-400 text-sm mb-2">Le serveur Render (gratuit) dort quand il est inactif. Il se réveille en <strong class="text-white">30–50 secondes</strong>.</p>
+                        <p class="text-gray-400 text-sm">Le badge deviendra <strong class="text-green-400">vert</strong> quand il est prêt — réessaie alors.</p>
+                        <p class="text-gray-500 text-xs mt-2">Ou bascule sur <strong class="text-brand-primary">Gemini</strong> pour une réponse immédiate.</p>
                     </div>`;
                 output.scrollTop = output.scrollHeight;
                 return;
