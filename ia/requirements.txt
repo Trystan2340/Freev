@@ -1,0 +1,2 @@
+# FreevBrain v7 — stdlib only, aucune dépendance externe
+# Ce fichier est requis par Render même si vide
