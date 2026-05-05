@@ -2,8 +2,12 @@ services:
   - type: web
     name: freev-ai
     runtime: python
+    rootDir: ia
     buildCommand: pip install -r requirements.txt
     startCommand: python server.py
+    healthCheckPath: /status
     envVars:
       - key: PYTHON_VERSION
-        value: 3.11.0
+        value: "3.11.0"
+      - key: ALLOWED_ORIGINS
+        value: "https://trystan2340.github.io"
