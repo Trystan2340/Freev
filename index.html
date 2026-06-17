@@ -1157,7 +1157,7 @@
     } catch (error) {
       renderUserData(user, { email: user.email }, false);
       if (isPermissionError(error)) {
-        setAuthStatus("Compte créé/connecté. Activez les règles Firestore pour autoriser users/{uid} afin de synchroniser les données.", "error");
+        setAuthStatus("Compte créé/connecté. Déployez les règles Firestore du projet pour autoriser users/{uid} afin de synchroniser les données.", "error");
         return;
       }
       setAuthStatus(`Compte connecté, mais synchronisation Firestore impossible : ${error.message}`, "error");
