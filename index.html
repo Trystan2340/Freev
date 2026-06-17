@@ -223,11 +223,16 @@
                         <i class="fa-solid fa-xmark"></i>
                     </button>
                 </div>
-                <p class="text-sm text-gray-400 mb-4">Connectez-vous pour synchroniser vos données avec Firebase (offre gratuite Spark).</p>
-                <form class="space-y-3">
-                    <input type="email" placeholder="Email" class="w-full bg-slate-900/80 border border-white/10 rounded-lg px-4 py-2 focus:outline-none focus:border-brand-primary">
-                    <input type="password" placeholder="Mot de passe" class="w-full bg-slate-900/80 border border-white/10 rounded-lg px-4 py-2 focus:outline-none focus:border-brand-primary">
-                    <button type="button" class="w-full py-2 bg-gradient-to-r from-brand-primary to-brand-secondary rounded-lg font-semibold">Se connecter</button>
+                <p class="text-sm text-gray-400 mb-4">Inscrivez-vous ou connectez-vous pour synchroniser vos données avec Firebase (offre gratuite Spark).</p>
+                <form id="auth-form" class="space-y-3">
+                    <input id="auth-email" type="email" placeholder="Email" autocomplete="email" required class="w-full bg-slate-900/80 border border-white/10 rounded-lg px-4 py-2 focus:outline-none focus:border-brand-primary">
+                    <input id="auth-password" type="password" placeholder="Mot de passe" autocomplete="current-password" minlength="6" required class="w-full bg-slate-900/80 border border-white/10 rounded-lg px-4 py-2 focus:outline-none focus:border-brand-primary">
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                        <button type="button" id="login-button" class="w-full py-2 bg-gradient-to-r from-brand-primary to-brand-secondary rounded-lg font-semibold">Se connecter</button>
+                        <button type="button" id="register-button" class="w-full py-2 border border-brand-accent/50 text-brand-accent rounded-lg font-semibold hover:bg-brand-accent/10 transition-colors">S'inscrire</button>
+                    </div>
+                    <p id="auth-status" class="min-h-5 text-xs text-gray-400" role="status" aria-live="polite"></p>
+                    <div id="firebase-user-data" class="hidden rounded-lg border border-white/10 bg-slate-900/70 p-3 text-xs text-gray-300"></div>
                 </form>
             </div>
         </div>
@@ -1080,6 +1085,8 @@
 
 <script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+  import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+  import { getFirestore, doc, getDoc, setDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
   const firebaseConfig = {
     apiKey: "AIzaSyBtcQrFenU9T0C2v1qcBUpF2DfVqC_V5sM",
@@ -1092,6 +1099,90 @@
   };
 
   const app = initializeApp(firebaseConfig);
+  const auth = getAuth(app);
+  const db = getFirestore(app);
+
+  const authForm = document.getElementById("auth-form");
+  const emailInput = document.getElementById("auth-email");
+  const passwordInput = document.getElementById("auth-password");
+  const loginButton = document.getElementById("login-button");
+  const registerButton = document.getElementById("register-button");
+  const authStatus = document.getElementById("auth-status");
+  const firebaseUserData = document.getElementById("firebase-user-data");
+
+  const setAuthStatus = (message, type = "info") => {
+    if (!authStatus) return;
+    authStatus.textContent = message;
+    authStatus.className = `min-h-5 text-xs ${type === "error" ? "text-red-400" : type === "success" ? "text-emerald-400" : "text-gray-400"}`;
+  };
+
+  const renderUserData = (user, data = {}) => {
+    if (!firebaseUserData) return;
+    firebaseUserData.classList.remove("hidden");
+    firebaseUserData.innerHTML = `
+      <p class="font-semibold text-white mb-2">Données récupérées depuis Firebase</p>
+      <p><span class="text-gray-500">UID :</span> ${user.uid}</p>
+      <p><span class="text-gray-500">Email :</span> ${user.email}</p>
+      <p><span class="text-gray-500">Compte créé :</span> ${data.createdAt?.toDate ? data.createdAt.toDate().toLocaleString("fr-FR") : "à l'instant"}</p>
+      <p><span class="text-gray-500">Dernière connexion :</span> ${data.lastLoginAt?.toDate ? data.lastLoginAt.toDate().toLocaleString("fr-FR") : "maintenant"}</p>
+    `;
+  };
+
+  const saveAndLoadUserData = async (user, isNewUser = false) => {
+    const userRef = doc(db, "users", user.uid);
+    const snapshot = await getDoc(userRef);
+    const baseData = {
+      uid: user.uid,
+      email: user.email,
+      lastLoginAt: serverTimestamp(),
+    };
+
+    await setDoc(userRef, {
+      ...baseData,
+      ...(snapshot.exists() ? {} : { createdAt: serverTimestamp() }),
+    }, { merge: true });
+
+    const freshSnapshot = await getDoc(userRef);
+    const data = freshSnapshot.exists() ? freshSnapshot.data() : baseData;
+    renderUserData(user, data);
+    setAuthStatus(isNewUser ? "Inscription réussie : vos données sont enregistrées dans Firebase." : "Connexion réussie : vos données Firebase ont été retrouvées.", "success");
+  };
+
+  const getCredentials = () => {
+    if (!authForm?.reportValidity()) return null;
+    return { email: emailInput.value.trim(), password: passwordInput.value };
+  };
+
+  registerButton?.addEventListener("click", async () => {
+    const credentials = getCredentials();
+    if (!credentials) return;
+    try {
+      setAuthStatus("Inscription en cours...");
+      const { user } = await createUserWithEmailAndPassword(auth, credentials.email, credentials.password);
+      await saveAndLoadUserData(user, true);
+    } catch (error) {
+      setAuthStatus(`Erreur d'inscription : ${error.message}`, "error");
+    }
+  });
+
+  loginButton?.addEventListener("click", async () => {
+    const credentials = getCredentials();
+    if (!credentials) return;
+    try {
+      setAuthStatus("Connexion en cours...");
+      const { user } = await signInWithEmailAndPassword(auth, credentials.email, credentials.password);
+      await saveAndLoadUserData(user);
+    } catch (error) {
+      setAuthStatus(`Erreur de connexion : ${error.message}`, "error");
+    }
+  });
+
+  onAuthStateChanged(auth, (user) => {
+    if (user) {
+      emailInput.value = user.email || "";
+      saveAndLoadUserData(user).catch((error) => setAuthStatus(`Erreur Firebase : ${error.message}`, "error"));
+    }
+  });
 
   console.log("Firebase connecté 🔥", app);
 </script>
