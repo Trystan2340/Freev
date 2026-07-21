@@ -1113,6 +1113,150 @@
             75%, 100% { box-shadow: 0 0 0 7px rgba(251, 191, 36, 0); }
         }
 
+        /* Mode vocal immersif : même langage visuel cyan/bleu que Freev. */
+        .freev-voice-modal {
+            background:
+                radial-gradient(circle at 50% 34%, rgba(14, 165, 233, 0.2), transparent 34%),
+                radial-gradient(circle at 15% 85%, rgba(34, 211, 238, 0.12), transparent 30%),
+                rgba(2, 6, 23, 0.92);
+        }
+        .freev-voice-panel {
+            position: relative;
+            isolation: isolate;
+            overflow: hidden;
+            width: min(100%, 760px);
+            max-height: min(92vh, 860px);
+            border: 1px solid rgba(103, 232, 249, 0.22);
+            border-radius: 28px;
+            background: linear-gradient(160deg, rgba(15, 23, 42, 0.96), rgba(8, 15, 32, 0.98));
+            box-shadow: 0 36px 100px rgba(0, 0, 0, 0.55), 0 0 70px rgba(14, 165, 233, 0.09);
+        }
+        .freev-voice-panel::before {
+            content: "";
+            position: absolute;
+            z-index: -1;
+            inset: 0;
+            pointer-events: none;
+            background:
+                linear-gradient(rgba(34, 211, 238, 0.035) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(34, 211, 238, 0.035) 1px, transparent 1px);
+            background-size: 32px 32px;
+            mask-image: linear-gradient(to bottom, black, transparent 88%);
+        }
+        .freev-voice-stage {
+            --voice-accent: #22d3ee;
+            position: relative;
+            display: grid;
+            width: min(68vw, 310px);
+            aspect-ratio: 1;
+            margin-inline: auto;
+            place-items: center;
+        }
+        .freev-voice-stage[data-state="thinking"] { --voice-accent: #818cf8; }
+        .freev-voice-stage[data-state="speaking"] { --voice-accent: #34d399; }
+        .freev-voice-stage[data-state="error"] { --voice-accent: #fb7185; }
+        .freev-voice-ring {
+            position: absolute;
+            inset: 12%;
+            border: 1px solid color-mix(in srgb, var(--voice-accent) 62%, transparent);
+            border-radius: 50%;
+            opacity: 0.3;
+            transition: border-color 240ms ease;
+        }
+        .freev-voice-ring:nth-child(2) { inset: 4%; opacity: 0.16; }
+        .freev-voice-stage[data-state="listening"] .freev-voice-ring,
+        .freev-voice-stage[data-state="speaking"] .freev-voice-ring {
+            animation: freevVoiceRing 2.2s ease-out infinite;
+        }
+        .freev-voice-stage[data-state="listening"] .freev-voice-ring:nth-child(2),
+        .freev-voice-stage[data-state="speaking"] .freev-voice-ring:nth-child(2) {
+            animation-delay: 0.7s;
+        }
+        .freev-voice-orb {
+            position: relative;
+            display: grid;
+            width: 56%;
+            aspect-ratio: 1;
+            place-items: center;
+            border: 1px solid color-mix(in srgb, var(--voice-accent) 55%, transparent);
+            border-radius: 50%;
+            background:
+                radial-gradient(circle at 38% 32%, rgba(255, 255, 255, 0.34), transparent 8%),
+                radial-gradient(circle at 50% 45%, color-mix(in srgb, var(--voice-accent) 40%, transparent), rgba(15, 23, 42, 0.92) 68%);
+            box-shadow:
+                inset 0 0 34px color-mix(in srgb, var(--voice-accent) 24%, transparent),
+                0 0 42px color-mix(in srgb, var(--voice-accent) 22%, transparent);
+            transition: border-color 240ms ease, box-shadow 240ms ease;
+        }
+        .freev-voice-orb::before {
+            content: "";
+            position: absolute;
+            inset: -7%;
+            border-radius: inherit;
+            background: conic-gradient(from 0deg, transparent, var(--voice-accent), transparent 38%, transparent 72%, var(--voice-accent), transparent);
+            filter: blur(1px);
+            opacity: 0.54;
+            -webkit-mask: radial-gradient(circle, transparent 62%, black 64%);
+            mask: radial-gradient(circle, transparent 62%, black 64%);
+            animation: freevVoiceOrbit 7s linear infinite;
+        }
+        .freev-voice-stage[data-state="thinking"] .freev-voice-orb::before {
+            animation-duration: 2.4s;
+        }
+        .freev-voice-mark {
+            color: #e0f2fe;
+            font-size: clamp(2.1rem, 8vw, 3.25rem);
+            filter: drop-shadow(0 0 14px color-mix(in srgb, var(--voice-accent) 70%, transparent));
+        }
+        .freev-voice-wave {
+            position: absolute;
+            bottom: 11%;
+            left: 50%;
+            display: flex;
+            width: 68%;
+            height: 44px;
+            align-items: center;
+            justify-content: center;
+            gap: 5px;
+            transform: translateX(-50%);
+        }
+        .freev-voice-wave span {
+            width: 4px;
+            height: calc(6px + var(--bar, 1) * 2px);
+            border-radius: 999px;
+            background: var(--voice-accent);
+            box-shadow: 0 0 10px color-mix(in srgb, var(--voice-accent) 54%, transparent);
+            opacity: 0.42;
+            transform-origin: center;
+        }
+        .freev-voice-stage[data-state="listening"] .freev-voice-wave span,
+        .freev-voice-stage[data-state="speaking"] .freev-voice-wave span {
+            animation: freevVoiceWave 0.8s ease-in-out infinite alternate;
+            animation-delay: calc(var(--bar, 1) * -70ms);
+            opacity: 0.9;
+        }
+        .freev-voice-transcript {
+            min-height: 62px;
+            overflow-wrap: anywhere;
+        }
+        .freev-voice-control:focus-visible,
+        #freev-voice-button:focus-visible {
+            outline: 2px solid #67e8f9;
+            outline-offset: 3px;
+        }
+        body.freev-voice-open { overflow: hidden; }
+
+        @keyframes freevVoiceOrbit { to { transform: rotate(360deg); } }
+        @keyframes freevVoiceRing {
+            0% { transform: scale(0.82); opacity: 0; }
+            28% { opacity: 0.44; }
+            100% { transform: scale(1.08); opacity: 0; }
+        }
+        @keyframes freevVoiceWave {
+            from { transform: scaleY(0.45); }
+            to { transform: scaleY(calc(1.15 + var(--bar, 1) * 0.15)); }
+        }
+
         @media (prefers-reduced-motion: reduce) {
             #freev-site-aura,
             #freev-site-aura::before,
@@ -1127,7 +1271,10 @@
             .freev-thinking-ring,
             .freev-thinking-core,
             .freev-thinking-dot,
-            .freev-status-thinking-dot {
+            .freev-status-thinking-dot,
+            .freev-voice-ring,
+            .freev-voice-orb::before,
+            .freev-voice-wave span {
                 animation: none !important;
             }
             .freev-thinking-ring { opacity: 0.35; transform: scale(0.88); }
@@ -1678,18 +1825,18 @@ Freev Brain V7 répond avec la base propre de Freev. Tu peux aussi connecter ta 
 </div>
 <div class="rounded-xl border border-white/10 bg-white/5 p-4">
 <i class="fa-solid fa-comments text-fuchsia-300 mb-2"></i>
-<h3 class="font-bold text-white text-sm">Meilleure compréhension</h3>
-<p class="mt-1 text-xs leading-relaxed text-gray-400">V7 reconnaît davantage de reformulations et de questions en français.</p>
+<h3 class="font-bold text-white text-sm">Raisonnement conversationnel</h3>
+<p class="mt-1 text-xs leading-relaxed text-gray-400">V7 peut maintenant expliquer, comparer et conseiller sans modèle externe.</p>
 </div>
 <div class="rounded-xl border border-white/10 bg-white/5 p-4">
 <i class="fa-solid fa-database text-emerald-300 mb-2"></i>
-<h3 class="font-bold text-white text-sm">Base Freev native</h3>
-<p class="mt-1 text-xs leading-relaxed text-gray-400">Les réponses viennent du cerveau et des connaissances propres à Freev.</p>
+<h3 class="font-bold text-white text-sm">Grande base Freev native</h3>
+<p class="mt-1 text-xs leading-relaxed text-gray-400">Près de 480 000 connaissances locales, complétées par une recherche encyclopédique fiable.</p>
 </div>
 <div class="rounded-xl border border-white/10 bg-white/5 p-4">
-<i class="fa-solid fa-shield-halved text-amber-300 mb-2"></i>
-<h3 class="font-bold text-white text-sm">Mode public protégé</h3>
-<p class="mt-1 text-xs leading-relaxed text-gray-400">Les demandes de code, d’outils et de données sensibles sont bloquées.</p>
+<i class="fa-solid fa-wave-square text-sky-300 mb-2"></i>
+<h3 class="font-bold text-white text-sm">Vocal immersif</h3>
+<p class="mt-1 text-xs leading-relaxed text-gray-400">Micro, transcription, réponse parlée et animation réactive dans le style du site.</p>
 </div>
 </div>
 </div>
@@ -1699,7 +1846,7 @@ Freev Brain V7 répond avec la base propre de Freev. Tu peux aussi connecter ta 
 <div class="flex items-center justify-between gap-4 border-b border-white/10 pb-4">
 <div>
 <p class="font-bold text-white" id="freev-v7-chat-title"><i class="fa-solid fa-brain mr-2 text-cyan-300"></i>Freev Brain V7</p>
-<p class="mt-1 text-[11px] text-gray-500" id="freev-v7-mode-description">Conversation écrite · base Freev native</p>
+<p class="mt-1 text-[11px] text-gray-500" id="freev-v7-mode-description">Conversation écrite ou vocale · base Freev native</p>
 </div>
 <span class="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-3 py-1 text-[11px] text-gray-400" id="freev-v7-status" role="status" aria-live="polite">
 <span class="h-2 w-2 rounded-full bg-amber-400" id="freev-v7-status-dot"></span> Connexion…
@@ -1721,6 +1868,9 @@ Freev Brain V7 répond avec la base propre de Freev. Tu peux aussi connecter ta 
 <i class="fa-solid fa-clock-rotate-left"></i> Historique
 <span class="rounded-full bg-cyan-500/15 px-1.5 py-0.5 text-[9px]" id="freev-history-count">0</span>
 </button>
+<button aria-haspopup="dialog" class="inline-flex items-center gap-2 rounded-lg border border-sky-400/30 bg-sky-500/10 px-3 py-2 text-[11px] font-bold text-sky-100 transition-colors hover:bg-sky-500/20" id="freev-voice-button" type="button">
+<i class="fa-solid fa-microphone-lines"></i> Vocal immersif
+</button>
 </div>
 <div class="mt-4 min-h-[280px] max-h-[390px] space-y-3 overflow-y-auto rounded-xl border border-white/10 bg-slate-950/60 p-4 text-sm" id="freev-v7-output" aria-live="polite" aria-label="Conversation avec Freev Brain V7">
 <div class="rounded-xl border border-cyan-400/15 bg-cyan-500/5 p-3 text-gray-300">
@@ -1735,7 +1885,54 @@ Freev Brain V7 répond avec la base propre de Freev. Tu peux aussi connecter ta 
 <i class="fa-solid fa-paper-plane"></i>
 </button>
 </form>
-<p class="mt-2 text-[10px] text-gray-600">Conversation écrite. Les modèles externes utilisent uniquement la configuration enregistrée dans ton navigateur.</p>
+<p class="mt-2 text-[10px] text-gray-600">Conversation écrite ou vocale. Le micro et la voix restent gérés par ton navigateur.</p>
+
+<!-- Expérience vocale plein écran, reliée au même chat et au même historique. -->
+<div aria-hidden="true" aria-labelledby="freev-voice-title" aria-modal="true" class="freev-voice-modal fixed inset-0 z-[140] hidden items-center justify-center overflow-y-auto p-3 backdrop-blur-xl sm:p-6" id="freev-voice-modal" role="dialog">
+<div class="freev-voice-panel p-5 sm:p-8">
+<div class="flex items-start justify-between gap-4">
+<div>
+<p class="text-[10px] font-bold uppercase tracking-[0.26em] text-cyan-300">Freev Brain V7</p>
+<h3 class="mt-1 font-heading text-xl font-bold text-white sm:text-2xl" id="freev-voice-title">Conversation vocale immersive</h3>
+<p class="mt-1 text-xs text-slate-400">Parle naturellement, Freev transcrit puis te répond à voix haute.</p>
+</div>
+<button aria-label="Fermer le mode vocal" class="freev-voice-control grid h-10 w-10 shrink-0 place-items-center rounded-full border border-white/10 text-slate-300 transition-colors hover:bg-white/10 hover:text-white" id="freev-voice-close" type="button">
+<i class="fa-solid fa-xmark"></i>
+</button>
+</div>
+
+<div class="freev-voice-stage mt-2" data-state="idle" id="freev-voice-stage">
+<span aria-hidden="true" class="freev-voice-ring"></span>
+<span aria-hidden="true" class="freev-voice-ring"></span>
+<div aria-hidden="true" class="freev-voice-orb">
+<i class="fa-solid fa-brain freev-voice-mark"></i>
+</div>
+<div aria-hidden="true" class="freev-voice-wave">
+<span style="--bar:1"></span><span style="--bar:4"></span><span style="--bar:2"></span><span style="--bar:6"></span><span style="--bar:3"></span><span style="--bar:7"></span><span style="--bar:4"></span><span style="--bar:6"></span><span style="--bar:2"></span><span style="--bar:5"></span><span style="--bar:3"></span><span style="--bar:1"></span>
+</div>
+</div>
+
+<div class="mx-auto max-w-xl text-center">
+<p aria-live="polite" class="font-bold text-cyan-100" id="freev-voice-state">Prêt à écouter</p>
+<p aria-live="polite" class="freev-voice-transcript mt-2 rounded-2xl border border-white/10 bg-slate-950/55 px-4 py-3 text-sm leading-relaxed text-slate-300" id="freev-voice-transcript">Appuie sur le micro et commence à parler.</p>
+</div>
+
+<div class="mt-5 flex flex-wrap items-center justify-center gap-3">
+<button aria-label="Démarrer l’écoute" class="freev-voice-control inline-flex min-w-40 items-center justify-center gap-2 rounded-full bg-gradient-to-r from-cyan-400 to-sky-500 px-5 py-3 text-sm font-bold text-slate-950 shadow-lg shadow-cyan-500/15 transition-transform hover:scale-[1.02] disabled:cursor-not-allowed disabled:opacity-40" id="freev-voice-mic" type="button">
+<i class="fa-solid fa-microphone"></i><span>Écouter</span>
+</button>
+<button aria-pressed="true" class="freev-voice-control inline-flex items-center justify-center gap-2 rounded-full border border-emerald-400/25 bg-emerald-500/10 px-4 py-3 text-xs font-bold text-emerald-100 hover:bg-emerald-500/15" id="freev-voice-speech-toggle" type="button">
+<i class="fa-solid fa-volume-high"></i><span>Réponse vocale</span>
+</button>
+</div>
+
+<div class="mx-auto mt-4 max-w-sm">
+<label class="mb-1 block text-center text-[10px] font-bold uppercase tracking-wider text-slate-500" for="freev-voice-select">Voix du navigateur</label>
+<select class="freev-voice-control w-full rounded-xl border border-white/10 bg-slate-950 px-3 py-2.5 text-xs text-slate-200 outline-none focus:border-cyan-400" id="freev-voice-select"></select>
+</div>
+<p class="mt-4 text-center text-[10px] leading-relaxed text-slate-500"><i class="fa-solid fa-shield-halved mr-1 text-cyan-400"></i>La reconnaissance et la lecture vocales utilisent les fonctions de ton navigateur. Freev ne stocke pas l’audio.</p>
+</div>
+</div>
 </div>
 </div>
 </div>
@@ -2695,7 +2892,7 @@ Freev Brain V7 répond avec la base propre de Freev. Tu peux aussi connecter ta 
             }
         });
 
-        // --- 4. FREEV BRAIN V7 : CONVERSATION TEXTE UNIQUEMENT ---
+        // --- 4. FREEV BRAIN V7 : CONVERSATION ÉCRITE ET VOCALE ---
         const FREEV_V7_SERVER = ['127.0.0.1', 'localhost'].includes(window.location.hostname)
             ? 'http://127.0.0.1:10000'
             : 'https://freev-iies.onrender.com';
@@ -2791,6 +2988,9 @@ Freev Brain V7 répond avec la base propre de Freev. Tu peux aussi connecter ta 
             copy.append(headlineRow, detailText);
             body.append(orb, copy);
             if (output) output.scrollTop = output.scrollHeight;
+            window.dispatchEvent(new CustomEvent('freev:thinking-start', {
+                detail: { headline, detail }
+            }));
             return box;
         }
 
@@ -2806,6 +3006,9 @@ Freev Brain V7 répond avec la base propre de Freev. Tu peux aussi connecter ta 
             body.textContent = String(text || 'Réponse vide.');
             output?.setAttribute('aria-busy', 'false');
             if (output) output.scrollTop = output.scrollHeight;
+            window.dispatchEvent(new CustomEvent('freev:assistant-response', {
+                detail: { text: String(text || 'Réponse vide.') }
+            }));
         }
 
         async function checkFreevV7() {
@@ -2824,7 +3027,9 @@ Freev Brain V7 répond avec la base propre de Freev. Tu peux aussi connecter ta 
                 const isPublicV7 = status.ok && String(status.version || '').startsWith('7')
                     && status.mode === 'conversation-texte'
                     && status.ollama === false
-                    && status.code_mode === false;
+                    && status.code_mode === false
+                    && status.voice === true
+                    && status.voice_runtime === 'browser-immersive';
                 if (!isPublicV7) throw new Error('service V7 public non vérifié');
                 freevV7State.online = true;
                 if (freevV7State.mode === 'freev') setFreevV7Status('En ligne', 'ok');
@@ -2909,6 +3114,7 @@ Freev Brain V7 répond avec la base propre de Freev. Tu peux aussi connecter ta 
         checkFreevV7();
     </script>
 <script defer="" src="js/freev-ai-options.js"></script>
+<script defer="" src="js/freev-voice-immersive.js"></script>
 <script>
       (() => {
         const modal = document.getElementById('login-modal');
