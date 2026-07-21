@@ -6,6 +6,9 @@
 
   const byId = (id) => document.getElementById(id);
   const STORAGE_KEY = 'freev_custom_ai_config';
+  const SAVED_MODELS_KEY = 'freev_saved_ai_configs';
+  const HISTORY_KEY = 'freev_chat_history';
+  const HISTORY_MAX = 300;
   const PAGE_SIZE = 18;
   const PRESETS = {
     custom: { baseUrl: '', model: '' },
@@ -96,6 +99,88 @@
     }
   }
 
+  function configKey(config) {
+    return `${config?.baseUrl || ''}::${config?.model || ''}`;
+  }
+
+  function readSavedModels() {
+    try {
+      const value = JSON.parse(localStorage.getItem(SAVED_MODELS_KEY) || '[]');
+      return Array.isArray(value)
+        ? value.filter((config) => config && config.baseUrl && config.model)
+        : [];
+    } catch (_) {
+      return [];
+    }
+  }
+
+  function writeSavedModels(list) {
+    try {
+      localStorage.setItem(SAVED_MODELS_KEY, JSON.stringify(list.slice(-100)));
+      return true;
+    } catch (_) {
+      return false;
+    }
+  }
+
+  function upsertSavedModel(config) {
+    const list = readSavedModels();
+    const index = list.findIndex((item) => configKey(item) === configKey(config));
+    if (index >= 0) list[index] = config;
+    else list.push(config);
+    writeSavedModels(list);
+    return list;
+  }
+
+  function seedSavedModels() {
+    const list = readSavedModels();
+    if (list.length) return list;
+    const active = readStoredConfig();
+    if (active.baseUrl && active.model) return upsertSavedModel(active);
+    return list;
+  }
+
+  function readHistory() {
+    try {
+      const value = JSON.parse(localStorage.getItem(HISTORY_KEY) || '[]');
+      return Array.isArray(value) ? value.map((entry) => {
+        const normalizedModel = String(entry?.model || '').toLowerCase().replace(/\s+/g, '');
+        return {
+          ...entry,
+          model: normalizedModel === ('freevbrainv' + '5') ? 'Freev Brain V7' : entry?.model
+        };
+      }) : [];
+    } catch (_) {
+      return [];
+    }
+  }
+
+  function writeHistory(list) {
+    try {
+      localStorage.setItem(HISTORY_KEY, JSON.stringify(list.slice(-HISTORY_MAX)));
+      updateHistoryCount();
+      return true;
+    } catch (_) {
+      return false;
+    }
+  }
+
+  function saveHistory({ mode, model, question, response }) {
+    if (!question && !response) return;
+    const entry = {
+      id: `h-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`,
+      date: new Date().toISOString(),
+      mode: mode || 'freev',
+      model: model || (mode === 'custom' ? 'IA personnalisée' : 'Freev Brain V7'),
+      question: String(question || ''),
+      response: String(response || '')
+    };
+    const list = readHistory();
+    list.push(entry);
+    writeHistory(list);
+    if (!byId('freev-history-modal')?.classList.contains('hidden')) renderHistory();
+  }
+
   function currentFormConfig() {
     return {
       preset: byId('freev-provider-preset')?.value || 'custom',
@@ -142,12 +227,17 @@
       const label = config.model || 'Autre IA';
       if (title) title.textContent = label;
       if (description) description.textContent = 'Fournisseur configuré dans ce navigateur';
+      if (byId('freev-current-model-label')) byId('freev-current-model-label').textContent = label;
       chat.setStatus(config.baseUrl && config.model ? 'Modèle prêt' : 'À configurer', config.baseUrl && config.model ? 'ok' : 'error');
     } else {
       if (title) title.innerHTML = '<i class="fa-solid fa-brain mr-2 text-cyan-300"></i>Freev Brain V7';
       if (description) description.textContent = 'Conversation écrite · base Freev native';
+      if (byId('freev-current-model-label')) byId('freev-current-model-label').textContent = 'Freev V7';
       chat.checkNative();
     }
+    byId('freev-saved-models-menu')?.classList.add('hidden');
+    byId('freev-saved-models-button')?.setAttribute('aria-expanded', 'false');
+    renderSavedModels();
   }
 
   function applyPreset() {
@@ -170,6 +260,7 @@
       chat.appendMessage('assistant', 'Le navigateur refuse l’enregistrement local de la configuration.', 'Configuration');
       return false;
     }
+    upsertSavedModel(config);
     setMode('custom');
     if (!options.keepPanel) byId('freev-api-settings')?.classList.add('hidden');
     return true;
@@ -182,6 +273,11 @@
     try {
       localStorage.setItem(STORAGE_KEY, JSON.stringify(config));
     } catch (_) {}
+    const list = readSavedModels().map((saved) => configKey(saved) === configKey(config)
+      ? { ...saved, apiKey: '' }
+      : saved);
+    writeSavedModels(list);
+    renderSavedModels();
     chat.appendMessage('assistant', 'La clé API enregistrée dans ce navigateur a été effacée.', 'Configuration');
   }
 
@@ -221,6 +317,7 @@
       const content = data?.choices?.[0]?.message?.content ?? data?.choices?.[0]?.text;
       if (!content) throw new Error('Réponse vide');
       waiting.querySelector('p:last-child').textContent = String(content);
+      saveHistory({ mode: 'custom', model: config.model, question: prompt, response: String(content) });
       chat.setStatus('Modèle prêt', 'ok');
     } catch (error) {
       const localHint = /^http:\/\/(localhost|127\.0\.0\.1)/i.test(config.baseUrl)
@@ -234,6 +331,209 @@
       chat.setStatus(byId('freev-v7-status')?.textContent?.trim() || 'Autre IA',
         byId('freev-v7-status-dot')?.classList.contains('bg-red-400') ? 'error' : 'ok');
     }
+  }
+
+  function activateSavedModel(index) {
+    const config = readSavedModels()[index];
+    if (!config) return;
+    try {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(config));
+    } catch (_) {
+      chat.appendMessage('assistant', 'Impossible d’activer ce modèle dans le stockage local.', 'Configuration');
+      return;
+    }
+    fillConfig(config);
+    setMode('custom');
+  }
+
+  function removeSavedModel(index) {
+    const list = readSavedModels();
+    const config = list[index];
+    if (!config || !window.confirm(`Supprimer la configuration enregistrée pour « ${config.model} » ?`)) return;
+    list.splice(index, 1);
+    writeSavedModels(list);
+    if (configKey(readStoredConfig()) === configKey(config)) {
+      try { localStorage.removeItem(STORAGE_KEY); } catch (_) {}
+      fillConfig({ preset: 'custom', baseUrl: '', model: '', apiKey: '' });
+      setMode('freev');
+    } else {
+      renderSavedModels();
+    }
+  }
+
+  function renderSavedModels() {
+    const container = byId('freev-saved-models-list');
+    if (!container) return;
+    const active = readStoredConfig();
+    const activeKey = chat.state.mode === 'custom' ? configKey(active) : '';
+    container.replaceChildren();
+
+    const nativeButton = document.createElement('button');
+    nativeButton.type = 'button';
+    nativeButton.className = chat.state.mode === 'freev'
+      ? 'mb-1 flex w-full items-center gap-2 rounded-lg border border-cyan-400/25 bg-cyan-500/10 px-3 py-2 text-left'
+      : 'mb-1 flex w-full items-center gap-2 rounded-lg px-3 py-2 text-left hover:bg-white/5';
+    nativeButton.innerHTML = '<i class="fa-solid fa-brain text-xs text-cyan-300"></i><span><span class="block text-sm font-bold text-white">Freev Brain V7</span><span class="block text-[10px] text-gray-500">Base native Freev</span></span>';
+    nativeButton.addEventListener('click', () => setMode('freev'));
+    container.appendChild(nativeButton);
+
+    const list = readSavedModels();
+    if (!list.length) {
+      const empty = document.createElement('p');
+      empty.className = 'px-3 py-4 text-xs text-gray-500';
+      empty.textContent = 'Aucun autre modèle enregistré. Ajoute une clé API ou choisis un modèle local.';
+      container.appendChild(empty);
+      return;
+    }
+
+    list.forEach((config, index) => {
+      const row = document.createElement('div');
+      const selected = activeKey && activeKey === configKey(config);
+      row.className = selected
+        ? 'mb-1 flex items-center gap-1 rounded-lg border border-fuchsia-400/25 bg-fuchsia-500/10 p-1'
+        : 'mb-1 flex items-center gap-1 rounded-lg p-1 hover:bg-white/5';
+      const choose = document.createElement('button');
+      choose.type = 'button';
+      choose.className = 'min-w-0 flex-1 px-2 py-1 text-left';
+      const model = document.createElement('span');
+      model.className = 'block truncate text-sm font-bold text-white';
+      model.textContent = config.model;
+      const provider = document.createElement('span');
+      provider.className = 'block truncate text-[10px] text-gray-500';
+      provider.textContent = `${config.preset || 'personnalisé'} · ${config.baseUrl}`;
+      choose.append(model, provider);
+      choose.addEventListener('click', () => activateSavedModel(index));
+      const remove = document.createElement('button');
+      remove.type = 'button';
+      remove.className = 'rounded-lg p-2 text-gray-600 hover:bg-red-500/10 hover:text-red-300';
+      remove.title = 'Supprimer ce modèle enregistré';
+      remove.setAttribute('aria-label', `Supprimer ${config.model}`);
+      remove.innerHTML = '<i class="fa-solid fa-trash text-xs"></i>';
+      remove.addEventListener('click', () => removeSavedModel(index));
+      row.append(choose, remove);
+      container.appendChild(row);
+    });
+  }
+
+  function toggleSavedModels() {
+    const menu = byId('freev-saved-models-menu');
+    const button = byId('freev-saved-models-button');
+    if (!menu || !button) return;
+    const open = menu.classList.contains('hidden');
+    if (open) renderSavedModels();
+    menu.classList.toggle('hidden', !open);
+    button.setAttribute('aria-expanded', String(open));
+  }
+
+  function formatHistoryDate(value) {
+    const date = new Date(value);
+    if (Number.isNaN(date.getTime())) return '';
+    return date.toLocaleString('fr-FR', {
+      day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit'
+    });
+  }
+
+  function updateHistoryCount() {
+    if (byId('freev-history-count')) byId('freev-history-count').textContent = String(readHistory().length);
+  }
+
+  function restoreHistoryEntry(entry) {
+    if (entry.question) chat.appendMessage('user', entry.question);
+    if (entry.response) chat.appendMessage('assistant', entry.response, entry.model || 'IA');
+    closeHistory();
+  }
+
+  function deleteHistoryEntry(id) {
+    if (!window.confirm('Supprimer cet échange de l’historique local ?')) return;
+    writeHistory(readHistory().filter((entry) => entry.id !== id));
+    renderHistory();
+  }
+
+  function renderHistory() {
+    const container = byId('freev-history-list');
+    if (!container) return;
+    const list = readHistory().slice().reverse();
+    container.replaceChildren();
+    if (!list.length) {
+      const empty = document.createElement('p');
+      empty.className = 'py-10 text-center text-sm italic text-gray-500';
+      empty.textContent = 'Aucune discussion enregistrée pour le moment.';
+      container.appendChild(empty);
+      updateHistoryCount();
+      return;
+    }
+
+    list.forEach((entry) => {
+      const card = document.createElement('article');
+      card.className = 'rounded-xl border border-white/10 bg-slate-900/70 p-4';
+      const header = document.createElement('div');
+      header.className = 'mb-3 flex flex-wrap items-center justify-between gap-2';
+      const badge = document.createElement('span');
+      badge.className = entry.mode === 'freev'
+        ? 'rounded-full border border-cyan-400/20 bg-cyan-500/10 px-2 py-1 text-[10px] font-bold text-cyan-200'
+        : 'rounded-full border border-fuchsia-400/20 bg-fuchsia-500/10 px-2 py-1 text-[10px] font-bold text-fuchsia-200';
+      badge.textContent = entry.model || 'IA';
+      const date = document.createElement('time');
+      date.className = 'text-[10px] text-gray-500';
+      date.dateTime = entry.date || '';
+      date.textContent = formatHistoryDate(entry.date);
+      header.append(badge, date);
+
+      const question = document.createElement('p');
+      question.className = 'text-sm text-white';
+      const questionLabel = document.createElement('strong');
+      questionLabel.className = 'text-fuchsia-200';
+      questionLabel.textContent = 'Toi : ';
+      question.append(questionLabel, document.createTextNode(entry.question || ''));
+      const answer = document.createElement('p');
+      answer.className = 'mt-2 whitespace-pre-wrap text-sm text-gray-300';
+      const answerLabel = document.createElement('strong');
+      answerLabel.className = 'text-cyan-200';
+      answerLabel.textContent = 'IA : ';
+      answer.append(answerLabel, document.createTextNode(entry.response || ''));
+
+      const actions = document.createElement('div');
+      actions.className = 'mt-3 flex flex-wrap gap-2';
+      const restore = document.createElement('button');
+      restore.type = 'button';
+      restore.className = 'rounded-lg border border-cyan-400/25 px-2.5 py-1.5 text-[10px] font-bold text-cyan-100 hover:bg-cyan-500/10';
+      restore.innerHTML = '<i class="fa-solid fa-arrow-rotate-left mr-1"></i>Afficher dans le chat';
+      restore.addEventListener('click', () => restoreHistoryEntry(entry));
+      const remove = document.createElement('button');
+      remove.type = 'button';
+      remove.className = 'rounded-lg border border-red-400/20 px-2.5 py-1.5 text-[10px] font-bold text-red-200 hover:bg-red-500/10';
+      remove.innerHTML = '<i class="fa-solid fa-trash mr-1"></i>Supprimer';
+      remove.addEventListener('click', () => deleteHistoryEntry(entry.id));
+      actions.append(restore, remove);
+      card.append(header, question, answer, actions);
+      container.appendChild(card);
+    });
+    updateHistoryCount();
+  }
+
+  function openHistory() {
+    const modal = byId('freev-history-modal');
+    if (!modal) return;
+    renderHistory();
+    modal.classList.remove('hidden');
+    modal.classList.add('flex');
+    document.body.classList.add('overflow-hidden');
+    byId('freev-history-close')?.focus();
+  }
+
+  function closeHistory() {
+    const modal = byId('freev-history-modal');
+    if (!modal) return;
+    modal.classList.add('hidden');
+    modal.classList.remove('flex');
+    document.body.classList.remove('overflow-hidden');
+    byId('freev-history-button')?.focus();
+  }
+
+  function clearHistory() {
+    if (!window.confirm('Vider tout l’historique des discussions sur cet appareil ?')) return;
+    writeHistory([]);
+    renderHistory();
   }
 
   function installCommand(model) {
@@ -417,6 +717,7 @@
 
   function init() {
     fillConfig(readStoredConfig());
+    seedSavedModels();
     populateFamilies();
     if (byId('freev-device-recommendation')) {
       byId('freev-device-recommendation').textContent = navigator.deviceMemory
@@ -432,6 +733,10 @@
     byId('freev-provider-preset')?.addEventListener('change', applyPreset);
     byId('freev-save-api-settings')?.addEventListener('click', () => saveConfig());
     byId('freev-clear-api-key')?.addEventListener('click', clearApiKey);
+    byId('freev-saved-models-button')?.addEventListener('click', toggleSavedModels);
+    byId('freev-history-button')?.addEventListener('click', openHistory);
+    byId('freev-history-close')?.addEventListener('click', closeHistory);
+    byId('freev-history-clear')?.addEventListener('click', clearHistory);
     byId('freev-model-library-button')?.addEventListener('click', openLibrary);
     byId('freev-model-library-close')?.addEventListener('click', closeLibrary);
     byId('freev-runtime-ollama')?.addEventListener('click', () => updateRuntime('ollama'));
@@ -451,12 +756,38 @@
     byId('freev-model-library-modal')?.addEventListener('click', (event) => {
       if (event.target === byId('freev-model-library-modal')) closeLibrary();
     });
+    byId('freev-history-modal')?.addEventListener('click', (event) => {
+      if (event.target === byId('freev-history-modal')) closeHistory();
+    });
+    document.addEventListener('click', (event) => {
+      const menu = byId('freev-saved-models-menu');
+      const button = byId('freev-saved-models-button');
+      if (!menu || menu.classList.contains('hidden')) return;
+      if (!menu.contains(event.target) && !button?.contains(event.target)) {
+        menu.classList.add('hidden');
+        button?.setAttribute('aria-expanded', 'false');
+      }
+    });
     document.addEventListener('keydown', (event) => {
-      if (event.key === 'Escape' && !byId('freev-model-library-modal')?.classList.contains('hidden')) closeLibrary();
+      if (event.key !== 'Escape') return;
+      if (!byId('freev-history-modal')?.classList.contains('hidden')) closeHistory();
+      else if (!byId('freev-model-library-modal')?.classList.contains('hidden')) closeLibrary();
+      else if (!byId('freev-saved-models-menu')?.classList.contains('hidden')) {
+        byId('freev-saved-models-menu').classList.add('hidden');
+        byId('freev-saved-models-button')?.setAttribute('aria-expanded', 'false');
+      }
     });
     renderLibrary();
+    renderSavedModels();
+    updateHistoryCount();
   }
 
-  window.FreevAiOptions = Object.freeze({ sendCustomMessage, setMode, openLibrary });
+  window.FreevAiOptions = Object.freeze({
+    sendCustomMessage,
+    saveHistory,
+    setMode,
+    openLibrary,
+    openHistory
+  });
   init();
 })();
