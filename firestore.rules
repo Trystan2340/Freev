@@ -1,0 +1,85 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+    function signedInAs(userId) {
+      return request.auth != null && request.auth.uid == userId;
+    }
+
+    match /users/{userId} {
+      allow read: if signedInAs(userId);
+      allow create, update: if signedInAs(userId)
+        && request.resource.data.uid == userId;
+      allow delete: if false;
+
+      match /saves/{saveId} {
+        allow read, create, update, delete: if signedInAs(userId);
+
+        match /history/{historyId} {
+          allow read, create, update, delete: if signedInAs(userId);
+        }
+      }
+
+      match /chatHistory/{entryId} {
+        allow read, delete: if signedInAs(userId);
+        allow create, update: if signedInAs(userId)
+          && request.resource.data.keys().hasOnly([
+            'id', 'date', 'mode', 'model', 'question', 'response', 'savedAt'
+          ])
+          && request.resource.data.id == entryId
+          && request.resource.data.id is string
+          && request.resource.data.id.size() <= 100
+          && request.resource.data.date is string
+          && request.resource.data.date.size() <= 40
+          && request.resource.data.mode is string
+          && request.resource.data.mode.size() <= 20
+          && request.resource.data.model is string
+          && request.resource.data.model.size() <= 200
+          && request.resource.data.question is string
+          && request.resource.data.question.size() <= 4000
+          && request.resource.data.response is string
+          && request.resource.data.response.size() <= 20000;
+      }
+
+      // Le navigateur peut lire uniquement le ciphertext de son propre compte.
+      // Le déchiffrement est impossible sans la clé principale conservée sur Render.
+      match /privateApiKeys/{secretId} {
+        allow read, delete: if signedInAs(userId);
+        allow create, update: if signedInAs(userId)
+          && secretId.matches('^[a-f0-9]{40}$')
+          && request.resource.data.keys().hasOnly([
+            'ciphertext', 'baseUrl', 'model', 'provider', 'version', 'updatedAt'
+          ])
+          && request.resource.data.ciphertext is string
+          && request.resource.data.ciphertext.size() >= 80
+          && request.resource.data.ciphertext.size() <= 15000
+          && request.resource.data.baseUrl is string
+          && request.resource.data.baseUrl.size() >= 8
+          && request.resource.data.baseUrl.size() <= 500
+          && request.resource.data.model is string
+          && request.resource.data.model.size() >= 1
+          && request.resource.data.model.size() <= 200
+          && request.resource.data.provider is string
+          && request.resource.data.provider.size() >= 3
+          && request.resource.data.provider.size() <= 253
+          && request.resource.data.version == 1
+          && request.resource.data.updatedAt is timestamp
+          && request.resource.data.updatedAt <= request.time + duration.value(1, 'm')
+          && request.resource.data.updatedAt > request.time - duration.value(10, 'm');
+      }
+    }
+
+    match /usernames/{nicknameLower} {
+      allow read: if true;
+      allow create: if request.auth != null
+        && request.resource.data.uid == request.auth.uid
+        && request.resource.data.nicknameLower == nicknameLower;
+      allow update: if request.auth != null
+        && resource.data.uid == request.auth.uid
+        && request.resource.data.uid == request.auth.uid
+        && request.resource.data.nicknameLower == nicknameLower;
+      allow delete: if request.auth != null
+        && resource.data.uid == request.auth.uid;
+    }
+  }
+}
