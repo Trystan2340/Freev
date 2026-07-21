@@ -1824,14 +1824,14 @@ Freev Brain V7 répond avec la base propre de Freev. Tu peux aussi connecter ta 
 <p class="mt-1 text-xs leading-relaxed text-gray-400">Index SQLite et classement multi-critères pour retrouver une réponse plus pertinente.</p>
 </div>
 <div class="rounded-xl border border-white/10 bg-white/5 p-4">
-<i class="fa-solid fa-comments text-fuchsia-300 mb-2"></i>
-<h3 class="font-bold text-white text-sm">Raisonnement conversationnel</h3>
-<p class="mt-1 text-xs leading-relaxed text-gray-400">V7 peut maintenant expliquer, comparer et conseiller sans modèle externe.</p>
+<i class="fa-solid fa-code text-fuchsia-300 mb-2"></i>
+<h3 class="font-bold text-white text-sm">Code et création web actifs</h3>
+<p class="mt-1 text-xs leading-relaxed text-gray-400">V7 peut expliquer, comparer, créer ou corriger du code et générer une page HTML.</p>
 </div>
 <div class="rounded-xl border border-white/10 bg-white/5 p-4">
 <i class="fa-solid fa-database text-emerald-300 mb-2"></i>
-<h3 class="font-bold text-white text-sm">Grande base Freev native</h3>
-<p class="mt-1 text-xs leading-relaxed text-gray-400">Près de 480 000 connaissances locales, complétées par une recherche encyclopédique fiable.</p>
+<h3 class="font-bold text-white text-sm">Cerveau privé complet</h3>
+<p class="mt-1 text-xs leading-relaxed text-gray-400">248 fichiers Freev, 168 modules Python et 479 947 connaissances dans l’image privée Render.</p>
 </div>
 <div class="rounded-xl border border-white/10 bg-white/5 p-4">
 <i class="fa-solid fa-wave-square text-sky-300 mb-2"></i>
@@ -1846,7 +1846,7 @@ Freev Brain V7 répond avec la base propre de Freev. Tu peux aussi connecter ta 
 <div class="flex items-center justify-between gap-4 border-b border-white/10 pb-4">
 <div>
 <p class="font-bold text-white" id="freev-v7-chat-title"><i class="fa-solid fa-brain mr-2 text-cyan-300"></i>Freev Brain V7</p>
-<p class="mt-1 text-[11px] text-gray-500" id="freev-v7-mode-description">Conversation écrite ou vocale · base Freev native</p>
+<p class="mt-1 text-[11px] text-gray-500" id="freev-v7-mode-description">Conversation · code · HTML · vocal · runtime privé complet</p>
 </div>
 <span class="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-3 py-1 text-[11px] text-gray-400" id="freev-v7-status" role="status" aria-live="polite">
 <span class="h-2 w-2 rounded-full bg-amber-400" id="freev-v7-status-dot"></span> Connexion…
@@ -1885,7 +1885,7 @@ Freev Brain V7 répond avec la base propre de Freev. Tu peux aussi connecter ta 
 <i class="fa-solid fa-paper-plane"></i>
 </button>
 </form>
-<p class="mt-2 text-[10px] text-gray-600">Conversation écrite ou vocale. Le micro et la voix restent gérés par ton navigateur.</p>
+<p class="mt-2 text-[10px] text-gray-600">Conversation, code, création web et vocal actifs. Les actions qui exigent ton PC sont indiquées « bientôt disponibles ».</p>
 
 <!-- Expérience vocale plein écran, reliée au même chat et au même historique. -->
 <div aria-hidden="true" aria-labelledby="freev-voice-title" aria-modal="true" class="freev-voice-modal fixed inset-0 z-[140] hidden items-center justify-center overflow-y-auto p-3 backdrop-blur-xl sm:p-6" id="freev-voice-modal" role="dialog">
@@ -3027,7 +3027,10 @@ Freev Brain V7 répond avec la base propre de Freev. Tu peux aussi connecter ta 
                 const isPublicV7 = status.ok && String(status.version || '').startsWith('7')
                     && status.mode === 'conversation-texte'
                     && status.ollama === false
-                    && status.code_mode === false
+                    && status.code_mode === true
+                    && status.html_mode === true
+                    && status.full_runtime === true
+                    && Number(status.full_runtime_files || 0) >= 248
                     && status.voice === true
                     && status.voice_runtime === 'browser-immersive';
                 if (!isPublicV7) throw new Error('service V7 public non vérifié');
