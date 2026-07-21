@@ -290,9 +290,21 @@
     }
 
     chat.appendMessage('user', prompt);
-    const waiting = chat.appendMessage('assistant', 'Le modèle répond…', config.model);
+    const waiting = chat.appendMessage('assistant', 'Préparation de la réponse…', config.model);
+    chat.startThinking?.(waiting, {
+      headline: 'Le modèle réfléchit',
+      detail: `Analyse avec ${config.model}`
+    });
     chat.state.sending = true;
     chat.setStatus('Réponse en cours…', 'wait');
+
+    const finishWaiting = (text) => {
+      if (typeof chat.finishThinking === 'function') {
+        chat.finishThinking(waiting, text);
+      } else {
+        waiting?.querySelector('p:last-child')?.replaceChildren(String(text || 'Réponse vide.'));
+      }
+    };
 
     const controller = new AbortController();
     const timer = setTimeout(() => controller.abort(), 60000);
@@ -316,14 +328,14 @@
       if (!response.ok) throw new Error(`HTTP ${response.status}`);
       const content = data?.choices?.[0]?.message?.content ?? data?.choices?.[0]?.text;
       if (!content) throw new Error('Réponse vide');
-      waiting.querySelector('p:last-child').textContent = String(content);
+      finishWaiting(String(content));
       saveHistory({ mode: 'custom', model: config.model, question: prompt, response: String(content) });
       chat.setStatus('Modèle prêt', 'ok');
     } catch (error) {
       const localHint = /^http:\/\/(localhost|127\.0\.0\.1)/i.test(config.baseUrl)
         ? ' Vérifie que le serveur local est démarré et autorise les requêtes du navigateur.'
         : '';
-      waiting.querySelector('p:last-child').textContent = `Impossible de joindre ce modèle.${localHint}`;
+      finishWaiting(`Impossible de joindre ce modèle.${localHint}`);
       chat.setStatus('Modèle indisponible', 'error');
     } finally {
       clearTimeout(timer);

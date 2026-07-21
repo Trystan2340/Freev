@@ -995,6 +995,124 @@
             100% { background-position: 150% 50%, 0 0; opacity: 0.5; }
         }
 
+        /* État de réflexion du chat : animé uniquement pendant l'attente. */
+        .freev-thinking-message {
+            position: relative;
+            isolation: isolate;
+            overflow: hidden;
+            border-color: rgba(34, 211, 238, 0.32) !important;
+            background: linear-gradient(135deg, rgba(6, 182, 212, 0.12), rgba(99, 102, 241, 0.12)) !important;
+            box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.04), 0 12px 32px rgba(8, 145, 178, 0.08);
+        }
+        .freev-thinking-message::before {
+            content: "";
+            position: absolute;
+            z-index: 0;
+            inset: 0;
+            pointer-events: none;
+            background: linear-gradient(110deg, transparent 25%, rgba(103, 232, 249, 0.11) 48%, rgba(192, 132, 252, 0.12) 55%, transparent 78%);
+            transform: translateX(-130%);
+            animation: freevThinkingSweep 2.6s cubic-bezier(0.22, 1, 0.36, 1) infinite;
+        }
+        .freev-thinking-message > * {
+            position: relative;
+            z-index: 1;
+        }
+        .freev-thinking-body {
+            display: flex;
+            min-height: 44px;
+            align-items: center;
+            gap: 0.85rem;
+        }
+        .freev-thinking-orb {
+            position: relative;
+            display: inline-grid;
+            width: 38px;
+            height: 38px;
+            flex: 0 0 38px;
+            place-items: center;
+        }
+        .freev-thinking-ring {
+            position: absolute;
+            inset: 2px;
+            border: 1px solid rgba(103, 232, 249, 0.65);
+            border-radius: 999px;
+            opacity: 0;
+            animation: freevThinkingRing 1.8s cubic-bezier(0.22, 1, 0.36, 1) infinite;
+        }
+        .freev-thinking-ring:nth-child(2) {
+            border-color: rgba(192, 132, 252, 0.58);
+            animation-delay: 0.65s;
+        }
+        .freev-thinking-core {
+            width: 12px;
+            height: 12px;
+            border-radius: 999px;
+            background: linear-gradient(135deg, #67e8f9, #a78bfa);
+            box-shadow: 0 0 18px rgba(34, 211, 238, 0.72), 0 0 30px rgba(168, 85, 247, 0.3);
+            animation: freevThinkingCore 1.2s ease-in-out infinite;
+        }
+        .freev-thinking-copy {
+            min-width: 0;
+            display: grid;
+            gap: 0.2rem;
+        }
+        .freev-thinking-headline {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.45rem;
+            color: #cffafe;
+            font-weight: 700;
+        }
+        .freev-thinking-dots {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.22rem;
+        }
+        .freev-thinking-dot {
+            width: 4px;
+            height: 4px;
+            border-radius: 999px;
+            background: #67e8f9;
+            opacity: 0.4;
+            animation: freevThinkingDot 0.9s ease-in-out infinite;
+        }
+        .freev-thinking-dot:nth-child(2) { animation-delay: 0.14s; }
+        .freev-thinking-dot:nth-child(3) { animation-delay: 0.28s; }
+        .freev-thinking-detail {
+            overflow-wrap: anywhere;
+            color: rgba(165, 243, 252, 0.58);
+            font-size: 0.72rem;
+            line-height: 1.35;
+        }
+        .freev-status-thinking-dot {
+            box-shadow: 0 0 0 0 rgba(251, 191, 36, 0.5);
+            animation: freevStatusPulse 1.4s ease-out infinite;
+        }
+
+        @keyframes freevThinkingSweep {
+            0% { transform: translateX(-130%); opacity: 0.25; }
+            45% { opacity: 0.85; }
+            100% { transform: translateX(130%); opacity: 0.2; }
+        }
+        @keyframes freevThinkingRing {
+            0% { transform: scale(0.58); opacity: 0; }
+            24% { opacity: 0.8; }
+            100% { transform: scale(1.2); opacity: 0; }
+        }
+        @keyframes freevThinkingCore {
+            0%, 100% { transform: scale(0.82); opacity: 0.78; }
+            50% { transform: scale(1.08); opacity: 1; }
+        }
+        @keyframes freevThinkingDot {
+            0%, 100% { transform: translateY(0); opacity: 0.35; }
+            50% { transform: translateY(-3px); opacity: 1; }
+        }
+        @keyframes freevStatusPulse {
+            0% { box-shadow: 0 0 0 0 rgba(251, 191, 36, 0.5); }
+            75%, 100% { box-shadow: 0 0 0 7px rgba(251, 191, 36, 0); }
+        }
+
         @media (prefers-reduced-motion: reduce) {
             #freev-site-aura,
             #freev-site-aura::before,
@@ -1004,9 +1122,16 @@
             .profile-banner,
             .profile-banner-fx,
             .profile-banner::after,
-            .theme-preview::before {
+            .theme-preview::before,
+            .freev-thinking-message::before,
+            .freev-thinking-ring,
+            .freev-thinking-core,
+            .freev-thinking-dot,
+            .freev-status-thinking-dot {
                 animation: none !important;
             }
+            .freev-thinking-ring { opacity: 0.35; transform: scale(0.88); }
+            .freev-thinking-dot { opacity: 0.75; transform: none; }
         }
     </style>
 </head>
@@ -2587,7 +2712,8 @@ Freev Brain V7 répond avec la base propre de Freev. Tu peux aussi connecter ta 
                 error: ['bg-red-400', 'text-red-200', 'Indisponible']
             };
             const selected = tones[tone] || tones.wait;
-            dot.className = 'h-2 w-2 rounded-full ' + selected[0];
+            dot.className = 'h-2 w-2 rounded-full ' + selected[0]
+                + (tone === 'wait' ? ' freev-status-thinking-dot' : '');
             status.className = 'inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-3 py-1 text-[11px] ' + selected[1];
             status.lastChild.textContent = ' ' + (label || selected[2]);
             if (send) {
@@ -2614,6 +2740,72 @@ Freev Brain V7 répond avec la base propre de Freev. Tu peux aussi connecter ta 
             output.appendChild(box);
             output.scrollTop = output.scrollHeight;
             return box;
+        }
+
+        function startFreevThinking(box, options = {}) {
+            const body = box?.querySelector('p:last-child');
+            const output = document.getElementById('freev-v7-output');
+            if (!body) return box;
+
+            const headline = String(options.headline || 'Le modèle réfléchit');
+            const detail = String(options.detail || 'Préparation de la réponse');
+            box.classList.add('freev-thinking-message');
+            box.dataset.freevThinking = 'true';
+            box.setAttribute('role', 'status');
+            box.setAttribute('aria-label', `${headline}. ${detail}`);
+            output?.setAttribute('aria-busy', 'true');
+
+            body.className = 'freev-thinking-body mt-2';
+            body.replaceChildren();
+
+            const orb = document.createElement('span');
+            orb.className = 'freev-thinking-orb';
+            orb.setAttribute('aria-hidden', 'true');
+            const ringOne = document.createElement('span');
+            const ringTwo = document.createElement('span');
+            const core = document.createElement('span');
+            ringOne.className = 'freev-thinking-ring';
+            ringTwo.className = 'freev-thinking-ring';
+            core.className = 'freev-thinking-core';
+            orb.append(ringOne, ringTwo, core);
+
+            const copy = document.createElement('span');
+            copy.className = 'freev-thinking-copy';
+            const headlineRow = document.createElement('span');
+            headlineRow.className = 'freev-thinking-headline';
+            const headlineText = document.createElement('span');
+            headlineText.textContent = headline;
+            const dots = document.createElement('span');
+            dots.className = 'freev-thinking-dots';
+            dots.setAttribute('aria-hidden', 'true');
+            for (let index = 0; index < 3; index += 1) {
+                const dot = document.createElement('span');
+                dot.className = 'freev-thinking-dot';
+                dots.appendChild(dot);
+            }
+            headlineRow.append(headlineText, dots);
+
+            const detailText = document.createElement('span');
+            detailText.className = 'freev-thinking-detail';
+            detailText.textContent = detail;
+            copy.append(headlineRow, detailText);
+            body.append(orb, copy);
+            if (output) output.scrollTop = output.scrollHeight;
+            return box;
+        }
+
+        function finishFreevThinking(box, text) {
+            const body = box?.querySelector('p:last-child');
+            const output = document.getElementById('freev-v7-output');
+            if (!body) return;
+            box.classList.remove('freev-thinking-message');
+            delete box.dataset.freevThinking;
+            box.removeAttribute('role');
+            box.removeAttribute('aria-label');
+            body.className = 'mt-1 whitespace-pre-wrap leading-relaxed';
+            body.textContent = String(text || 'Réponse vide.');
+            output?.setAttribute('aria-busy', 'false');
+            if (output) output.scrollTop = output.scrollHeight;
         }
 
         async function checkFreevV7() {
@@ -2646,7 +2838,11 @@ Freev Brain V7 répond avec la base propre de Freev. Tu peux aussi connecter ta 
             const prompt = String(message || '').trim();
             if (!prompt || freevV7State.sending || !freevV7State.online || freevV7State.mode !== 'freev') return;
             appendFreevV7Message('user', prompt);
-            const waiting = appendFreevV7Message('assistant', 'Je réfléchis avec ma base V7…');
+            const waiting = appendFreevV7Message('assistant', 'Préparation de la réponse…');
+            startFreevThinking(waiting, {
+                headline: 'Freev V7 réfléchit',
+                detail: 'Recherche dans la base native Freev'
+            });
             freevV7State.sending = true;
             setFreevV7Status('Réponse en cours…', 'wait');
             try {
@@ -2663,7 +2859,7 @@ Freev Brain V7 répond avec la base propre de Freev. Tu peux aussi connecter ta 
                 if (!response.ok || !data.ok || data.version !== '7.0') {
                     throw new Error(data.error || 'réponse V7 invalide');
                 }
-                waiting.querySelector('p:last-child').textContent = data.response || 'Réponse vide.';
+                finishFreevThinking(waiting, data.response || 'Réponse vide.');
                 window.FreevAiOptions?.saveHistory?.({
                     mode: 'freev',
                     model: 'Freev Brain V7',
@@ -2673,7 +2869,7 @@ Freev Brain V7 répond avec la base propre de Freev. Tu peux aussi connecter ta 
                 freevV7State.online = true;
                 setFreevV7Status('En ligne', 'ok');
             } catch (error) {
-                waiting.querySelector('p:last-child').textContent = 'Freev V7 est momentanément indisponible. Réessaie dans quelques instants.';
+                finishFreevThinking(waiting, 'Freev V7 est momentanément indisponible. Réessaie dans quelques instants.');
                 freevV7State.online = false;
                 setFreevV7Status('Indisponible', 'error');
             } finally {
@@ -2706,6 +2902,8 @@ Freev Brain V7 répond avec la base propre de Freev. Tu peux aussi connecter ta 
             state: freevV7State,
             setStatus: setFreevV7Status,
             appendMessage: appendFreevV7Message,
+            startThinking: startFreevThinking,
+            finishThinking: finishFreevThinking,
             checkNative: checkFreevV7
         });
         checkFreevV7();
