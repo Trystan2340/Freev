@@ -23,6 +23,26 @@
     ollama: { baseUrl: 'http://localhost:11434/v1', model: 'qwen3:8b' },
     lmstudio: { baseUrl: 'http://localhost:1234/v1', model: 'local-model' }
   };
+  const LEGACY_NVIDIA_HOSTS = new Set([
+    'freev-nvidia-proxy.trystan-bonnin27.workers.dev'
+  ]);
+
+  function isLocalProviderUrl(value) {
+    return /^http:\/\/(localhost|127\.0\.0\.1)(?::\d+)?(?:\/|$)/i.test(String(value || ''));
+  }
+
+  function migrateStoredConfig(config) {
+    if (!config || typeof config !== 'object') return {};
+    const model = String(config.model || '').trim().toLowerCase();
+    if (!model.startsWith('nvidia/')) return config;
+    try {
+      const hostname = new URL(config.baseUrl || '').hostname.toLowerCase();
+      if (LEGACY_NVIDIA_HOSTS.has(hostname)) {
+        return { ...config, preset: 'nvidia', baseUrl: PRESETS.nvidia.baseUrl };
+      }
+    } catch (_) {}
+    return config;
+  }
 
   const CATALOG = [
     ['Qwen3.5 0.8B', 'qwen3.5:0.8b', 'Qwen', 'Généraliste', 0.8, 2, true],
@@ -94,7 +114,9 @@
   function readStoredConfig() {
     try {
       const value = JSON.parse(localStorage.getItem(STORAGE_KEY) || '{}');
-      return value && typeof value === 'object' ? value : {};
+      const config = migrateStoredConfig(value);
+      if (config !== value) localStorage.setItem(STORAGE_KEY, JSON.stringify(config));
+      return config;
     } catch (_) {
       return {};
     }
@@ -107,9 +129,14 @@
   function readSavedModels() {
     try {
       const value = JSON.parse(localStorage.getItem(SAVED_MODELS_KEY) || '[]');
-      return Array.isArray(value)
-        ? value.filter((config) => config && config.baseUrl && config.model)
-        : [];
+      if (!Array.isArray(value)) return [];
+      const list = value
+        .map(migrateStoredConfig)
+        .filter((config) => config && config.baseUrl && config.model);
+      if (JSON.stringify(list) !== JSON.stringify(value)) {
+        localStorage.setItem(SAVED_MODELS_KEY, JSON.stringify(list.slice(-100)));
+      }
+      return list;
     } catch (_) {
       return [];
     }
@@ -226,10 +253,13 @@
     if (custom) {
       const config = readStoredConfig();
       const label = config.model || 'Autre IA';
+      const configured = Boolean(config.baseUrl && config.model);
+      const missingRemoteKey = configured && !isLocalProviderUrl(config.baseUrl) && !config.apiKey;
       if (title) title.textContent = label;
       if (description) description.textContent = 'Fournisseur configuré dans ce navigateur';
       if (byId('freev-current-model-label')) byId('freev-current-model-label').textContent = label;
-      chat.setStatus(config.baseUrl && config.model ? 'Modèle prêt' : 'À configurer', config.baseUrl && config.model ? 'ok' : 'error');
+      chat.setStatus(missingRemoteKey ? 'Clé API requise' : (configured ? 'Modèle prêt' : 'À configurer'),
+        configured && !missingRemoteKey ? 'ok' : 'error');
     } else {
       if (title) title.innerHTML = '<i class="fa-solid fa-brain mr-2 text-cyan-300"></i>Freev Brain V7';
       if (description) description.textContent = 'Conversation écrite · base Freev native';
@@ -289,6 +319,13 @@
       byId('freev-api-settings')?.classList.remove('hidden');
       return;
     }
+    const isLocalProvider = isLocalProviderUrl(config.baseUrl);
+    if (!isLocalProvider && !config.apiKey) {
+      chat.appendMessage('assistant', 'Ajoute ta clé API avec le bouton « Configurer une clé API », puis enregistre la configuration.', 'Configuration');
+      byId('freev-api-settings')?.classList.remove('hidden');
+      chat.setStatus('Clé API requise', 'error');
+      return;
+    }
 
     chat.appendMessage('user', prompt);
     const waiting = chat.appendMessage('assistant', 'Préparation de la réponse…', config.model);
@@ -309,7 +346,6 @@
 
     const controller = new AbortController();
     const timer = setTimeout(() => controller.abort(), 60000);
-    const isLocalProvider = /^http:\/\/(localhost|127\.0\.0\.1)(?::\d+)?(?:\/|$)/i.test(config.baseUrl);
     const endpoint = isLocalProvider
       ? (/\/chat\/completions\/?$/.test(config.baseUrl) ? config.baseUrl : `${config.baseUrl}/chat/completions`)
       : `${window.FreevV7Server || 'https://freev-iies.onrender.com'}/api/provider/chat`;
