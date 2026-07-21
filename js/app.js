@@ -876,9 +876,9 @@
             if (mode === 'freev') {
                 btnFreev.className  = 'px-4 sm:px-5 py-2.5 sm:py-2 rounded-full text-sm font-bold transition-all whitespace-nowrap bg-gradient-to-r from-brand-accent to-brand-secondary text-brand-dark shadow';
                 btnApiSettings.classList.add('hidden');
-                badge.innerHTML   = '<i class="fa-solid fa-cube"></i> Freev AI — FreevBrain v5 En ligne';
+                badge.innerHTML   = '<i class="fa-solid fa-cube"></i> Freev AI — Freev Brain V7 En ligne';
                 badge.className   = 'inline-flex items-center gap-2 px-3 py-1 rounded-full bg-cyan-500/10 text-cyan-400 text-xs font-bold mb-4 border border-cyan-500/20';
-                header.innerHTML  = '<i class="fa-solid fa-cube text-brand-accent"></i> FreevBrain v5 (en ligne)';
+                header.innerHTML  = '<i class="fa-solid fa-cube text-brand-accent"></i> Freev Brain V7 (en ligne)';
                 checkServer();
             } else {
                 // mode === 'custom' (ChatGPT, Gemini, Hermes 4, OpenRouter, NVIDIA, Ollama, Kimi, Qwen, Groq, DeepSeek, Mistral, Together, etc.)
@@ -949,7 +949,7 @@
             else generateFreev();
         }
 
-        // ── Freev AI en ligne (FreevBrain v5) ─────────────────────────────────
+        // ── Freev AI en ligne (Freev Brain V7) ────────────────────────────────
         // ⚠️ Remplace cette URL par ton URL Render/Railway après déploiement
         const FREEV_SERVER = 'https://freev-iies.onrender.com';
         let serverConnected = false;
@@ -1040,7 +1040,7 @@
                 output.appendChild(div);
                 output.scrollTop = output.scrollHeight;
 
-                saveChatHistoryEntry({ mode: 'freev', model: 'FreevBrain v5', question: prompt, response: data.response || '' });
+                saveChatHistoryEntry({ mode: 'freev', model: 'Freev Brain V7', question: prompt, response: data.response || '' });
 
             } catch (err) {
                 document.getElementById(loadingId)?.remove();
@@ -1100,7 +1100,7 @@
                 id: 'h-' + Date.now() + '-' + Math.random().toString(36).slice(2, 7),
                 date: new Date().toISOString(),
                 mode: mode || 'freev',       // 'freev' (en ligne) | 'custom' (autre IA / local)
-                model: model || (mode === 'freev' ? 'FreevBrain v5' : 'IA personnalisée'),
+                model: model || (mode === 'freev' ? 'Freev Brain V7' : 'IA personnalisée'),
                 question: question || '',
                 response: response || ''
             };

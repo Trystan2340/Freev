@@ -1483,7 +1483,7 @@
 </div>
 </div>
 </section>
-<!-- Freev Brain V7 — conversation écrite uniquement -->
+<!-- Freev Brain V7 — moteur natif avec fournisseurs optionnels -->
 <section class="py-20 px-6 bg-gradient-to-b from-brand-dark to-slate-900" id="ia" style="isolation:isolate; background-color:#0f172a !important; position:relative; z-index:2;">
 <div class="container mx-auto max-w-5xl" style="z-index: 30;">
 <div class="grid grid-cols-1 lg:grid-cols-2 gap-10 lg:gap-12 items-center">
@@ -1492,9 +1492,59 @@
 <i class="fa-solid fa-brain"></i> FREEV BRAIN V7
 </div>
 <h2 class="text-3xl md:text-5xl font-heading font-bold mb-5">Parler avec <span class="text-gradient">Freev V7</span></h2>
-<p class="text-gray-300 leading-relaxed mb-7">
-Freev Brain V7 répond avec la base propre de Freev dans une conversation écrite simple. Aucun modèle externe, aucun Ollama, aucun mode code et aucun vocal immersif ne sont reliés à cette version du site.
+<p class="text-gray-300 leading-relaxed mb-5">
+Freev Brain V7 répond avec la base propre de Freev. Tu peux aussi connecter ta propre clé API ou choisir un modèle local dans la bibliothèque, comme dans la version précédente.
 </p>
+<div class="mb-4 flex w-fit max-w-full gap-2 overflow-x-auto rounded-full border border-white/10 bg-slate-900 p-1" aria-label="Choisir le moteur IA">
+<button class="whitespace-nowrap rounded-full bg-cyan-500 px-4 py-2 text-xs font-bold text-slate-950" id="freev-mode-native" type="button">
+<i class="fa-solid fa-brain mr-1"></i> Freev V7
+</button>
+<button class="whitespace-nowrap rounded-full px-4 py-2 text-xs font-bold text-gray-400 transition-colors hover:text-white" id="freev-mode-custom" type="button">
+<i class="fa-solid fa-plug mr-1"></i> Autre IA
+</button>
+</div>
+<div class="mb-5 flex flex-col gap-2 sm:flex-row">
+<button class="rounded-full border border-fuchsia-400/35 px-4 py-2.5 text-xs font-bold text-fuchsia-200 transition-colors hover:bg-fuchsia-500/10" id="freev-api-settings-button" type="button">
+<i class="fa-solid fa-key mr-1"></i> Configurer une clé API
+</button>
+<button class="rounded-full border border-cyan-400/35 px-4 py-2.5 text-xs font-bold text-cyan-200 transition-colors hover:bg-cyan-500/10" id="freev-model-library-button" type="button">
+<i class="fa-solid fa-layer-group mr-1"></i> Bibliothèque de modèles
+</button>
+</div>
+<div class="mb-6 hidden space-y-3 rounded-2xl border border-fuchsia-400/25 bg-slate-900/85 p-4" id="freev-api-settings">
+<div>
+<label class="mb-1 block text-[10px] font-bold uppercase tracking-wide text-gray-400" for="freev-provider-preset">Fournisseur</label>
+<select class="w-full rounded-lg border border-white/10 bg-slate-950 px-3 py-2.5 text-sm text-white outline-none focus:border-fuchsia-400" id="freev-provider-preset">
+<option value="custom">Personnalisé — API compatible OpenAI</option>
+<option value="openai">OpenAI</option>
+<option value="gemini">Google Gemini</option>
+<option value="openrouter">OpenRouter</option>
+<option value="mistral">Mistral AI</option>
+<option value="groq">Groq</option>
+<option value="deepseek">DeepSeek</option>
+<option value="together">Together AI</option>
+<option value="ollama">Ollama — local</option>
+<option value="lmstudio">LM Studio — local</option>
+</select>
+</div>
+<div>
+<label class="mb-1 block text-[10px] font-bold uppercase tracking-wide text-gray-400" for="freev-custom-base-url">URL de base de l’API</label>
+<input class="w-full rounded-lg border border-white/10 bg-slate-950 px-3 py-2.5 text-sm text-white outline-none focus:border-fuchsia-400" id="freev-custom-base-url" inputmode="url" placeholder="https://api.openai.com/v1" type="url"/>
+</div>
+<div>
+<label class="mb-1 block text-[10px] font-bold uppercase tracking-wide text-gray-400" for="freev-custom-model">Nom du modèle</label>
+<input class="w-full rounded-lg border border-white/10 bg-slate-950 px-3 py-2.5 text-sm text-white outline-none focus:border-fuchsia-400" id="freev-custom-model" placeholder="gpt-4o-mini, qwen3:8b…" type="text"/>
+</div>
+<div>
+<label class="mb-1 block text-[10px] font-bold uppercase tracking-wide text-gray-400" for="freev-custom-api-key">Clé API <span class="font-normal normal-case text-gray-600">(vide pour un modèle local)</span></label>
+<input autocomplete="off" class="w-full rounded-lg border border-white/10 bg-slate-950 px-3 py-2.5 text-sm text-white outline-none focus:border-fuchsia-400" id="freev-custom-api-key" placeholder="Colle ta clé sur cet appareil" type="password"/>
+</div>
+<div class="flex flex-col gap-2 sm:flex-row">
+<button class="rounded-lg bg-fuchsia-500 px-4 py-2.5 text-xs font-bold text-white hover:bg-fuchsia-400" id="freev-save-api-settings" type="button">Enregistrer et utiliser</button>
+<button class="rounded-lg border border-white/10 px-4 py-2.5 text-xs font-bold text-gray-300 hover:bg-white/5" id="freev-clear-api-key" type="button">Effacer la clé enregistrée</button>
+</div>
+<p class="text-[10px] leading-relaxed text-gray-500">La configuration reste dans le stockage local de ce navigateur. Ne l’enregistre pas sur un appareil public. Les API distantes ou locales doivent autoriser les requêtes depuis ce site.</p>
+</div>
 <div class="grid grid-cols-1 sm:grid-cols-2 gap-3" aria-label="Nouveautés de Freev Brain V7">
 <div class="rounded-xl border border-white/10 bg-white/5 p-4">
 <i class="fa-solid fa-magnifying-glass-chart text-cyan-300 mb-2"></i>
@@ -1523,8 +1573,8 @@ Freev Brain V7 répond avec la base propre de Freev dans une conversation écrit
 <div class="rounded-xl bg-brand-dark p-5 sm:p-6">
 <div class="flex items-center justify-between gap-4 border-b border-white/10 pb-4">
 <div>
-<p class="font-bold text-white"><i class="fa-solid fa-brain mr-2 text-cyan-300"></i>Freev Brain V7</p>
-<p class="mt-1 text-[11px] text-gray-500">Conversation écrite · base Freev · sans modèle externe</p>
+<p class="font-bold text-white" id="freev-v7-chat-title"><i class="fa-solid fa-brain mr-2 text-cyan-300"></i>Freev Brain V7</p>
+<p class="mt-1 text-[11px] text-gray-500" id="freev-v7-mode-description">Conversation écrite · base Freev native</p>
 </div>
 <span class="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-3 py-1 text-[11px] text-gray-400" id="freev-v7-status" role="status" aria-live="polite">
 <span class="h-2 w-2 rounded-full bg-amber-400" id="freev-v7-status-dot"></span> Connexion…
@@ -1543,13 +1593,50 @@ Freev Brain V7 répond avec la base propre de Freev dans une conversation écrit
 <i class="fa-solid fa-paper-plane"></i>
 </button>
 </form>
-<p class="mt-2 text-[10px] text-gray-600">Pas de micro ni de mode vocal immersif pour le moment.</p>
+<p class="mt-2 text-[10px] text-gray-600">Conversation écrite. Les modèles externes utilisent uniquement la configuration enregistrée dans ton navigateur.</p>
 </div>
 </div>
 </div>
 </div>
 </div>
 </section>
+<!-- Bibliothèque de modèles téléchargeables -->
+<div aria-labelledby="freev-model-library-title" aria-modal="true" class="fixed inset-0 z-[120] hidden items-center justify-center bg-black/80 p-4 backdrop-blur-sm" id="freev-model-library-modal" role="dialog">
+<div class="max-h-[90vh] w-full max-w-6xl overflow-y-auto rounded-2xl border border-cyan-400/25 bg-slate-950 p-5 shadow-2xl sm:p-6">
+<div class="mb-4 flex items-start justify-between gap-4">
+<div>
+<p class="text-[10px] font-bold uppercase tracking-[0.2em] text-cyan-300">Modèles locaux</p>
+<h3 class="mt-1 text-xl font-heading font-bold text-white sm:text-2xl" id="freev-model-library-title"><i class="fa-solid fa-layer-group mr-2 text-fuchsia-300"></i>Bibliothèque de modèles téléchargeables</h3>
+<p class="mt-1 text-xs text-gray-400">Recherche un modèle, copie sa commande d’installation puis utilise-le avec Ollama ou LM Studio.</p>
+</div>
+<button aria-label="Fermer la bibliothèque" class="rounded-full p-2 text-gray-400 hover:bg-white/10 hover:text-white" id="freev-model-library-close" type="button"><i class="fa-solid fa-xmark text-lg"></i></button>
+</div>
+<div class="mb-4 grid grid-cols-1 gap-3 rounded-xl border border-white/10 bg-slate-900/70 p-3 lg:grid-cols-[auto_1fr] lg:items-center">
+<div class="flex gap-2" role="group" aria-label="Moteur local">
+<button class="rounded-full bg-emerald-500 px-3 py-2 text-xs font-bold text-slate-950" id="freev-runtime-ollama" type="button">Ollama</button>
+<button class="rounded-full border border-white/10 px-3 py-2 text-xs font-bold text-gray-400" id="freev-runtime-lmstudio" type="button">LM Studio</button>
+</div>
+<p class="text-xs text-gray-400" id="freev-device-recommendation"></p>
+</div>
+<div class="mb-4 grid grid-cols-1 gap-2 md:grid-cols-4">
+<input class="rounded-xl border border-white/10 bg-slate-900 px-3 py-2.5 text-sm text-white outline-none focus:border-cyan-400" id="freev-model-search" placeholder="Rechercher Qwen, Llama, vision…" type="search"/>
+<select class="rounded-xl border border-white/10 bg-slate-900 px-3 py-2.5 text-xs text-white" id="freev-model-family"><option value="all">Toutes les familles</option></select>
+<select class="rounded-xl border border-white/10 bg-slate-900 px-3 py-2.5 text-xs text-white" id="freev-model-ram"><option value="all">Toute quantité de RAM</option><option value="4">≤ 4 Go RAM</option><option value="8">≤ 8 Go RAM</option><option value="16">≤ 16 Go RAM</option><option value="32">≤ 32 Go RAM</option><option value="64">≤ 64 Go RAM</option></select>
+<select class="rounded-xl border border-white/10 bg-slate-900 px-3 py-2.5 text-xs text-white" id="freev-model-sort"><option value="recommended">Recommandés d’abord</option><option value="size">Taille croissante</option><option value="name">Nom A → Z</option></select>
+</div>
+<div class="mb-3 flex flex-wrap items-center justify-between gap-2">
+<p aria-live="polite" class="text-xs text-gray-400" id="freev-model-count"></p>
+<p class="text-[10px] text-amber-200/80"><i class="fa-solid fa-circle-info mr-1"></i>Les tailles sont indicatives.</p>
+</div>
+<div class="grid grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-3" id="freev-model-grid"></div>
+<div class="mt-5 flex items-center justify-between border-t border-white/10 pt-4">
+<button class="rounded-lg border border-white/10 px-3 py-2 text-xs font-bold text-gray-300 disabled:opacity-40" id="freev-model-prev" type="button"><i class="fa-solid fa-chevron-left mr-1"></i>Précédent</button>
+<span class="text-xs text-gray-500" id="freev-model-page"></span>
+<button class="rounded-lg border border-white/10 px-3 py-2 text-xs font-bold text-gray-300 disabled:opacity-40" id="freev-model-next" type="button">Suivant<i class="fa-solid fa-chevron-right ml-1"></i></button>
+</div>
+<p class="mt-4 text-[10px] text-gray-500">Vérifie la fiche officielle du modèle avant installation. Le téléchargement et l’exécution restent sur ton ordinateur.</p>
+</div>
+</div>
 <!-- La section étudiante a été entièrement supprimée -->
 <!-- Footer -->
 <footer class="bg-black border-t border-white/10 pt-16 pb-24 md:pb-8" id="contact">
@@ -2452,7 +2539,7 @@ Freev Brain V7 répond avec la base propre de Freev dans une conversation écrit
         const FREEV_V7_SERVER = ['127.0.0.1', 'localhost'].includes(window.location.hostname)
             ? 'http://127.0.0.1:10000'
             : 'https://freev-iies.onrender.com';
-        const freevV7State = { online: false, sending: false };
+        const freevV7State = { online: false, sending: false, mode: 'freev' };
 
         function setFreevV7Status(label, tone) {
             const status = document.getElementById('freev-v7-status');
@@ -2468,10 +2555,13 @@ Freev Brain V7 répond avec la base propre de Freev dans une conversation écrit
             dot.className = 'h-2 w-2 rounded-full ' + selected[0];
             status.className = 'inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-3 py-1 text-[11px] ' + selected[1];
             status.lastChild.textContent = ' ' + (label || selected[2]);
-            if (send) send.disabled = !freevV7State.online || freevV7State.sending;
+            if (send) {
+                send.disabled = freevV7State.sending
+                    || (freevV7State.mode === 'freev' && !freevV7State.online);
+            }
         }
 
-        function appendFreevV7Message(role, text) {
+        function appendFreevV7Message(role, text, assistantLabel) {
             const output = document.getElementById('freev-v7-output');
             if (!output) return;
             const box = document.createElement('div');
@@ -2482,7 +2572,7 @@ Freev Brain V7 répond avec la base propre de Freev dans une conversation écrit
                 ? 'ml-6 rounded-xl border border-fuchsia-400/15 bg-fuchsia-500/5 p-3 text-gray-200'
                 : 'mr-6 rounded-xl border border-cyan-400/15 bg-cyan-500/5 p-3 text-gray-300';
             title.className = isUser ? 'font-bold text-fuchsia-200' : 'font-bold text-cyan-200';
-            title.textContent = isUser ? 'Toi' : 'Freev V7';
+            title.textContent = isUser ? 'Toi' : (assistantLabel || 'Freev V7');
             body.className = 'mt-1 whitespace-pre-wrap leading-relaxed';
             body.textContent = String(text || '');
             box.append(title, body);
@@ -2510,16 +2600,16 @@ Freev Brain V7 répond avec la base propre de Freev dans une conversation écrit
                     && status.code_mode === false;
                 if (!isPublicV7) throw new Error('service V7 public non vérifié');
                 freevV7State.online = true;
-                setFreevV7Status('En ligne', 'ok');
+                if (freevV7State.mode === 'freev') setFreevV7Status('En ligne', 'ok');
             } catch (error) {
                 freevV7State.online = false;
-                setFreevV7Status('Migration V7 en cours', 'error');
+                if (freevV7State.mode === 'freev') setFreevV7Status('Migration V7 en cours', 'error');
             }
         }
 
         async function sendFreevV7Message(message) {
             const prompt = String(message || '').trim();
-            if (!prompt || freevV7State.sending || !freevV7State.online) return;
+            if (!prompt || freevV7State.sending || !freevV7State.online || freevV7State.mode !== 'freev') return;
             appendFreevV7Message('user', prompt);
             const waiting = appendFreevV7Message('assistant', 'Je réfléchis avec ma base V7…');
             freevV7State.sending = true;
@@ -2556,9 +2646,14 @@ Freev Brain V7 répond avec la base propre de Freev dans une conversation écrit
         const freevV7Input = document.getElementById('freev-v7-input');
         freevV7Form?.addEventListener('submit', (event) => {
             event.preventDefault();
-            const prompt = freevV7Input?.value || '';
+            const prompt = (freevV7Input?.value || '').trim();
+            if (!prompt) return;
             if (freevV7Input) freevV7Input.value = '';
-            sendFreevV7Message(prompt);
+            if (freevV7State.mode === 'custom' && window.FreevAiOptions?.sendCustomMessage) {
+                window.FreevAiOptions.sendCustomMessage(prompt);
+            } else {
+                sendFreevV7Message(prompt);
+            }
         });
         freevV7Input?.addEventListener('keydown', (event) => {
             if (event.key === 'Enter' && !event.shiftKey) {
@@ -2566,8 +2661,15 @@ Freev Brain V7 répond avec la base propre de Freev dans une conversation écrit
                 freevV7Form?.requestSubmit();
             }
         });
+        window.FreevV7Chat = Object.freeze({
+            state: freevV7State,
+            setStatus: setFreevV7Status,
+            appendMessage: appendFreevV7Message,
+            checkNative: checkFreevV7
+        });
         checkFreevV7();
     </script>
+<script defer="" src="js/freev-ai-options.js"></script>
 <script>
       (() => {
         const modal = document.getElementById('login-modal');

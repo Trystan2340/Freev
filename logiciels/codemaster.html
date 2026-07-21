@@ -9090,7 +9090,7 @@ ${rawHtml}
   const FREEV_AI_STORAGE_KEY_V31 = 'codemaster_v31_freev_ai_settings';
   const FREEV_AI_DEFAULT_SERVER_V31 = 'https://freev-iies.onrender.com';
   const FREEV_AI_PRESETS_V31 = {
-    freev: { url: FREEV_AI_DEFAULT_SERVER_V31, model: 'FreevBrain v5' },
+    freev: { url: FREEV_AI_DEFAULT_SERVER_V31, model: 'Freev Brain V7' },
     openai: { url: 'https://api.openai.com/v1', model: 'gpt-4o-mini' },
     gemini: { url: 'https://generativelanguage.googleapis.com/v1beta/openai', model: 'gemini-2.0-flash' },
     openrouter: { url: 'https://openrouter.ai/api/v1', model: 'qwen/qwen-2.5-72b-instruct' },
@@ -9926,7 +9926,7 @@ ${rawHtml}
       project: getProjectNameForStorage(),
       mode: settings.provider === 'freev' ? 'freev' : 'custom',
       provider: settings.provider,
-      model: settings.model || (settings.provider === 'freev' ? 'FreevBrain v5' : 'IA personnalisée'),
+      model: settings.model || (settings.provider === 'freev' ? 'Freev Brain V7' : 'IA personnalisée'),
       baseUrl: settings.baseUrl || '',
       target: settings.target || 'current',
       question: String(question || ''),
