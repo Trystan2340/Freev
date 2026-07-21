@@ -6,8 +6,32 @@ service cloud.firestore {
       return request.auth != null && request.auth.uid == userId;
     }
 
+    // Le propriétaire Firebase peut amorcer et administrer Nova.
+    // Les autres administrateurs sont déclarés dans novaAdmins/{uid}.
+    function isNovaOwner() {
+      return request.auth != null
+        && request.auth.token.email == 'trystan.bonnin27@icloud.com';
+    }
+
+    function isNovaAdmin() {
+      return request.auth != null
+        && (isNovaOwner()
+          || (exists(/databases/$(database)/documents/novaAdmins/$(request.auth.uid))
+            && get(/databases/$(database)/documents/novaAdmins/$(request.auth.uid)).data.active == true));
+    }
+
+    function hasNovaAccess(userId) {
+      return isNovaAdmin()
+        || (signedInAs(userId)
+          && exists(/databases/$(database)/documents/novaEntitlements/$(userId))
+          && get(/databases/$(database)/documents/novaEntitlements/$(userId)).data.active == true
+          && get(/databases/$(database)/documents/novaEntitlements/$(userId)).data.plan == 'nova'
+          && (get(/databases/$(database)/documents/novaEntitlements/$(userId)).data.expiresAt == null
+            || get(/databases/$(database)/documents/novaEntitlements/$(userId)).data.expiresAt > request.time));
+    }
+
     match /users/{userId} {
-      allow read: if signedInAs(userId);
+      allow read: if signedInAs(userId) || isNovaAdmin();
       allow create, update: if signedInAs(userId)
         && request.resource.data.uid == userId;
       allow delete: if false;
@@ -67,6 +91,116 @@ service cloud.firestore {
           && request.resource.data.updatedAt <= request.time + duration.value(1, 'm')
           && request.resource.data.updatedAt > request.time - duration.value(10, 'm');
       }
+
+      // Profils de modèles Nova. Une clé API en clair n'est jamais un champ autorisé.
+      match /novaModels/{profileId} {
+        allow read, delete: if signedInAs(userId) && hasNovaAccess(userId);
+        allow create, update: if signedInAs(userId)
+          && hasNovaAccess(userId)
+          && profileId.matches('^[a-zA-Z0-9_-]{3,80}$')
+          && request.resource.data.keys().hasOnly([
+            'id', 'label', 'source', 'baseUrl', 'model', 'secretId',
+            'capabilities', 'createdAt', 'updatedAt'
+          ])
+          && request.resource.data.keys().hasAll([
+            'id', 'label', 'source', 'baseUrl', 'model', 'secretId',
+            'capabilities', 'createdAt', 'updatedAt'
+          ])
+          && request.resource.data.id == profileId
+          && request.resource.data.label is string
+          && request.resource.data.label.size() >= 1
+          && request.resource.data.label.size() <= 60
+          && request.resource.data.source in ['local', 'api']
+          && request.resource.data.baseUrl is string
+          && request.resource.data.baseUrl.size() >= 8
+          && request.resource.data.baseUrl.size() <= 500
+          && request.resource.data.model is string
+          && request.resource.data.model.size() >= 1
+          && request.resource.data.model.size() <= 200
+          && request.resource.data.secretId is string
+          && ((request.resource.data.source == 'local'
+              && request.resource.data.baseUrl.matches('^http://(localhost|127\\.0\\.0\\.1|\\[::1\\])(:[0-9]+)?(/.*)?$')
+              && request.resource.data.secretId == '')
+            || (request.resource.data.source == 'api'
+              && request.resource.data.baseUrl.matches('^https://.*$')
+              && request.resource.data.secretId.matches('^[a-f0-9]{40}$')))
+          && request.resource.data.capabilities is list
+          && request.resource.data.capabilities.size() <= 8
+          && request.resource.data.createdAt is timestamp
+          && request.resource.data.updatedAt is timestamp
+          && request.resource.data.updatedAt <= request.time + duration.value(1, 'm');
+      }
+
+      // Une affectation contient seulement des identifiants de profils, jamais des secrets.
+      match /novaAssignments/{targetId} {
+        allow read, delete: if signedInAs(userId) && hasNovaAccess(userId);
+        allow create, update: if signedInAs(userId)
+          && hasNovaAccess(userId)
+          && targetId.matches('^(spark|archon|codex|buddy|axiom|forge|auditor|navigator|iris|pixel|operator|sentinel|archivist)$')
+          && request.resource.data.keys().hasOnly(['targetId', 'modelIds', 'updatedAt'])
+          && request.resource.data.keys().hasAll(['targetId', 'modelIds', 'updatedAt'])
+          && request.resource.data.targetId == targetId
+          && request.resource.data.modelIds is list
+          && request.resource.data.modelIds.size() <= 5
+          && request.resource.data.updatedAt is timestamp
+          && request.resource.data.updatedAt <= request.time + duration.value(1, 'm');
+      }
+
+      match /novaHistory/{entryId} {
+        allow read, delete: if signedInAs(userId) && hasNovaAccess(userId);
+        allow create, update: if signedInAs(userId)
+          && hasNovaAccess(userId)
+          && request.resource.data.keys().hasOnly([
+            'id', 'kind', 'target', 'prompt', 'response', 'models', 'createdAt'
+          ])
+          && request.resource.data.keys().hasAll([
+            'id', 'kind', 'target', 'prompt', 'response', 'models', 'createdAt'
+          ])
+          && request.resource.data.id == entryId
+          && request.resource.data.kind in ['mode', 'council']
+          && request.resource.data.target is string
+          && request.resource.data.target.size() <= 200
+          && request.resource.data.prompt is string
+          && request.resource.data.prompt.size() <= 6000
+          && request.resource.data.response is string
+          && request.resource.data.response.size() <= 30000
+          && request.resource.data.models is list
+          && request.resource.data.models.size() <= 20
+          && request.resource.data.createdAt is timestamp;
+      }
+    }
+
+    match /novaEntitlements/{userId} {
+      allow get: if signedInAs(userId) || isNovaAdmin();
+      allow list: if isNovaAdmin();
+      allow create, update: if isNovaAdmin()
+        && request.resource.data.keys().hasOnly([
+          'uid', 'active', 'plan', 'expiresAt', 'grantedBy', 'grantedAt', 'updatedAt'
+        ])
+        && request.resource.data.keys().hasAll([
+          'uid', 'active', 'plan', 'expiresAt', 'grantedBy', 'grantedAt', 'updatedAt'
+        ])
+        && request.resource.data.uid == userId
+        && request.resource.data.active is bool
+        && request.resource.data.plan == 'nova'
+        && (request.resource.data.expiresAt == null
+          || request.resource.data.expiresAt is timestamp)
+        && request.resource.data.grantedBy == request.auth.uid
+        && request.resource.data.grantedAt is timestamp
+        && request.resource.data.updatedAt is timestamp
+        && request.resource.data.updatedAt <= request.time + duration.value(1, 'm');
+      allow delete: if false;
+    }
+
+    match /novaAdmins/{userId} {
+      allow read: if signedInAs(userId) || isNovaAdmin();
+      allow create, update: if isNovaOwner()
+        && request.resource.data.keys().hasOnly(['uid', 'active', 'createdBy', 'createdAt'])
+        && request.resource.data.uid == userId
+        && request.resource.data.active == true
+        && request.resource.data.createdBy == request.auth.uid
+        && request.resource.data.createdAt is timestamp;
+      allow delete: if isNovaOwner();
     }
 
     match /usernames/{nicknameLower} {
