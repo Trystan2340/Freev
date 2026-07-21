@@ -1081,32 +1081,6 @@
 </div>
 </div>
 </header>
-<!-- Fenêtre Historique des conversations -->
-<div class="hidden fixed inset-0 z-[60] bg-black/70 backdrop-blur-sm px-4 py-5" id="history-modal">
-<div class="min-h-full flex items-center justify-center">
-<div class="glass w-full max-w-2xl rounded-2xl p-5 sm:p-6 border border-white/15 max-h-[calc(100vh-2.5rem)] flex flex-col">
-<div class="flex items-center justify-between mb-4">
-<h2 class="text-xl font-heading font-bold flex items-center gap-2"><i class="fa-solid fa-clock-rotate-left text-brand-accent"></i> Historique des conversations</h2>
-<button class="text-gray-400 hover:text-white" id="close-history-modal" type="button">
-<i class="fa-solid fa-xmark text-xl"></i>
-</button>
-</div>
-<p class="text-xs text-gray-500 mb-3" id="history-sync-status">Enregistré sur cet appareil.</p>
-<div class="flex-grow overflow-y-auto space-y-3 pr-1" id="history-list"></div>
-<div class="flex items-center justify-between mt-4 pt-4 border-t border-white/10">
-<span class="text-xs text-gray-500" id="history-count"></span>
-<div class="flex items-center gap-2">
-<button class="px-4 py-2 rounded-full text-xs font-bold bg-brand-accent/10 text-brand-accent border border-brand-accent/20 hover:bg-brand-accent/20 transition-colors" onclick="exportChatHistory()">
-<i class="fa-solid fa-download mr-1"></i> Télécharger en JSON
-</button>
-<button class="px-4 py-2 rounded-full text-xs font-bold bg-red-500/10 text-red-400 border border-red-500/20 hover:bg-red-500/20 transition-colors" onclick="clearChatHistory()">
-<i class="fa-solid fa-trash mr-1"></i> Vider l'historique
-</button>
-</div>
-</div>
-</div>
-</div>
-</div>
 <!-- Fenêtre de connexion -->
 <div class="hidden fixed inset-0 z-[60] bg-black/70 backdrop-blur-sm px-4 py-5" id="login-modal">
 <div class="min-h-full flex items-center justify-center">
@@ -1509,340 +1483,73 @@
 </div>
 </div>
 </section>
-<!-- IA Tools Section (UPDATED FOR GEMINI) -->
-<section class="py-20 px-6 bg-gradient-to-b from-brand-dark to-slate-900" id="ia">
-<div class="container mx-auto max-w-5xl">
-<div class="flex flex-col md:flex-row gap-12 items-center">
-<div class="w-full md:w-1/2 reveal">
-<div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-cyan-500/10 text-cyan-400 text-xs font-bold mb-4 border border-cyan-500/20" id="ai-mode-badge">
-<i class="fa-solid fa-cube"></i> Freev AI — Connexion en cours...
-                    </div>
-<h2 class="text-3xl md:text-5xl font-heading font-bold mb-6">Freev AI <span class="text-gradient">Vision</span></h2>
-<p class="text-gray-300 mb-8 leading-relaxed">
-                        Le nouveau module d'intelligence artificielle Freev. Utilisez directement <strong class="text-brand-accent">Freev AI natif</strong> sans rien configurer, ou connectez <strong class="text-fuchsia-400">n'importe quel autre fournisseur IA</strong> (ChatGPT, Gemini, Hermes 4, OpenRouter, NVIDIA, Ollama, Kimi, Qwen...), en ligne ou en local.
-                    </p>
-<!-- Mode Toggle -->
-<div class="-mx-6 px-6 sm:mx-0 sm:px-0 mb-5 overflow-x-auto no-scrollbar">
-<div class="flex gap-2 p-1 bg-slate-900 rounded-full border border-white/10 w-max sm:w-fit">
-<button class="px-4 sm:px-5 py-2.5 sm:py-2 rounded-full text-sm font-bold transition-all whitespace-nowrap bg-gradient-to-r from-brand-accent to-brand-secondary text-brand-dark shadow" id="btn-mode-freev" onclick="setAiMode('freev')">
-<i class="fa-solid fa-cube mr-1"></i> Freev AI
-                            </button>
-<button class="px-4 sm:px-5 py-2.5 sm:py-2 rounded-full text-sm font-bold transition-all whitespace-nowrap text-gray-400 hover:text-white" id="btn-mode-custom" onclick="setAiMode('custom')">
-<i class="fa-solid fa-plug mr-1"></i> Autre IA
-                            </button>
+<!-- Freev Brain V7 — conversation écrite uniquement -->
+<section class="py-20 px-6 bg-gradient-to-b from-brand-dark to-slate-900" id="ia" style="isolation:isolate; background-color:#0f172a !important; position:relative; z-index:2;">
+<div class="container mx-auto max-w-5xl" style="z-index: 30;">
+<div class="grid grid-cols-1 lg:grid-cols-2 gap-10 lg:gap-12 items-center">
+<div class="reveal">
+<div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-cyan-500/10 text-cyan-300 text-xs font-bold mb-4 border border-cyan-400/20">
+<i class="fa-solid fa-brain"></i> FREEV BRAIN V7
+</div>
+<h2 class="text-3xl md:text-5xl font-heading font-bold mb-5">Parler avec <span class="text-gradient">Freev V7</span></h2>
+<p class="text-gray-300 leading-relaxed mb-7">
+Freev Brain V7 répond avec la base propre de Freev dans une conversation écrite simple. Aucun modèle externe, aucun Ollama, aucun mode code et aucun vocal immersif ne sont reliés à cette version du site.
+</p>
+<div class="grid grid-cols-1 sm:grid-cols-2 gap-3" aria-label="Nouveautés de Freev Brain V7">
+<div class="rounded-xl border border-white/10 bg-white/5 p-4">
+<i class="fa-solid fa-magnifying-glass-chart text-cyan-300 mb-2"></i>
+<h3 class="font-bold text-white text-sm">Recherche hybride</h3>
+<p class="mt-1 text-xs leading-relaxed text-gray-400">Index SQLite et classement multi-critères pour retrouver une réponse plus pertinente.</p>
+</div>
+<div class="rounded-xl border border-white/10 bg-white/5 p-4">
+<i class="fa-solid fa-comments text-fuchsia-300 mb-2"></i>
+<h3 class="font-bold text-white text-sm">Meilleure compréhension</h3>
+<p class="mt-1 text-xs leading-relaxed text-gray-400">V7 reconnaît davantage de reformulations et de questions en français.</p>
+</div>
+<div class="rounded-xl border border-white/10 bg-white/5 p-4">
+<i class="fa-solid fa-database text-emerald-300 mb-2"></i>
+<h3 class="font-bold text-white text-sm">Base Freev native</h3>
+<p class="mt-1 text-xs leading-relaxed text-gray-400">Les réponses viennent du cerveau et des connaissances propres à Freev.</p>
+</div>
+<div class="rounded-xl border border-white/10 bg-white/5 p-4">
+<i class="fa-solid fa-shield-halved text-amber-300 mb-2"></i>
+<h3 class="font-bold text-white text-sm">Mode public protégé</h3>
+<p class="mt-1 text-xs leading-relaxed text-gray-400">Les demandes de code, d’outils et de données sensibles sont bloquées.</p>
 </div>
 </div>
-<!-- Bouton dédié : explorateur de modèles locaux adaptés à l'appareil -->
-<button class="mb-5 w-full sm:w-auto px-5 py-3 rounded-full text-sm font-bold border border-fuchsia-400/40 text-fuchsia-300 hover:bg-fuchsia-500/10 transition-all flex items-center justify-center gap-2" id="btn-model-explorer" onclick="openModelExplorer()">
-<i class="fa-solid fa-layer-group"></i> Explorer les modèles téléchargeables pour mon appareil
-                    </button>
-<div class="flex flex-col sm:flex-row gap-3 sm:gap-4">
-<button class="hidden w-full sm:w-auto px-6 py-3 border border-white/20 rounded-full hover:bg-white/10 transition-all items-center justify-center gap-2" id="btn-api-settings" onclick="toggleApiSettings()">
-<i class="fa-solid fa-gear"></i> Configurer Clé API
-                        </button>
-<!-- LINK CORRECTION: Pointing to telechargementfreevia.html -->
-<a class="w-full sm:w-auto px-6 py-3 bg-gradient-to-r from-brand-primary to-brand-secondary text-white font-bold rounded-full hover:opacity-90 transition-all shadow-lg shadow-brand-primary/20 flex items-center justify-center gap-2" href="telechargement/telechargementfreevia.html">
-<i class="fa-solid fa-download"></i> App Desktop
-                        </a>
 </div>
-<!-- API Settings Dropdown (Autre fournisseur - ChatGPT, Gemini, Hermes 4, OpenRouter, NVIDIA, Ollama, Kimi, Qwen, etc.) -->
-<div class="hidden mt-4 p-4 bg-slate-800 rounded-xl border border-white/10 animate-fade-in space-y-3" id="api-settings-custom">
+<div class="reveal" style="transition-delay: 160ms;">
+<div class="glass-card rounded-2xl border border-cyan-400/20 p-1 shadow-2xl shadow-cyan-500/10">
+<div class="rounded-xl bg-brand-dark p-5 sm:p-6">
+<div class="flex items-center justify-between gap-4 border-b border-white/10 pb-4">
 <div>
-<label class="block text-xs font-bold text-gray-400 uppercase mb-2">Fournisseur</label>
-<select class="w-full bg-black/30 border border-white/10 rounded px-3 py-3 text-sm text-white focus:outline-none focus:border-fuchsia-400" id="custom-provider-preset" onchange="applyCustomPreset()">
-<option value="custom">Personnalisé (URL manuelle)</option>
-<option value="openai">ChatGPT (OpenAI)</option>
-<option value="gemini">Gemini (Google)</option>
-<option value="hermes">Hermes 4 (Nous Research)</option>
-<option value="openrouter">OpenRouter (accès à tous les modèles)</option>
-<option value="nvidia">NVIDIA NIM</option>
-<option value="ollama">Ollama (local)</option>
-<option value="lmstudio">LM Studio (local)</option>
-<option value="moonshot">Kimi (Moonshot AI)</option>
-<option value="dashscope">Qwen (Alibaba DashScope)</option>
-<option value="zhipu">GLM (Zhipu AI)</option>
-<option value="baichuan">Baichuan AI</option>
-<option value="groq">Groq</option>
-<option value="deepseek">DeepSeek</option>
-<option value="mistral">Mistral AI</option>
-<option value="together">Together AI</option>
-<option value="fireworks">Fireworks AI</option>
-<option value="cerebras">Cerebras</option>
-<option value="xai">xAI (Grok)</option>
-<option value="perplexity">Perplexity</option>
-<option value="cohere">Cohere</option>
-<option value="novita">Novita AI</option>
-<option value="siliconflow">SiliconFlow</option>
-<option value="hyperbolic">Hyperbolic</option>
-<option value="anyscale">Anyscale</option>
-</select>
+<p class="font-bold text-white"><i class="fa-solid fa-brain mr-2 text-cyan-300"></i>Freev Brain V7</p>
+<p class="mt-1 text-[11px] text-gray-500">Conversation écrite · base Freev · sans modèle externe</p>
 </div>
-<div>
-<label class="block text-xs font-bold text-gray-400 uppercase mb-2">URL de base de l'API (compatible OpenAI, sans /chat/completions)</label>
-<input class="w-full bg-black/30 border border-white/10 rounded px-3 py-3 sm:py-2 text-base sm:text-sm text-white focus:outline-none focus:border-fuchsia-400" id="custom-base-url" inputmode="url" placeholder="ex: https://openrouter.ai/api/v1" type="text"/>
+<span class="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-3 py-1 text-[11px] text-gray-400" id="freev-v7-status" role="status" aria-live="polite">
+<span class="h-2 w-2 rounded-full bg-amber-400" id="freev-v7-status-dot"></span> Connexion…
+</span>
 </div>
-<!-- Bibliothèque de modèles locaux (Ollama / LM Studio) — visible seulement pour ces fournisseurs -->
-<div class="hidden" id="local-model-library">
-<label class="block text-xs font-bold text-gray-400 uppercase mb-2">Modèles téléchargeables en local (triés du plus léger au plus lourd)</label>
-<select class="w-full bg-black/30 border border-fuchsia-400/40 rounded px-3 py-3 text-sm text-white focus:outline-none focus:border-fuchsia-400" id="local-model-picker" onchange="applyLocalModel()">
-<option value="">— Choisir un modèle pour économiser de la place —</option>
-<option value="qwen2.5:0.5b">Qwen2.5 0.5B — ~0.4 Go (ultra léger)</option>
-<option value="llama3.2:1b">Llama 3.2 1B — ~1.3 Go</option>
-<option value="gemma2:2b">Gemma 2 2B — ~1.6 Go</option>
-<option value="qwen2.5:3b">Qwen2.5 3B — ~1.9 Go</option>
-<option value="llama3.2:3b">Llama 3.2 3B — ~2.0 Go</option>
-<option value="phi3:mini">Phi-3 Mini 3.8B — ~2.2 Go</option>
-<option value="hermes3:8b">Hermes 3 8B — ~4.7 Go</option>
-<option value="qwen2.5:7b">Qwen2.5 7B — ~4.7 Go</option>
-<option value="mistral:7b">Mistral 7B — ~4.1 Go</option>
-<option value="llama3.1:8b">Llama 3.1 8B — ~4.7 Go</option>
-<option value="gemma2:9b">Gemma 2 9B — ~5.4 Go</option>
-<option value="deepseek-r1:7b">DeepSeek-R1 7B — ~4.7 Go</option>
-<option value="qwen2.5:14b">Qwen2.5 14B — ~9 Go</option>
-<option value="mixtral:8x7b">Mixtral 8x7B — ~26 Go (gros)</option>
-<option value="llama3.1:70b">Llama 3.1 70B — ~40 Go (très gros)</option>
-</select>
-<p class="text-[10px] text-gray-500 mt-2">Choisis un petit modèle si tu manques de place disque. Une fois choisi, télécharge-le avec <code class="text-fuchsia-300">ollama pull <span id="local-model-cmd-hint">nom-du-modele</span></code> dans un terminal, puis clique sur "Enregistrer" ci-dessous.</p>
-</div>
-<div>
-<label class="block text-xs font-bold text-gray-400 uppercase mb-2">Nom du modèle</label>
-<input class="w-full bg-black/30 border border-white/10 rounded px-3 py-3 sm:py-2 text-base sm:text-sm text-white focus:outline-none focus:border-fuchsia-400" id="custom-model-name" placeholder="ex: qwen/qwen-2.5-72b, moonshotai/kimi-k2, llama3..." type="text"/>
-</div>
-<div>
-<label class="block text-xs font-bold text-gray-400 uppercase mb-2">Clé API (laisser vide pour Ollama / LM Studio en local)</label>
-<div class="flex flex-col sm:flex-row gap-2">
-<input class="flex-grow bg-black/30 border border-white/10 rounded px-3 py-3 sm:py-2 text-base sm:text-sm text-white focus:outline-none focus:border-fuchsia-400" id="custom-api-key" placeholder="Collez votre clé ici" type="password"/>
-<button class="px-4 py-3 sm:py-2 bg-fuchsia-500 rounded text-sm font-bold whitespace-nowrap" onclick="saveCustomConfig()">Enregistrer</button>
+<div class="mt-4 min-h-[280px] max-h-[390px] space-y-3 overflow-y-auto rounded-xl border border-white/10 bg-slate-950/60 p-4 text-sm" id="freev-v7-output" aria-live="polite" aria-label="Conversation avec Freev Brain V7">
+<div class="rounded-xl border border-cyan-400/15 bg-cyan-500/5 p-3 text-gray-300">
+<p class="font-bold text-cyan-200">Freev V7</p>
+<p class="mt-1 leading-relaxed">Bonjour ! Pose-moi une question pour commencer.</p>
 </div>
 </div>
-<p class="text-[10px] text-gray-500">Compatible avec toute API respectant le format OpenAI <code>/v1/chat/completions</code> : ChatGPT, Gemini, Hermes 4, OpenRouter, NVIDIA API, Ollama, Kimi, Qwen, Groq, DeepSeek, Mistral, Together AI, et bien d'autres. Tout est stocké localement dans votre navigateur, de façon permanente sur cet appareil.</p>
-</div>
-</div>
-<!-- Interface IA Interactive -->
-<div class="w-full md:w-1/2 reveal" style="transition-delay: 200ms;">
-<div class="glass-card p-1 rounded-2xl shadow-2xl shadow-brand-accent/10 border border-brand-accent/20">
-<div class="bg-brand-dark rounded-xl p-6 relative">
-<!-- Header -->
-<div class="flex items-center justify-between mb-4 border-b border-gray-800 pb-4">
-<span class="text-sm font-mono text-gray-400 flex items-center gap-2" id="chat-header-label">
-<i class="fa-solid fa-cube text-brand-accent"></i> Freev AI (natif)
-                                </span>
-<div class="flex items-center gap-3">
-<button class="text-gray-500 hover:text-brand-accent transition-colors" id="btn-open-history" onclick="openHistoryPanel()" title="Historique des conversations">
-<i class="fa-solid fa-clock-rotate-left"></i>
-</button>
-<div class="flex gap-2">
-<div class="w-3 h-3 rounded-full bg-red-500"></div>
-<div class="w-3 h-3 rounded-full bg-yellow-500"></div>
-<div class="w-3 h-3 rounded-full bg-green-500"></div>
-</div>
-</div>
-</div>
-<!-- Output Area -->
-<div class="min-h-[300px] max-h-[400px] bg-slate-900/50 rounded-lg p-4 mb-4 text-sm text-gray-300 font-sans overflow-y-auto border border-gray-800 prose prose-invert max-w-none" id="ai-output">
-<div class="mb-4 p-3 bg-slate-800/50 rounded-lg border border-brand-accent/20">
-<p class="text-brand-accent font-bold mb-1"><i class="fa-solid fa-cube mr-2"></i>Freev AI — FreevBrain v5</p>
-<p class="text-gray-400 text-sm">IA en ligne · apprend de chaque conversation.</p>
-<p class="text-gray-500 text-xs mt-2">Connexion au serveur en cours... ou bascule sur <strong class="text-brand-primary">un autre modèle</strong> si indisponible.</p>
-</div>
-</div>
-<!-- Image Preview Area -->
-<div class="hidden mb-2 relative inline-block" id="image-preview-container">
-<img class="h-16 rounded border border-brand-accent/50 object-cover" id="image-preview" src=""/>
-<button class="absolute -top-2 -right-2 bg-red-500 text-white rounded-full w-5 h-5 flex items-center justify-center text-xs hover:bg-red-600" onclick="removeImage()">
-<i class="fa-solid fa-xmark"></i>
-</button>
-</div>
-<!-- Input Area -->
-<div class="relative flex gap-2 items-end">
-<input accept="image/*" class="hidden" id="image-upload" onchange="handleImageUpload(event)" type="file"/>
-<button class="p-3 bg-slate-800 text-gray-400 rounded-lg hover:text-brand-accent transition-colors border border-white/5 h-[46px]" onclick="document.getElementById('image-upload').click()" title="Ajouter une image">
-<i class="fa-solid fa-paperclip"></i>
-</button>
-<div class="relative">
-<button class="p-3 bg-slate-800 text-gray-400 rounded-lg hover:text-fuchsia-400 transition-colors border border-white/5 h-[46px]" id="switch-model-btn" onclick="toggleModelSwitcher()" title="Changer de modèle IA">
-<i class="fa-solid fa-layer-group"></i>
-</button>
-<div class="hidden absolute bottom-full mb-2 left-0 w-72 max-h-72 overflow-y-auto bg-slate-900 border border-white/10 rounded-xl shadow-2xl z-20 p-2" id="model-switcher-dropdown">
-<div class="text-xs font-bold text-gray-400 px-2 py-1 mb-1 flex items-center gap-2">
-<i class="fa-solid fa-layer-group text-fuchsia-400"></i> Mes modèles enregistrés
-</div>
-<div id="model-switcher-list"></div>
-</div>
-</div>
-<div class="relative flex-grow">
-<input class="w-full bg-slate-800 text-white rounded-lg pl-4 pr-12 py-3 focus:outline-none focus:ring-2 focus:ring-brand-accent/50 text-sm transition-all border border-white/5" id="ai-input" placeholder="Posez une question ou décrivez l'image..." type="text"/>
-<button class="absolute right-2 top-1/2 transform -translate-y-1/2 p-2 text-brand-primary hover:text-white transition-colors" onclick="sendMessage()">
+<form class="mt-4 flex items-end gap-2" id="freev-v7-form">
+<label class="sr-only" for="freev-v7-input">Écrire un message à Freev Brain V7</label>
+<textarea class="min-h-[48px] max-h-32 flex-grow resize-y rounded-xl border border-white/10 bg-slate-800 px-4 py-3 text-base text-white outline-none transition-colors placeholder:text-gray-500 focus:border-cyan-400/60 sm:text-sm" id="freev-v7-input" maxlength="2000" placeholder="Écris ton message…" rows="1"></textarea>
+<button class="h-12 w-12 shrink-0 rounded-xl bg-gradient-to-r from-cyan-400 to-blue-500 text-slate-950 transition-opacity hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-40" id="freev-v7-send" type="submit" aria-label="Envoyer le message">
 <i class="fa-solid fa-paper-plane"></i>
 </button>
-</div>
-</div>
+</form>
+<p class="mt-2 text-[10px] text-gray-600">Pas de micro ni de mode vocal immersif pour le moment.</p>
 </div>
 </div>
 </div>
 </div>
 </div>
 </section>
-<!-- Modal : Bibliothèque de modèles IA locaux -->
-<div class="hidden fixed inset-0 z-[100] flex items-center justify-center bg-black/70 backdrop-blur-sm p-4" id="model-explorer-modal" onclick="if(event.target===this) closeModelExplorer()">
-<div class="w-full max-w-6xl max-h-[90vh] overflow-y-auto bg-slate-900 border border-white/10 rounded-2xl p-5 sm:p-6 animate-fade-in">
-<div class="flex items-start justify-between gap-4 mb-4">
-<div>
-<h3 class="text-xl sm:text-2xl font-heading font-bold text-white flex items-center gap-2">
-<i class="fa-solid fa-layer-group text-fuchsia-400"></i> Bibliothèque de modèles IA
-                    </h3>
-<p class="text-xs text-gray-400 mt-1">Catalogue Freev : recherche rapide, compatibilité indicative et installation guidée pour Ollama et LM Studio. Les commandes d’installation sont incluses dans le guide rapide.</p>
-</div>
-<button aria-label="Fermer la bibliothèque" class="p-2 text-gray-400 hover:text-white rounded-full hover:bg-white/10 transition-all" onclick="closeModelExplorer()">
-<i class="fa-solid fa-xmark text-lg"></i>
-</button>
-</div>
-<div class="mb-4 p-3 bg-slate-800/70 rounded-xl border border-white/10 text-xs text-gray-300" id="device-info-banner">Détection de ton appareil en cours...</div>
-<div class="mb-4 rounded-xl border border-fuchsia-400/20 bg-fuchsia-500/5 overflow-hidden">
-<button class="w-full flex items-center justify-between gap-3 p-3 text-left hover:bg-white/5 transition-colors" onclick="toggleInstallQuickGuide()" type="button" aria-expanded="false" aria-controls="install-quick-guide">
-<span class="text-xs font-bold text-fuchsia-100"><i class="fa-solid fa-download mr-2 text-fuchsia-400"></i>Installer un modèle : guide rapide</span>
-<i class="fa-solid fa-chevron-down text-xs text-fuchsia-300" id="install-quick-guide-icon"></i>
-</button>
-<div class="hidden px-3 pb-3 text-xs text-gray-300 grid grid-cols-1 md:grid-cols-2 gap-3" id="install-quick-guide">
-  <div class="rounded-lg border border-cyan-400/20 bg-black/20 p-3 space-y-3">
-    <div>
-      <p class="font-bold text-white mb-1"><i class="fa-solid fa-download mr-1 text-cyan-300"></i>1. Installer Ollama</p>
-      <p class="text-gray-400">Installe Ollama une seule fois. Ensuite, toutes les commandes <code>ollama pull</code> des fiches fonctionneront.</p>
-    </div>
-    <div class="rounded-md border border-white/10 bg-slate-950/70 p-2">
-      <p class="text-[10px] font-bold text-cyan-200 mb-1">Windows — PowerShell</p>
-      <div class="flex gap-2 items-start"><code class="flex-1 text-cyan-300 break-all">irm https://ollama.com/install.ps1 | iex</code><button type="button" data-freev-copy-command="irm https://ollama.com/install.ps1 | iex" class="shrink-0 text-[10px] px-2 py-1 rounded border border-cyan-400/20 text-cyan-200 hover:bg-cyan-400/10"><i class="fa-regular fa-copy"></i></button></div>
-    </div>
-    <div class="rounded-md border border-white/10 bg-slate-950/70 p-2">
-      <p class="text-[10px] font-bold text-cyan-200 mb-1">macOS / Linux — Terminal</p>
-      <div class="flex gap-2 items-start"><code class="flex-1 text-cyan-300 break-all">curl -fsSL https://ollama.com/install.sh | sh</code><button type="button" data-freev-copy-command="curl -fsSL https://ollama.com/install.sh | sh" class="shrink-0 text-[10px] px-2 py-1 rounded border border-cyan-400/20 text-cyan-200 hover:bg-cyan-400/10"><i class="fa-regular fa-copy"></i></button></div>
-    </div>
-    <div class="border-t border-white/10 pt-2"><p class="text-[10px] text-gray-400">Télécharger un modèle ensuite :</p><code class="mt-1 block px-2 py-1 rounded bg-slate-950 text-cyan-300 overflow-x-auto">ollama pull qwen3:8b</code><p class="mt-1 text-[10px] text-gray-500">Pour discuter : <code>ollama run qwen3:8b</code>.</p></div>
-  </div>
-  <div class="rounded-lg border border-amber-400/20 bg-black/20 p-3 space-y-3">
-    <div>
-      <p class="font-bold text-white mb-1"><i class="fa-solid fa-download mr-1 text-amber-300"></i>2. Installer LM Studio CLI</p>
-      <p class="text-gray-400">L’application LM Studio inclut la commande <code>lms</code>. Pour une installation terminal sans interface, installe <strong>llmster</strong>, qui fournit aussi <code>lms</code>.</p>
-    </div>
-    <div class="rounded-md border border-white/10 bg-slate-950/70 p-2">
-      <p class="text-[10px] font-bold text-amber-200 mb-1">Windows — PowerShell</p>
-      <div class="flex gap-2 items-start"><code class="flex-1 text-amber-200 break-all">irm https://lmstudio.ai/install.ps1 | iex</code><button type="button" data-freev-copy-command="irm https://lmstudio.ai/install.ps1 | iex" class="shrink-0 text-[10px] px-2 py-1 rounded border border-amber-400/20 text-amber-100 hover:bg-amber-400/10"><i class="fa-regular fa-copy"></i></button></div>
-    </div>
-    <div class="rounded-md border border-white/10 bg-slate-950/70 p-2">
-      <p class="text-[10px] font-bold text-amber-200 mb-1">macOS / Linux — Terminal</p>
-      <div class="flex gap-2 items-start"><code class="flex-1 text-amber-200 break-all">curl -fsSL https://lmstudio.ai/install.sh | bash</code><button type="button" data-freev-copy-command="curl -fsSL https://lmstudio.ai/install.sh | bash" class="shrink-0 text-[10px] px-2 py-1 rounded border border-amber-400/20 text-amber-100 hover:bg-amber-400/10"><i class="fa-regular fa-copy"></i></button></div>
-    </div>
-    <div class="border-t border-white/10 pt-2"><p class="text-[10px] text-gray-400">Vérifier puis télécharger un modèle :</p><code class="mt-1 block px-2 py-1 rounded bg-slate-950 text-amber-200 overflow-x-auto">lms --help</code><code class="mt-1 block px-2 py-1 rounded bg-slate-950 text-amber-200 overflow-x-auto">lms get "Qwen3 8B"</code></div>
-  </div>
-</div>
-<div class="mt-3 rounded-lg border border-emerald-400/20 bg-emerald-500/5 p-3 text-xs text-emerald-50 md:col-span-2">
-  <div class="flex flex-wrap items-center justify-between gap-2">
-    <span><i class="fa-solid fa-link mr-1 text-emerald-300"></i><strong>Après téléchargement :</strong> ouvre <em>Mes modèles installés</em>, sélectionne ton modèle, puis Freev le configure automatiquement.</span>
-    <button type="button" onclick="openInstalledModels()" class="rounded-lg border border-emerald-400/30 px-2.5 py-1.5 font-bold text-emerald-100 hover:bg-emerald-500/15">Voir mes modèles</button>
-  </div>
-</div>
-</div>
-<div class="grid grid-cols-1 lg:grid-cols-[auto_1fr] gap-3 mb-3 items-center">
-<div class="flex items-center gap-2 text-xs flex-wrap">
-<span class="text-gray-400 font-bold uppercase">Runtime :</span>
-<button class="px-3 py-1.5 rounded-full font-bold bg-fuchsia-500 text-white" id="explorer-runtime-ollama" onclick="setExplorerRuntime('ollama')">Ollama</button>
-<button class="px-3 py-1.5 rounded-full font-bold bg-slate-800 text-gray-400 hover:text-white border border-white/10" id="explorer-runtime-lmstudio" onclick="setExplorerRuntime('lmstudio')">LM Studio</button>
-</div>
-<div class="flex flex-wrap items-center justify-end gap-2">
-<button type="button" id="freev-open-local-models" onclick="openInstalledModels()" class="inline-flex items-center gap-2 rounded-xl border border-emerald-400/30 bg-emerald-500/10 px-3 py-2 text-xs font-bold text-emerald-100 hover:bg-emerald-500/20 transition-colors">
-<i class="fa-solid fa-hard-drive"></i> Mes modèles installés
-</button>
-</div>
-<div class="relative">
-<i class="fa-solid fa-magnifying-glass absolute left-3 top-3 text-gray-500 text-xs"></i>
-<input autocomplete="off" class="w-full bg-slate-800 border border-white/10 rounded-xl pl-9 pr-10 py-2.5 text-sm text-white outline-none focus:border-fuchsia-400/70" id="model-library-search" oninput="handleModelSearch()" onkeydown="handleModelSearchKey(event)" placeholder="Recherche intelligente : qwen code 7B · famille:qwen · ram&lt;=8 · quant:q4" type="search"/>
-<button class="absolute right-2 top-1/2 -translate-y-1/2 h-7 w-7 rounded-lg text-gray-500 hover:text-white hover:bg-white/10" onclick="clearModelSearchOnly()" title="Effacer la recherche"><i class="fa-solid fa-xmark"></i></button>
-<div class="hidden absolute z-20 mt-2 left-0 right-0 max-h-64 overflow-y-auto rounded-xl border border-white/10 bg-slate-900 shadow-2xl p-1" id="model-search-suggestions"></div>
-</div>
-</div>
-<div class="mb-3 flex flex-wrap items-center gap-2 text-[11px]">
-<span class="text-gray-500 font-bold uppercase tracking-wide">Essais rapides :</span>
-<button class="px-2.5 py-1 rounded-full border border-fuchsia-400/20 text-fuchsia-200 bg-fuchsia-500/5 hover:bg-fuchsia-500/15" onclick="applyModelSearch('famille:qwen')">Qwen</button>
-<button class="px-2.5 py-1 rounded-full border border-cyan-400/20 text-cyan-200 bg-cyan-500/5 hover:bg-cyan-500/15" onclick="applyModelSearch('type:code')">Code</button>
-<button class="px-2.5 py-1 rounded-full border border-indigo-400/20 text-indigo-200 bg-indigo-500/5 hover:bg-indigo-500/15" onclick="applyModelSearch('type:vision')">Vision</button>
-<button class="px-2.5 py-1 rounded-full border border-emerald-400/20 text-emerald-200 bg-emerald-500/5 hover:bg-emerald-500/15" onclick="applyModelSearch('ram&lt;=8')">≤ 8 Go RAM</button>
-<button class="px-2.5 py-1 rounded-full border border-amber-400/20 text-amber-200 bg-amber-500/5 hover:bg-amber-500/15" onclick="applyModelSearch('quant:q4')">Q4</button>
-<span class="text-gray-600">Utilise Entrée pour choisir une suggestion.</span>
-</div>
-<div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-6 gap-2 mb-4">
-<select class="bg-slate-800 border border-white/10 rounded-xl px-3 py-2 text-xs text-white" id="model-library-family" onchange="renderModelGrid()"><option value="all">Toutes les familles</option></select>
-<select class="bg-slate-800 border border-white/10 rounded-xl px-3 py-2 text-xs text-white" id="model-library-type" onchange="renderModelGrid()">
-<option value="all">Tous les usages</option><option value="general">Généraliste</option><option value="reasoning">Raisonnement</option><option value="code">Code</option><option value="vision">Vision / images</option><option value="embedding">Embeddings / RAG</option><option value="translate">Traduction</option><option value="audio">Audio</option>
-</select>
-<select class="bg-slate-800 border border-white/10 rounded-xl px-3 py-2 text-xs text-white" id="model-library-quant" onchange="renderModelGrid()"><option value="all">Tous les formats</option><option value="official">Version officielle</option><option value="GGUF">GGUF</option><option value="EXL2">EXL2</option><option value="AWQ">AWQ</option><option value="GPTQ">GPTQ</option><option value="MLX">MLX</option><option value="BF16">BF16</option><option value="FP16">FP16</option></select>
-<select class="bg-slate-800 border border-white/10 rounded-xl px-3 py-2 text-xs text-white" id="model-library-size" onchange="renderModelGrid()">
-<option value="all">Toutes les tailles</option><option value="tiny">Ultra léger (≤ 4 Go RAM)</option><option value="small">Léger (≤ 8 Go RAM)</option><option value="medium">Moyen (≤ 16 Go RAM)</option><option value="large">Puissant (&gt; 16 Go RAM)</option>
-</select>
-<select class="bg-slate-800 border border-white/10 rounded-xl px-3 py-2 text-xs text-white" id="model-library-sort" onchange="renderModelGrid()"><option value="relevance">Trier : pertinence</option><option value="ramAsc">RAM : faible → élevée</option><option value="ramDesc">RAM : élevée → faible</option><option value="diskAsc">Disque : faible → élevé</option><option value="name">Nom A → Z</option><option value="family">Famille A → Z</option></select>
-<button class="rounded-xl px-3 py-2 text-xs font-bold border border-white/10 bg-white/5 hover:bg-white/10 text-gray-200" onclick="clearModelFilters()"><i class="fa-solid fa-rotate-left mr-1"></i> Réinitialiser</button>
-</div>
-<div class="flex gap-2 mb-4 flex-wrap">
-<button class="px-4 py-2 rounded-full text-xs sm:text-sm font-bold bg-gradient-to-r from-fuchsia-500 to-purple-600 text-white" id="explorer-tab-recommended" onclick="selectExplorerTab('recommended')"><i class="fa-solid fa-microchip mr-1"></i> Adaptés à ton appareil</button>
-<button class="px-4 py-2 rounded-full text-xs sm:text-sm font-bold bg-slate-800 text-gray-400 hover:text-white border border-white/10" id="explorer-tab-all" onclick="selectExplorerTab('all')"><i class="fa-solid fa-book-open mr-1"></i> Toute la bibliothèque</button>
-<button class="px-4 py-2 rounded-full text-xs sm:text-sm font-bold bg-slate-800 text-gray-400 hover:text-white border border-white/10" id="explorer-tab-popular" onclick="selectExplorerTab('popular')"><i class="fa-solid fa-fire mr-1"></i> Incontournables</button>
-<button class="px-4 py-2 rounded-full text-xs sm:text-sm font-bold bg-slate-800 text-gray-400 hover:text-white border border-white/10" id="explorer-tab-recent" onclick="selectExplorerTab('recent')"><i class="fa-solid fa-sparkles mr-1"></i> Nouveautés</button>
-<button class="px-4 py-2 rounded-full text-xs sm:text-sm font-bold bg-slate-800 text-gray-400 hover:text-white border border-white/10" id="explorer-tab-favorites" onclick="selectExplorerTab('favorites')"><i class="fa-solid fa-star mr-1"></i> Favoris</button>
-</div>
-<div class="flex flex-wrap justify-between items-center gap-2 mb-3">
-<div class="flex items-center gap-2"><span class="inline-flex h-2 w-2 rounded-full bg-emerald-400" id="model-library-live" title="Catalogue prêt"></span><p aria-live="polite" class="text-xs text-gray-400" id="model-library-count"></p></div>
-<p class="text-[10px] text-amber-200/80"><i class="fa-solid fa-circle-info mr-1"></i> Les commandes sont fiables pour les fiches officielles ; une variante GGUF exacte s’installe plutôt dans LM Studio.</p>
-</div>
-<div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-3" id="model-explorer-grid"></div>
-<div class="mt-5 flex flex-wrap justify-between items-center gap-3 border-t border-white/10 pt-4" id="model-library-pagination">
-<p class="text-xs text-gray-500" id="model-library-page-info"></p>
-<div class="flex items-center gap-2">
-<button class="px-3 py-2 rounded-lg text-xs font-bold border border-white/10 bg-slate-800 text-gray-300 hover:text-white disabled:opacity-40 disabled:cursor-not-allowed" id="model-page-prev" onclick="changeModelPage(-1)"><i class="fa-solid fa-chevron-left mr-1"></i> Précédent</button>
-<button class="px-3 py-2 rounded-lg text-xs font-bold border border-white/10 bg-fuchsia-500/20 text-fuchsia-100 hover:bg-fuchsia-500/35 disabled:opacity-40 disabled:cursor-not-allowed" id="model-page-next" onclick="changeModelPage(1)">Suivant <i class="fa-solid fa-chevron-right ml-1"></i></button>
-</div>
-</div>
-<p class="text-[10px] text-gray-500 mt-4">La bibliothèque distingue les modèles officiels et les formats locaux. Les tailles et la RAM sont des estimations : vérifie toujours la fiche du dépôt avant de télécharger.</p>
-</div>
-</div>
-<!-- Mes modèles locaux : détection depuis Ollama / LM Studio -->
-<div class="hidden fixed inset-0 z-[115] flex items-center justify-center bg-black/85 backdrop-blur-sm p-4" id="freev-installed-models-modal" onclick="if(event.target===this) closeInstalledModels()" role="dialog" aria-modal="true" aria-labelledby="freev-installed-title">
-  <div class="w-full max-w-3xl max-h-[88vh] overflow-hidden rounded-2xl border border-emerald-400/25 bg-slate-950 shadow-2xl">
-    <div class="flex items-start justify-between gap-4 border-b border-white/10 p-5">
-      <div>
-        <p class="text-[10px] uppercase tracking-[0.2em] text-emerald-300 font-bold">Connexion locale</p>
-        <h3 id="freev-installed-title" class="mt-1 text-xl font-heading font-bold text-white"><i class="fa-solid fa-hard-drive mr-2 text-emerald-300"></i>Mes modèles installés</h3>
-        <p class="mt-1 text-xs text-gray-400">Freev lit uniquement les modèles présents sur ton ordinateur via Ollama ou le serveur local LM Studio.</p>
-      </div>
-      <button type="button" class="rounded-full p-2 text-gray-400 hover:bg-white/10 hover:text-white" aria-label="Fermer" onclick="closeInstalledModels()"><i class="fa-solid fa-xmark"></i></button>
-    </div>
-    <div class="p-5 space-y-4 overflow-y-auto max-h-[calc(88vh-100px)]">
-      <div class="grid grid-cols-1 sm:grid-cols-[1fr_auto] gap-3 items-center">
-        <div class="grid grid-cols-2 gap-2" role="group" aria-label="Choisir le moteur local">
-          <button type="button" id="freev-local-runtime-ollama" onclick="setInstalledRuntime('ollama')" class="rounded-xl px-3 py-2 text-xs font-bold bg-emerald-500 text-slate-950"><i class="fa-solid fa-terminal mr-1"></i> Ollama</button>
-          <button type="button" id="freev-local-runtime-lmstudio" onclick="setInstalledRuntime('lmstudio')" class="rounded-xl border border-white/10 bg-slate-800 px-3 py-2 text-xs font-bold text-gray-300 hover:text-white"><i class="fa-solid fa-window-maximize mr-1"></i> LM Studio</button>
-        </div>
-        <button type="button" id="freev-local-refresh" onclick="refreshInstalledModels()" class="rounded-xl border border-emerald-400/30 bg-emerald-500/10 px-3 py-2 text-xs font-bold text-emerald-100 hover:bg-emerald-500/20"><i class="fa-solid fa-rotate-right mr-1"></i> Actualiser</button>
-      </div>
-      <div id="freev-local-status" class="rounded-xl border border-white/10 bg-slate-900/70 p-3 text-xs text-gray-300" role="status" aria-live="polite">Choisis un moteur puis clique sur Actualiser.</div>
-      <div class="relative">
-        <i class="fa-solid fa-magnifying-glass absolute left-3 top-1/2 -translate-y-1/2 text-gray-500 text-xs"></i>
-        <input id="freev-local-search" type="search" autocomplete="off" oninput="filterInstalledModels()" placeholder="Filtrer les modèles détectés…" class="w-full rounded-xl border border-white/10 bg-slate-900 pl-9 pr-3 py-2.5 text-sm text-white outline-none focus:border-emerald-400/70">
-      </div>
-      <div id="freev-installed-selected" class="hidden rounded-xl border border-fuchsia-400/25 bg-fuchsia-500/5 p-3 text-xs text-fuchsia-50"></div>
-      <div id="freev-installed-list" class="space-y-2"></div>
-      <div class="rounded-xl border border-amber-400/20 bg-amber-500/5 p-3 text-[11px] text-amber-100"><i class="fa-solid fa-shield-halved mr-1 text-amber-300"></i> Cette détection reste sur <code>localhost</code>. Aucun nom de modèle n’est envoyé vers Internet. Si la liste reste vide, démarre Ollama ou active le serveur local dans l’onglet <strong>Developer</strong> de LM Studio.</div>
-    </div>
-  </div>
-</div>
-
-<!-- Guide d’installation d’un modèle -->
-<div class="hidden fixed inset-0 z-[110] flex items-center justify-center bg-black/80 backdrop-blur-sm p-4" id="model-install-modal" onclick="if(event.target===this) closeInstallGuide()">
-<div class="w-full max-w-2xl max-h-[90vh] overflow-y-auto bg-slate-900 border border-fuchsia-400/30 rounded-2xl p-5 sm:p-6 shadow-2xl">
-<div class="flex items-start justify-between gap-4 mb-4"><div><p class="text-[10px] uppercase tracking-[0.2em] text-fuchsia-300 font-bold">Installation guidée</p><h3 class="text-lg sm:text-xl font-heading font-bold text-white mt-1" id="install-guide-title">Modèle</h3><p class="text-xs text-gray-400 mt-1" id="install-guide-meta"></p></div><button aria-label="Fermer" class="p-2 text-gray-400 hover:text-white rounded-full hover:bg-white/10" onclick="closeInstallGuide()"><i class="fa-solid fa-xmark"></i></button></div>
-<div class="grid grid-cols-2 gap-2 mb-4"><button class="rounded-xl px-3 py-2 text-xs font-bold bg-fuchsia-500 text-white" id="install-guide-ollama" onclick="setInstallRuntime('ollama')"><i class="fa-solid fa-terminal mr-1"></i> Ollama</button><button class="rounded-xl px-3 py-2 text-xs font-bold border border-white/10 bg-slate-800 text-gray-300 hover:text-white" id="install-guide-lmstudio" onclick="setInstallRuntime('lmstudio')"><i class="fa-solid fa-window-maximize mr-1"></i> LM Studio</button></div>
-<div id="install-guide-content"></div>
-</div>
-</div>
-
 <!-- La section étudiante a été entièrement supprimée -->
 <!-- Footer -->
 <footer class="bg-black border-t border-white/10 pt-16 pb-24 md:pb-8" id="contact">
@@ -2741,866 +2448,125 @@
             }
         });
 
-        // --- 4. AI LOGIC ---
+        // --- 4. FREEV BRAIN V7 : CONVERSATION TEXTE UNIQUEMENT ---
+        const FREEV_V7_SERVER = ['127.0.0.1', 'localhost'].includes(window.location.hostname)
+            ? 'http://127.0.0.1:10000'
+            : 'https://freev-iies.onrender.com';
+        const freevV7State = { online: false, sending: false };
 
-        let currentAiMode = 'freev'; // 'freev' | 'custom'
-        let currentImageBase64 = null;
-
-        // ── Mode switcher ──────────────────────────────────────────────────────
-        const INACTIVE_MODE_BTN = 'px-4 sm:px-5 py-2.5 sm:py-2 rounded-full text-sm font-bold transition-all whitespace-nowrap text-gray-400 hover:text-white';
-
-        function setAiMode(mode) {
-            currentAiMode = mode;
-            const btnFreev  = document.getElementById('btn-mode-freev');
-            const btnCustom = document.getElementById('btn-mode-custom');
-            const btnApiSettings = document.getElementById('btn-api-settings');
-            const badge     = document.getElementById('ai-mode-badge');
-            const header    = document.getElementById('chat-header-label');
-
-            // Reset des boutons
-            btnFreev.className  = INACTIVE_MODE_BTN;
-            btnCustom.className = INACTIVE_MODE_BTN;
-            document.getElementById('api-settings-custom').classList.add('hidden');
-
-            if (mode === 'freev') {
-                btnFreev.className  = 'px-4 sm:px-5 py-2.5 sm:py-2 rounded-full text-sm font-bold transition-all whitespace-nowrap bg-gradient-to-r from-brand-accent to-brand-secondary text-brand-dark shadow';
-                btnApiSettings.classList.add('hidden');
-                badge.innerHTML   = '<i class="fa-solid fa-cube"></i> Freev AI — FreevBrain v5 En ligne';
-                badge.className   = 'inline-flex items-center gap-2 px-3 py-1 rounded-full bg-cyan-500/10 text-cyan-400 text-xs font-bold mb-4 border border-cyan-500/20';
-                header.innerHTML  = '<i class="fa-solid fa-cube text-brand-accent"></i> FreevBrain v5 (en ligne)';
-                checkServer();
-            } else {
-                // mode === 'custom' (ChatGPT, Gemini, Hermes 4, OpenRouter, NVIDIA, Ollama, Kimi, Qwen, Groq, DeepSeek, Mistral, Together, etc.)
-                btnCustom.className = 'px-4 sm:px-5 py-2.5 sm:py-2 rounded-full text-sm font-bold transition-all whitespace-nowrap bg-gradient-to-r from-fuchsia-500 to-purple-600 text-white shadow';
-                btnApiSettings.classList.remove('hidden');
-                loadCustomConfig();
-                const modelLabel = document.getElementById('custom-model-name')?.value || 'modèle personnalisé';
-                badge.innerHTML   = '<i class="fa-solid fa-plug"></i> Autre IA — ' + escapeHtml(modelLabel);
-                badge.className   = 'inline-flex items-center gap-2 px-3 py-1 rounded-full bg-fuchsia-500/10 text-fuchsia-400 text-xs font-bold mb-4 border border-fuchsia-500/20';
-                header.innerHTML  = '<i class="fa-solid fa-plug text-fuchsia-400"></i> ' + escapeHtml(modelLabel);
-            }
+        function setFreevV7Status(label, tone) {
+            const status = document.getElementById('freev-v7-status');
+            const dot = document.getElementById('freev-v7-status-dot');
+            const send = document.getElementById('freev-v7-send');
+            if (!status || !dot) return;
+            const tones = {
+                ok: ['bg-emerald-400', 'text-emerald-200', 'En ligne'],
+                wait: ['bg-amber-400', 'text-amber-200', 'Connexion…'],
+                error: ['bg-red-400', 'text-red-200', 'Indisponible']
+            };
+            const selected = tones[tone] || tones.wait;
+            dot.className = 'h-2 w-2 rounded-full ' + selected[0];
+            status.className = 'inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-3 py-1 text-[11px] ' + selected[1];
+            status.lastChild.textContent = ' ' + (label || selected[2]);
+            if (send) send.disabled = !freevV7State.online || freevV7State.sending;
         }
 
-        // Affiche le panneau de configuration du fournisseur personnalisé
-        function toggleApiSettings() {
-            if (currentAiMode === 'custom') {
-                document.getElementById('api-settings-custom').classList.toggle('hidden');
-            }
-        }
-
-        // ── Dispatcher ─────────────────────────────────────────────────────────
-        function sendMessage() {
-            if (currentAiMode === 'custom') generateCustom();
-            else generateFreev();
-        }
-
-        // ── Freev AI en ligne (FreevBrain v5) ─────────────────────────────────
-        // ⚠️ Remplace cette URL par ton URL Render/Railway après déploiement
-        const FREEV_SERVER = 'https://freev-iies.onrender.com';
-        let serverConnected = false;
-
-        // Vérifier connexion au serveur local au démarrage
-        async function checkServer() {
-            try {
-                const r = await fetch(FREEV_SERVER + '/status', { signal: AbortSignal.timeout(20000) });
-                const data = await r.json();
-                serverConnected = data.ok;
-                updateServerBadge(data);
-            } catch {
-                serverConnected = false;
-                updateServerBadge(null);
-            }
-        }
-
-        function updateServerBadge(data) {
-            const badge = document.getElementById('ai-mode-badge');
-            const output = document.getElementById('ai-output');
-            if (currentAiMode !== 'freev') return;
-
-            if (serverConnected && data) {
-                badge.innerHTML = '<i class="fa-solid fa-circle text-green-400 text-xs"></i> Freev AI — En ligne · ' + data.pairs + ' paires';
-                badge.className = 'inline-flex items-center gap-2 px-3 py-1 rounded-full bg-green-500/10 text-green-400 text-xs font-bold mb-4 border border-green-500/20';
-            } else {
-                badge.innerHTML = '<i class="fa-solid fa-circle text-yellow-400 text-xs animate-pulse"></i> Freev AI — Réveil du serveur...';
-                badge.className = 'inline-flex items-center gap-2 px-3 py-1 rounded-full bg-yellow-500/10 text-yellow-400 text-xs font-bold mb-4 border border-yellow-500/20';
-            }
-        }
-
-        // Vérifier toutes les 30 secondes (serveur en ligne)
-        checkServer();
-        setInterval(checkServer, 30000);
-        // Render Free se réveille en ~50s — on refait un check rapide après 40s
-        setTimeout(checkServer, 40000);
-
-        async function generateFreev() {
-            const input  = document.getElementById('ai-input');
-            const output = document.getElementById('ai-output');
-            const prompt = input.value.trim();
-            if (!prompt) return;
-
-            // Message utilisateur
-            output.innerHTML += `<div class="mt-4 text-white p-3 bg-white/5 rounded-lg border border-white/5"><span class="text-brand-secondary font-bold">Vous :</span> ${escapeHtml(prompt)}</div>`;
-            input.value = '';
+        function appendFreevV7Message(role, text) {
+            const output = document.getElementById('freev-v7-output');
+            if (!output) return;
+            const box = document.createElement('div');
+            const title = document.createElement('p');
+            const body = document.createElement('p');
+            const isUser = role === 'user';
+            box.className = isUser
+                ? 'ml-6 rounded-xl border border-fuchsia-400/15 bg-fuchsia-500/5 p-3 text-gray-200'
+                : 'mr-6 rounded-xl border border-cyan-400/15 bg-cyan-500/5 p-3 text-gray-300';
+            title.className = isUser ? 'font-bold text-fuchsia-200' : 'font-bold text-cyan-200';
+            title.textContent = isUser ? 'Toi' : 'Freev V7';
+            body.className = 'mt-1 whitespace-pre-wrap leading-relaxed';
+            body.textContent = String(text || '');
+            box.append(title, body);
+            output.appendChild(box);
             output.scrollTop = output.scrollHeight;
+            return box;
+        }
 
-            // Si serveur hors ligne → message d'aide
-            if (!serverConnected) {
-                output.innerHTML += `
-                    <div class="mt-3 p-4 bg-slate-800/80 rounded-xl border border-yellow-500/30">
-                        <p class="text-yellow-400 font-bold mb-2"><i class="fa-solid fa-hourglass-half mr-2"></i>Freev AI se réveille...</p>
-                        <p class="text-gray-400 text-sm mb-2">Le serveur Render (gratuit) dort quand il est inactif. Il se réveille en <strong class="text-white">30–50 secondes</strong>.</p>
-                        <p class="text-gray-400 text-sm">Le badge deviendra <strong class="text-green-400">vert</strong> quand il est prêt — réessaie alors.</p>
-                        <p class="text-gray-500 text-xs mt-2">Ou bascule sur <strong class="text-brand-primary">un autre modèle</strong> pour une réponse immédiate.</p>
-                    </div>`;
-                output.scrollTop = output.scrollHeight;
-                return;
-            }
-
-            const loadingId = 'loading-' + Date.now();
-            output.innerHTML += `<div id="${loadingId}" class="mt-2 text-gray-500 italic flex items-center gap-2"><i class="fa-solid fa-brain fa-bounce text-brand-accent"></i> FreevBrain réfléchit...</div>`;
-            output.scrollTop = output.scrollHeight;
-
+        async function checkFreevV7() {
+            setFreevV7Status('Connexion…', 'wait');
             try {
-                const r = await fetch(FREEV_SERVER + '/api/chat', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ message: prompt }),
-                    signal: AbortSignal.timeout(10000)
+                const controller = new AbortController();
+                const timer = setTimeout(() => controller.abort(), 20000);
+                const response = await fetch(FREEV_V7_SERVER + '/status', {
+                    signal: controller.signal,
+                    headers: { Accept: 'application/json' },
+                    cache: 'no-store'
                 });
-
-                if (!r.ok) throw new Error('Erreur serveur ' + r.status);
-                const data = await r.json();
-
-                document.getElementById(loadingId).remove();
-                const div = document.createElement('div');
-                div.className = 'mt-4 text-gray-200 border-l-2 border-brand-accent pl-4 py-1';
-                div.innerHTML = `<span class="text-brand-accent font-bold text-sm mb-1 block"><i class="fa-solid fa-cube mr-1"></i>Freev AI :</span>` + marked.parse(escapeHtml(data.response || ''));
-                output.appendChild(div);
-                output.scrollTop = output.scrollHeight;
-
-                saveChatHistoryEntry({ mode: 'freev', model: 'FreevBrain v5', question: prompt, response: data.response || '' });
-
-            } catch (err) {
-                document.getElementById(loadingId)?.remove();
-                serverConnected = false;
-                updateServerBadge(null);
-                output.innerHTML += `<div class="mt-2 text-red-400 p-2 bg-red-900/20 rounded text-sm"><i class="fa-solid fa-xmark mr-1"></i>Timeout — le serveur ne répond plus.</div>`;
-                output.scrollTop = output.scrollHeight;
-            }
-        }
-
-        function escapeHtml(t) {
-            return t.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
-        }
-
-        // ── Historique des conversations (local + IA en ligne) ──────────────────
-        const CHAT_HISTORY_KEY = 'freev_chat_history';
-        const CHAT_HISTORY_MAX = 300;
-
-        function readChatHistory() {
-            try {
-                const raw = localStorage.getItem(CHAT_HISTORY_KEY);
-                const list = raw ? JSON.parse(raw) : [];
-                return Array.isArray(list) ? list : [];
-            } catch (e) { return []; }
-        }
-
-        function writeChatHistory(list) {
-            try { localStorage.setItem(CHAT_HISTORY_KEY, JSON.stringify(list)); } catch (e) {}
-        }
-
-        // Enregistre chaque question + réponse, peu importe si l'IA est locale (Ollama/LM Studio),
-        // en ligne (FreevBrain) ou via un fournisseur "Autre IA" (ChatGPT, Gemini, etc.)
-        function saveChatHistoryEntry({ mode, model, question, response }) {
-            if (!question && !response) return;
-            const entry = {
-                id: 'h-' + Date.now() + '-' + Math.random().toString(36).slice(2, 7),
-                date: new Date().toISOString(),
-                mode: mode || 'freev',       // 'freev' (en ligne) | 'custom' (autre IA / local)
-                model: model || (mode === 'freev' ? 'FreevBrain v5' : 'IA personnalisée'),
-                question: question || '',
-                response: response || ''
-            };
-            const list = readChatHistory();
-            list.push(entry);
-            while (list.length > CHAT_HISTORY_MAX) list.shift();
-            writeChatHistory(list);
-
-            // Sauvegarde aussi côté cloud si l'utilisateur est connecté (best-effort, non bloquant)
-            if (window.FreevAuthActions?.getCurrentUser?.() && window.FreevAuthActions?.saveChatHistoryEntry) {
-                window.FreevAuthActions.saveChatHistoryEntry(entry).catch(() => {});
-            }
-
-            if (!document.getElementById('history-modal')?.classList.contains('hidden')) {
-                renderHistoryList();
-            }
-        }
-
-        // Fusionne l'historique cloud (autre appareil) avec l'historique local, sans doublons
-        window.syncChatHistoryFromCloud = async function () {
-            if (!window.FreevAuthActions?.loadChatHistory) return;
-            try {
-                const cloudList = await window.FreevAuthActions.loadChatHistory();
-                if (!Array.isArray(cloudList) || !cloudList.length) return;
-                const local = readChatHistory();
-                const knownIds = new Set(local.map(e => e.id));
-                let changed = false;
-                cloudList.forEach(entry => {
-                    if (entry?.id && !knownIds.has(entry.id)) {
-                        local.push(entry);
-                        knownIds.add(entry.id);
-                        changed = true;
-                    }
-                });
-                if (changed) {
-                    local.sort((a, b) => new Date(a.date) - new Date(b.date));
-                    while (local.length > CHAT_HISTORY_MAX) local.shift();
-                    writeChatHistory(local);
-                    if (!document.getElementById('history-modal')?.classList.contains('hidden')) {
-                        renderHistoryList();
-                    }
-                }
-            } catch (e) { console.warn('Synchro historique échouée', e); }
-        };
-
-        function formatHistoryDate(iso) {
-            try {
-                return new Date(iso).toLocaleString('fr-FR', { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' });
-            } catch (e) { return iso; }
-        }
-
-        function renderHistoryList() {
-            const container = document.getElementById('history-list');
-            const countEl = document.getElementById('history-count');
-            const syncStatus = document.getElementById('history-sync-status');
-            if (!container) return;
-
-            const list = readChatHistory().slice().reverse();
-            countEl.textContent = list.length + (list.length > 1 ? ' échanges enregistrés' : ' échange enregistré');
-
-            const isLoggedIn = !!window.FreevAuthActions?.getCurrentUser?.();
-            syncStatus.textContent = isLoggedIn
-                ? 'Enregistré sur cet appareil et synchronisé avec votre compte Freev.'
-                : "Enregistré sur cet appareil. Connectez-vous pour synchroniser dans le cloud.";
-
-            if (!list.length) {
-                container.innerHTML = '<p class="text-sm text-gray-500 italic py-6 text-center">Aucune conversation enregistrée pour le moment.</p>';
-                return;
-            }
-
-            container.innerHTML = list.map(entry => {
-                const badgeClass = entry.mode === 'freev'
-                    ? 'bg-cyan-500/10 text-cyan-400 border-cyan-500/20'
-                    : 'bg-fuchsia-500/10 text-fuchsia-400 border-fuchsia-500/20';
-                return `
-                <div class="p-3 bg-slate-900/60 rounded-lg border border-white/10">
-                    <div class="flex items-center justify-between mb-2">
-                        <span class="text-[10px] font-bold px-2 py-0.5 rounded-full border ${badgeClass}">${escapeHtml(entry.model)}</span>
-                        <div class="flex items-center gap-3">
-                            <span class="text-[10px] text-gray-500">${formatHistoryDate(entry.date)}</span>
-                            <button class="text-gray-500 hover:text-red-400 text-xs" onclick="deleteHistoryEntry('${entry.id}')" title="Supprimer">
-                                <i class="fa-solid fa-trash"></i>
-                            </button>
-                        </div>
-                    </div>
-                    <p class="text-sm text-white mb-1"><span class="text-brand-secondary font-bold">Vous : </span>${escapeHtml(entry.question)}</p>
-                    <p class="text-sm text-gray-300"><span class="text-brand-accent font-bold">IA : </span>${escapeHtml(entry.response)}</p>
-                </div>`;
-            }).join('');
-        }
-
-        function deleteHistoryEntry(id) {
-            const list = readChatHistory().filter(e => e.id !== id);
-            writeChatHistory(list);
-            renderHistoryList();
-        }
-
-        function clearChatHistory() {
-            if (!confirm("Vider tout l'historique des conversations sur cet appareil ?")) return;
-            writeChatHistory([]);
-            renderHistoryList();
-        }
-
-        function exportChatHistory() {
-            const list = readChatHistory();
-            if (!list.length) {
-                alert("Aucune conversation à exporter pour le moment.");
-                return;
-            }
-            const payload = {
-                exportedAt: new Date().toISOString(),
-                app: 'Freev',
-                count: list.length,
-                history: list
-            };
-            const blob = new Blob([JSON.stringify(payload, null, 2)], { type: 'application/json' });
-            const url = URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            const stamp = new Date().toISOString().slice(0, 19).replace(/[:T]/g, '-');
-            a.href = url;
-            a.download = `freev_historique_${stamp}.json`;
-            document.body.appendChild(a);
-            a.click();
-            a.remove();
-            URL.revokeObjectURL(url);
-        }
-
-        function openHistoryPanel() {
-            const modal = document.getElementById('history-modal');
-            if (!modal) return;
-            renderHistoryList();
-            modal.classList.remove('hidden');
-            document.body.classList.add('overflow-hidden');
-        }
-
-        function closeHistoryPanel() {
-            const modal = document.getElementById('history-modal');
-            if (!modal) return;
-            modal.classList.add('hidden');
-            document.body.classList.remove('overflow-hidden');
-        }
-
-        document.getElementById('close-history-modal')?.addEventListener('click', closeHistoryPanel);
-        document.getElementById('history-modal')?.addEventListener('click', (e) => {
-            if (e.target.id === 'history-modal') closeHistoryPanel();
-        });
-        document.addEventListener('keydown', (e) => {
-            if (e.key === 'Escape' && !document.getElementById('history-modal')?.classList.contains('hidden')) {
-                closeHistoryPanel();
-            }
-        });
-
-        // Image Handling
-        function handleImageUpload(event) {
-            const file = event.target.files[0];
-            if (!file) return;
-
-            const reader = new FileReader();
-            reader.onload = function(e) {
-                currentImageBase64 = e.target.result.split(',')[1]; // Remove header
-                const preview = document.getElementById('image-preview');
-                preview.src = e.target.result;
-                document.getElementById('image-preview-container').classList.remove('hidden');
-            };
-            reader.readAsDataURL(file);
-        }
-
-        function removeImage() {
-            currentImageBase64 = null;
-            document.getElementById('image-preview-container').classList.add('hidden');
-            document.getElementById('image-upload').value = '';
-        }
-
-        // ── Autre IA (n'importe quelle API compatible OpenAI) ─────────────────
-        // Fonctionne avec ChatGPT, Gemini, Hermes 4, OpenRouter, NVIDIA NIM, Ollama,
-        // Kimi (Moonshot), Qwen (DashScope), Groq, DeepSeek, Mistral, Together AI,
-        // ou tout autre fournisseur exposant un endpoint /chat/completions au format OpenAI.
-
-        const CUSTOM_PRESETS = {
-            custom:     { url: '',                                                 model: '' },
-            openai:     { url: 'https://api.openai.com/v1',                        model: 'gpt-4o-mini' },
-            gemini:     { url: 'https://generativelanguage.googleapis.com/v1beta/openai', model: 'gemini-2.0-flash' },
-            hermes:     { url: 'https://openrouter.ai/api/v1',                     model: 'nousresearch/hermes-4-405b' },
-            openrouter: { url: 'https://openrouter.ai/api/v1',                     model: 'qwen/qwen-2.5-72b-instruct' },
-            nvidia:     { url: 'https://freev-nvidia-proxy.trystan-bonnin27.workers.dev/v1', model: 'nvidia/llama-3.1-nemotron-70b-instruct' },
-            ollama:     { url: 'http://localhost:11434/v1',                        model: 'llama3' },
-            lmstudio:   { url: 'http://localhost:1234/v1',                         model: 'local-model' },
-            moonshot:   { url: 'https://api.moonshot.ai/v1',                       model: 'kimi-k2-0711-preview' },
-            dashscope:  { url: 'https://dashscope.aliyuncs.com/compatible-mode/v1', model: 'qwen-plus' },
-            zhipu:      { url: 'https://open.bigmodel.cn/api/paas/v4',             model: 'glm-4-plus' },
-            baichuan:   { url: 'https://api.baichuan-ai.com/v1',                   model: 'Baichuan4' },
-            groq:       { url: 'https://api.groq.com/openai/v1',                   model: 'llama-3.3-70b-versatile' },
-            deepseek:   { url: 'https://api.deepseek.com/v1',                      model: 'deepseek-chat' },
-            mistral:    { url: 'https://api.mistral.ai/v1',                        model: 'mistral-large-latest' },
-            together:   { url: 'https://api.together.xyz/v1',                      model: 'meta-llama/Llama-3.3-70B-Instruct-Turbo' },
-            fireworks:  { url: 'https://api.fireworks.ai/inference/v1',            model: 'accounts/fireworks/models/llama-v3p3-70b-instruct' },
-            cerebras:   { url: 'https://api.cerebras.ai/v1',                       model: 'llama3.3-70b' },
-            xai:        { url: 'https://api.x.ai/v1',                             model: 'grok-3' },
-            perplexity: { url: 'https://api.perplexity.ai',                       model: 'sonar' },
-            cohere:     { url: 'https://api.cohere.ai/compatibility/v1',          model: 'command-r-plus' },
-            novita:     { url: 'https://api.novita.ai/v3/openai',                 model: 'meta-llama/llama-3.3-70b-instruct' },
-            siliconflow:{ url: 'https://api.siliconflow.com/v1',                  model: 'Qwen/Qwen2.5-72B-Instruct' },
-            hyperbolic: { url: 'https://api.hyperbolic.xyz/v1',                   model: 'meta-llama/Llama-3.3-70B-Instruct' },
-            anyscale:   { url: 'https://api.endpoints.anyscale.com/v1',           model: 'meta-llama/Llama-3-70b-chat-hf' }
-        };
-
-        function applyCustomPreset() {
-            const presetKey = document.getElementById('custom-provider-preset').value;
-            const preset = CUSTOM_PRESETS[presetKey];
-            if (!preset) return;
-            if (preset.url)   document.getElementById('custom-base-url').value = preset.url;
-            if (preset.model) document.getElementById('custom-model-name').value = preset.model;
-
-            // Affiche la bibliothèque de modèles locaux uniquement pour Ollama / LM Studio
-            const localLib = document.getElementById('local-model-library');
-            if (presetKey === 'ollama' || presetKey === 'lmstudio') {
-                localLib.classList.remove('hidden');
-            } else {
-                localLib.classList.add('hidden');
-            }
-        }
-
-        function applyLocalModel() {
-            const modelName = document.getElementById('local-model-picker').value;
-            if (!modelName) return;
-            document.getElementById('custom-model-name').value = modelName;
-            const hint = document.getElementById('local-model-cmd-hint');
-            if (hint) hint.textContent = modelName;
-        }
-
-        // ── Bibliothèque de modèles IA : données ────────────────────────────────
-        // Catalogue de référence Freev. Chaque modèle « officiel » peut être installé
-        // avec Ollama ou LM Studio ; les variantes ci-dessous représentent les formats
-        // de téléchargement (quantisations GGUF, formats GPU, Apple Silicon...) les plus
-        // couramment publiés. Tailles et RAM sont des estimations : vérifie toujours la
-        // fiche du dépôt avant de télécharger. Le moteur d'affichage est plus bas dans la page.
-        const MODEL_CATALOG = [
-          // Qwen
-          ['Qwen3.5 0.8B','qwen3.5:0.8b','Qwen','general',0.8,2,'Ultra léger','Assistant multimodal compact.',true,true],
-          ['Qwen3.5 2B','qwen3.5:2b','Qwen','general',1.7,4,'Léger','Très bon point de départ local.',true,true],
-          ['Qwen3.5 4B','qwen3.5:4b','Qwen','vision',3.0,6,'Léger','Texte, image, outils et raisonnement.',true,true],
-          ['Qwen3.5 9B','qwen3.5:9b','Qwen','vision',6.0,10,'Moyen','Multimodal polyvalent.',true,true],
-          ['Qwen3.5 27B','qwen3.5:27b','Qwen','vision',17,24,'Puissant','Pour gros PC avec GPU.',true,true],
-          ['Qwen3 1.7B','qwen3:1.7b','Qwen','reasoning',1.4,4,'Léger','Raisonnement très compact.',true,false],
-          ['Qwen3 4B','qwen3:4b','Qwen','reasoning',2.5,6,'Léger','Bon modèle de réflexion local.',true,false],
-          ['Qwen3 8B','qwen3:8b','Qwen','reasoning',5.2,8,'Moyen','Excellent généraliste moderne.',true,true],
-          ['Qwen3 14B','qwen3:14b','Qwen','reasoning',9.0,16,'Costaud','Raisonnement plus solide.',true,false],
-          ['Qwen3 30B-A3B','qwen3:30b','Qwen','reasoning',19,24,'Puissant','MoE, puissant sans être géant.',true,true],
-          ['Qwen3 32B','qwen3:32b','Qwen','reasoning',20,28,'Puissant','Dense, fort en tâches complexes.',false,false],
-          ['Qwen3 235B-A22B','qwen3:235b','Qwen','reasoning',140,192,'Très gros','Station ou cloud requis.',false,true],
-          ['Qwen3 Coder','qwen3-coder','Qwen','code',18,24,'Puissant','Développement et agents.',true,true],
-          ['Qwen3 Coder Next','qwen3-coder-next','Qwen','code',20,32,'Puissant','Coding agentique local.',true,true],
-          ['Qwen3 VL','qwen3-vl','Qwen','vision',8,12,'Moyen','Analyse visuelle et documents.',true,true],
-          ['Qwen3 Embedding','qwen3-embedding','Qwen','embedding',0.6,2,'Ultra léger','Recherche vectorielle pour RAG.',false,true],
-          // Google / Gemma
-          ['Gemma 3 1B','gemma3:1b','Gemma','general',0.8,2,'Ultra léger','Google, très léger.',true,false],
-          ['Gemma 3 4B','gemma3:4b','Gemma','vision',3.3,6,'Léger','Multimodal et compact.',true,false],
-          ['Gemma 3 12B','gemma3:12b','Gemma','vision',8,16,'Costaud','Bon niveau pour texte et images.',true,false],
-          ['Gemma 3 27B','gemma3:27b','Gemma','vision',17,24,'Puissant','Version haute qualité.',true,false],
-          ['Gemma 4 E2B','gemma4:e2b','Gemma','reasoning',7.2,10,'Moyen','Raisonnement local moderne.',true,true],
-          ['Gemma 4 12B','gemma4:12b','Gemma','vision',8,16,'Costaud','Multimodal avec thinking.',true,true],
-          ['Gemma 4 27B','gemma4:27b','Gemma','vision',17,24,'Puissant','Modèle avancé de Google.',true,true],
-          ['TranslateGemma 4B','translategemma:4b','Gemma','translate',3,6,'Léger','Traduction multilingue.',false,true],
-          ['TranslateGemma 12B','translategemma:12b','Gemma','translate',8,16,'Costaud','Traduction de meilleure qualité.',false,true],
-          // Meta / Llama
-          ['Llama 3.2 1B','llama3.2:1b','Llama','general',1.3,4,'Ultra léger','Rapide pour petits PC.',true,false],
-          ['Llama 3.2 3B','llama3.2:3b','Llama','general',2,6,'Léger','Conversation légère.',true,false],
-          ['Llama 3.1 8B','llama3.1:8b','Llama','general',4.7,8,'Moyen','Valeur sûre locale.',true,false],
-          ['Llama 3.3 70B','llama3.3:70b','Llama','general',40,48,'Très gros','Généraliste 70B.',true,false],
-          ['Llama 4 Scout','llama4:scout','Llama','vision',60,96,'Très gros','MoE multimodal.',true,true],
-          ['Llama 4 Maverick','llama4:maverick','Llama','vision',200,256,'Très gros','Très grande configuration.',false,true],
-          // Microsoft / OpenAI / DeepSeek
-          ['Phi-4 Mini','phi4-mini','Phi','reasoning',2.5,6,'Léger','Microsoft, raisonnement compact.',true,false],
-          ['Phi-4','phi4','Phi','reasoning',8.5,16,'Costaud','Maths et raisonnement.',true,false],
-          ['GPT-OSS 20B','gpt-oss:20b','OpenAI','reasoning',13,20,'Puissant','Raisonnement et tâches agentiques.',true,true],
-          ['GPT-OSS 120B','gpt-oss:120b','OpenAI','reasoning',70,96,'Très gros','Nécessite une grosse machine.',true,true],
-          ['DeepSeek R1 1.5B','deepseek-r1:1.5b','DeepSeek','reasoning',1.1,4,'Ultra léger','Initiation au raisonnement.',true,false],
-          ['DeepSeek R1 7B','deepseek-r1:7b','DeepSeek','reasoning',4.7,8,'Moyen','Raisonnement accessible.',true,false],
-          ['DeepSeek R1 14B','deepseek-r1:14b','DeepSeek','reasoning',9,16,'Costaud','Pour tâches plus complexes.',true,false],
-          ['DeepSeek R1 32B','deepseek-r1:32b','DeepSeek','reasoning',20,28,'Puissant','Très fort, très gourmand.',true,false],
-          ['DeepSeek R1 70B','deepseek-r1:70b','DeepSeek','reasoning',40,48,'Très gros','Gros poste requis.',false,false],
-          ['DeepSeek Coder V2','deepseek-coder-v2','DeepSeek','code',9,16,'Costaud','Spécialisé développement.',true,false],
-          // Mistral / Europe
-          ['Mistral 7B','mistral:7b','Mistral','general',4.1,8,'Moyen','Classique rapide et fiable.',true,false],
-          ['Mistral Nemo 12B','mistral-nemo:12b','Mistral','general',7.1,16,'Costaud','Généraliste moderne.',true,false],
-          ['Mistral Small 3.1','mistral-small3.1','Mistral','vision',14,24,'Puissant','Texte, image et code.',true,true],
-          ['Mixtral 8x7B','mixtral:8x7b','Mistral','general',26,32,'Puissant','MoE reconnu.',true,false],
-          ['Mixtral 8x22B','mixtral:8x22b','Mistral','general',80,128,'Très gros','Grosse station nécessaire.',false,false],
-          ['Codestral','codestral','Mistral','code',13,20,'Puissant','Code et complétion.',true,false],
-          // Autres familles utiles
-          ['GLM-4.7 Flash','glm-4.7-flash','Zhipu','general',5,8,'Moyen','Généraliste rapide.',true,true],
-          ['GLM-5.1','glm-5.1','Zhipu','code',40,64,'Très gros','Agentic engineering.',true,true],
-          ['Command R7B','command-r7b','Cohere','general',5,8,'Moyen','RAG et outils.',false,false],
-          ['Aya Expanse 8B','aya-expanse:8b','Cohere','translate',5,8,'Moyen','Multilingue et traduction.',true,false],
-          ['OLMo 2 7B','olmo2:7b','AI2','general',4.7,8,'Moyen','Open source complet.',false,false],
-          ['OLMo 2 13B','olmo2:13b','AI2','general',8,16,'Costaud','Open science.',false,false],
-          ['SmolLM2 135M','smollm2:135m','Hugging Face','general',0.2,1,'Ultra léger','Tests et appareils modestes.',false,false],
-          ['SmolLM2 1.7B','smollm2:1.7b','Hugging Face','general',1.1,3,'Ultra léger','Petit assistant local.',true,false],
-          ['LFM2 1.2B','lfm2:1.2b','Liquid AI','general',0.9,3,'Ultra léger','Pensé pour l’embarqué.',true,true],
-          ['LFM2 24B-A2B','lfm2:24b','Liquid AI','general',15,24,'Puissant','Hybride efficace.',true,true],
-          ['Falcon3 10B','falcon3:10b','TII','general',6,12,'Moyen','Généraliste open weight.',false,false],
-          ['WizardLM2 7B','wizardlm2:7b','Microsoft','general',4.1,8,'Moyen','Instructions et conversation.',false,false],
-          ['Hermes 3 8B','hermes3:8b','Nous Research','general',4.7,8,'Moyen','Discussion et consignes.',true,false],
-          ['Dolphin 3 8B','dolphin3:8b','Cognitive Computations','general',4.7,8,'Moyen','Assistant communautaire.',false,false],
-          ['Nomic Embed Text','nomic-embed-text','Nomic','embedding',0.3,2,'Ultra léger','Embeddings pour mémoire/RAG.',true,false],
-          ['BGE-M3','bge-m3','BAAI','embedding',1.5,4,'Léger','Embeddings multilingues.',false,false],
-          ['Whisper Small','whisper:small','OpenAI','audio',1,3,'Ultra léger','Transcription locale.',true,false],
-          ['Whisper Large V3','whisper:large-v3','OpenAI','audio',3,8,'Moyen','Transcription haute qualité.',true,false],
-          ['LLaVA 7B','llava:7b','LLaVA','vision',4.7,8,'Moyen','Vision-language classique.',true,false],
-          ['Moondream 2','moondream','Moondream','vision',1.1,3,'Ultra léger','Vision très légère.',true,false],
-          ['MiniCPM-V','minicpm-v','OpenBMB','vision',5,8,'Moyen','Analyse d’images et OCR.',true,false]
-        ].map(([name,model,family,type,sizeGB,ramGB,tag,desc,popular,recent])=>({name,model,family,type,sizeGB,ramGB,tag,desc,popular,recent,variant:'Version officielle / référence',format:'official',isVariant:false}));
-
-        // Formats de téléchargement les plus utiles (fusion des anciennes listes GGUF / GPU / Apple
-        // en une seule sélection curatée, pour éviter des milliers de quasi-doublons peu lisibles).
-        const QUANT_PROFILES = [
-          ['Q2_K','GGUF',0.52,0.58,'Très compact','Qualité réduite, à réserver aux machines limitées.'],
-          ['Q3_K_M','GGUF',0.72,0.76,'Compact','Bon compromis compact.'],
-          ['Q4_0','GGUF',0.82,0.86,'Standard','Quantisation classique légère.'],
-          ['Q4_K_S','GGUF',0.90,0.96,'Standard+','GGUF, compromis taille / qualité.'],
-          ['Q4_K_M','GGUF',0.94,1.00,'Recommandé','Meilleur compromis qualité / mémoire.'],
-          ['Q5_K_M','GGUF',1.08,1.14,'Qualité+','Plus précis, demande davantage de mémoire.'],
-          ['Q6_K','GGUF',1.24,1.30,'Haute qualité','Très bon rendu local.'],
-          ['Q8_0','GGUF',1.56,1.62,'Très haute qualité','Gros fichier, qualité maximale quantifiée.'],
-          ['IQ4_XS','GGUF',0.78,0.84,'i-quant','Quantisation intelligente très compacte, bon ratio mémoire.'],
-          ['AWQ 4-bit','AWQ',0.90,0.98,'GPU optimisé','Format GPU : vérifier la disponibilité du dépôt.'],
-          ['GPTQ 4-bit','GPTQ',0.92,1.00,'GPU optimisé','Format GPU : vérifier la disponibilité du dépôt.'],
-          ['EXL2 4.0 bpw','EXL2',0.82,0.92,'GPU recommandé','Format ExLlamaV2 équilibré, GPU NVIDIA recommandé.'],
-          ['MLX 4-bit','MLX',0.87,0.96,'Apple Silicon','Format MLX pour Mac Apple Silicon.'],
-          ['BF16','BF16',2.00,2.05,'Précision maximale','Poids original, pour très grosse machine.']
-        ];
-        const BASE_MODELS = MODEL_CATALOG.slice();
-        const LOCAL_VARIANT_CATALOG = BASE_MODELS.flatMap((base, baseIndex) => QUANT_PROFILES.map(([quant, format, diskFactor, ramFactor, quality, note], quantIndex) => ({
-          name: `${base.name} · ${quant}`, model: base.model, family: base.family, type: base.type,
-          sizeGB: Math.max(0.1, +(base.sizeGB * diskFactor).toFixed(1)), ramGB: Math.max(1, Math.ceil(base.ramGB * ramFactor)),
-          tag: `${quality} · ${quant}`, desc: `${base.desc} Variante locale ${format} ${quant}. ${note}`,
-          popular: base.popular && ['Q4_K_M','Q5_K_M','Q6_K','Q8_0','MLX 4-bit'].includes(quant), recent: base.recent,
-          variant: `${format} · ${quant} · ${quality}`, format, isVariant: true, baseModelName: base.name,
-          sourceIndex: baseIndex, quantIndex
-        })));
-        MODEL_CATALOG.push(...LOCAL_VARIANT_CATALOG);
-
-        const modelTypeLabels = { general:'Généraliste', reasoning:'Raisonnement', code:'Code', vision:'Vision', embedding:'Embeddings', translate:'Traduction', audio:'Audio' };
-
-        // Exposés pour le moteur d'affichage de la bibliothèque (plus bas dans la page).
-        window.FreevModelCatalog = MODEL_CATALOG;
-        window.FreevModelTypeLabels = modelTypeLabels;
-
-        // ── Gestion de la liste des modèles sauvegardés (switch rapide) ────────
-        const SAVED_MODELS_KEY = 'freev_saved_ai_configs';
-
-        function getSavedModelsList() {
-            try {
-                const raw = localStorage.getItem(SAVED_MODELS_KEY);
-                return raw ? JSON.parse(raw) : [];
-            } catch { return []; }
-        }
-
-        function setSavedModelsList(list) {
-            localStorage.setItem(SAVED_MODELS_KEY, JSON.stringify(list));
-        }
-
-        async function syncSavedModelsListToCloud(list) {
-            if (window.FreevAuthActions?.getCurrentUser?.()) {
-                try { await window.FreevAuthActions.saveAiConfigsList(list); } catch (e) { console.warn('Sync liste modèles échouée', e); }
-            }
-        }
-
-        function upsertSavedModel(config) {
-            const list = getSavedModelsList();
-            const key = (c) => (c.baseUrl || '') + '::' + (c.model || '');
-            const idx = list.findIndex(c => key(c) === key(config));
-            if (idx >= 0) list[idx] = config; else list.push(config);
-            setSavedModelsList(list);
-            syncSavedModelsListToCloud(list);
-            return list;
-        }
-
-        // Migration : si la liste est vide mais qu'une ancienne config "active" existe déjà
-        // (localStorage ou Firestore d'avant l'ajout du switcher), on l'ajoute à la liste.
-        function ensureSavedModelsSeeded() {
-            const list = getSavedModelsList();
-            if (list.length > 0) return list;
-            try {
-                const raw = localStorage.getItem('freev_custom_ai_config');
-                if (raw) {
-                    const config = JSON.parse(raw);
-                    if (config && config.baseUrl && config.model) {
-                        return upsertSavedModel(config);
-                    }
-                }
-            } catch {}
-            return list;
-        }
-
-        function deleteSavedModel(index, event) {
-            event?.stopPropagation();
-            const list = getSavedModelsList();
-            list.splice(index, 1);
-            setSavedModelsList(list);
-            syncSavedModelsListToCloud(list);
-            renderModelSwitcherList();
-        }
-
-        function activateSavedModel(index) {
-            const list = getSavedModelsList();
-            const config = list[index];
-            if (!config) return;
-            localStorage.setItem('freev_custom_ai_config', JSON.stringify(config));
-            if (typeof setAiMode === 'function') setAiMode('custom');
-            loadCustomConfig();
-            const badge = document.getElementById('ai-mode-badge');
-            const header = document.getElementById('chat-header-label');
-            if (badge && header) {
-                badge.innerHTML  = '<i class="fa-solid fa-plug"></i> Autre IA — ' + escapeHtml(config.model);
-                header.innerHTML = '<i class="fa-solid fa-plug text-fuchsia-400"></i> ' + escapeHtml(config.model);
-            }
-            document.getElementById('model-switcher-dropdown')?.classList.add('hidden');
-        }
-
-        function renderModelSwitcherList() {
-            ensureSavedModelsSeeded();
-            const list = getSavedModelsList();
-            const container = document.getElementById('model-switcher-list');
-            if (!container) return;
-            let activeKey = null;
-            try {
-                const active = JSON.parse(localStorage.getItem('freev_custom_ai_config') || 'null');
-                if (active) activeKey = (active.baseUrl || '') + '::' + (active.model || '');
-            } catch {}
-
-            if (!list.length) {
-                container.innerHTML = '<p class="text-xs text-gray-500 p-3">Aucun modèle enregistré pour le moment. Configure une clé API pour en ajouter un.</p>';
-                return;
-            }
-            container.innerHTML = list.map((c, i) => {
-                const key = (c.baseUrl || '') + '::' + (c.model || '');
-                const isActive = key === activeKey;
-                return `
-                <div class="flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-white/5 cursor-pointer ${isActive ? 'bg-fuchsia-500/10 border border-fuchsia-500/30' : ''}" onclick="activateSavedModel(${i})">
-                    <i class="fa-solid ${isActive ? 'fa-circle-check text-fuchsia-400' : 'fa-plug text-gray-500'} text-xs"></i>
-                    <div class="flex-grow min-w-0">
-                        <div class="text-sm text-white truncate">${escapeHtml(c.model)}</div>
-                        <div class="text-xs text-gray-500 truncate">${escapeHtml(c.baseUrl)}</div>
-                    </div>
-                    <button class="text-gray-600 hover:text-red-400 px-1" onclick="deleteSavedModel(${i}, event)" title="Supprimer">
-                        <i class="fa-solid fa-trash text-xs"></i>
-                    </button>
-                </div>`;
-            }).join('');
-        }
-
-        function toggleModelSwitcher() {
-            const dropdown = document.getElementById('model-switcher-dropdown');
-            if (!dropdown) return;
-            const willShow = dropdown.classList.contains('hidden');
-            if (willShow) renderModelSwitcherList();
-            dropdown.classList.toggle('hidden', !willShow);
-        }
-
-        document.addEventListener('click', (e) => {
-            const dropdown = document.getElementById('model-switcher-dropdown');
-            const btn = document.getElementById('switch-model-btn');
-            if (!dropdown || dropdown.classList.contains('hidden')) return;
-            if (!dropdown.contains(e.target) && !btn?.contains(e.target)) {
-                dropdown.classList.add('hidden');
-            }
-        });
-
-        async function saveCustomConfig() {
-            const config = {
-                preset:  document.getElementById('custom-provider-preset').value,
-                baseUrl: document.getElementById('custom-base-url').value.trim().replace(/\/$/, ''),
-                model:   document.getElementById('custom-model-name').value.trim(),
-                apiKey:  document.getElementById('custom-api-key').value.trim()
-            };
-            if (!config.baseUrl || !config.model) {
-                alert("Merci de renseigner au minimum l'URL de base et le nom du modèle.");
-                return;
-            }
-            localStorage.setItem('freev_custom_ai_config', JSON.stringify(config));
-            upsertSavedModel(config);
-
-            let cloudSynced = false;
-            if (window.FreevAuthActions?.getCurrentUser?.()) {
-                try {
-                    await window.FreevAuthActions.saveAiConfig(config);
-                    cloudSynced = true;
-                } catch (e) {
-                    console.warn('Sync cloud config échouée', e);
-                }
-            }
-
-            alert(cloudSynced
-                ? "Configuration enregistrée et synchronisée avec votre profil Freev."
-                : "Configuration enregistrée sur cet appareil. Connectez-vous à votre profil Freev pour la synchroniser sur tous vos appareils.");
-
-            document.getElementById('api-settings-custom').classList.add('hidden');
-            const badge = document.getElementById('ai-mode-badge');
-            const header = document.getElementById('chat-header-label');
-            if (currentAiMode === 'custom') {
-                badge.innerHTML  = '<i class="fa-solid fa-plug"></i> Autre IA — ' + escapeHtml(config.model);
-                header.innerHTML = '<i class="fa-solid fa-plug text-fuchsia-400"></i> ' + escapeHtml(config.model);
-            }
-        }
-
-        function loadCustomConfig() {
-            const raw = localStorage.getItem('freev_custom_ai_config');
-            if (!raw) return;
-            try {
-                const config = JSON.parse(raw);
-                document.getElementById('custom-provider-preset').value = config.preset || 'custom';
-                document.getElementById('custom-base-url').value = config.baseUrl || '';
-                document.getElementById('custom-model-name').value = config.model || '';
-                document.getElementById('custom-api-key').value = config.apiKey || '';
-                const localLib = document.getElementById('local-model-library');
-                if (config.preset === 'ollama' || config.preset === 'lmstudio') {
-                    localLib.classList.remove('hidden');
-                } else {
-                    localLib.classList.add('hidden');
-                }
-            } catch { /* config corrompue, on ignore */ }
-        }
-
-        // Appelée automatiquement dès que Firebase détecte une connexion (login, ou session déjà active au chargement).
-        // Récupère la config IA sauvegardée sur le profil et la fait passer avant celle en localStorage.
-        window.syncAiConfigFromCloud = async function () {
-            if (!window.FreevAuthActions?.loadAiConfig) return;
-            try {
-                const cloudConfig = await window.FreevAuthActions.loadAiConfig();
-                if (cloudConfig && cloudConfig.baseUrl && cloudConfig.model) {
-                    localStorage.setItem('freev_custom_ai_config', JSON.stringify(cloudConfig));
-                    loadCustomConfig();
-                    const badge = document.getElementById('ai-mode-badge');
-                    const header = document.getElementById('chat-header-label');
-                    if (typeof currentAiMode !== 'undefined' && currentAiMode === 'custom' && badge && header) {
-                        badge.innerHTML  = '<i class="fa-solid fa-plug"></i> Autre IA — ' + escapeHtml(cloudConfig.model);
-                        header.innerHTML = '<i class="fa-solid fa-plug text-fuchsia-400"></i> ' + escapeHtml(cloudConfig.model);
-                    }
-                }
-                const cloudList = await window.FreevAuthActions.loadAiConfigsList?.();
-                if (Array.isArray(cloudList) && cloudList.length > 0) {
-                    setSavedModelsList(cloudList);
-                } else {
-                    // Pas encore de liste sur ce profil : on migre l'ancienne config unique si elle existe.
-                    ensureSavedModelsSeeded();
-                }
-                renderModelSwitcherList();
-            } catch (e) {
-                console.warn('Chargement config IA depuis le profil échoué', e);
-            }
-        };
-
-        async function generateCustom() {
-            const input  = document.getElementById('ai-input');
-            const output = document.getElementById('ai-output');
-            const prompt = input.value.trim();
-            const raw    = localStorage.getItem('freev_custom_ai_config');
-
-            if (!prompt && !currentImageBase64) return;
-            if (!raw) {
-                output.innerHTML += `<div class="mt-4 text-red-400 p-2 bg-red-900/20 rounded border border-red-500/30"><i class="fa-solid fa-triangle-exclamation"></i> Erreur: Aucun fournisseur configuré. Cliquez sur "Configurer Clé API" ci-dessus et renseignez l'URL + le modèle.</div>`;
-                output.scrollTop = output.scrollHeight;
-                return;
-            }
-            const config = JSON.parse(raw);
-            if (!config.baseUrl || !config.model) {
-                output.innerHTML += `<div class="mt-4 text-red-400 p-2 bg-red-900/20 rounded border border-red-500/30"><i class="fa-solid fa-triangle-exclamation"></i> Erreur: URL de base ou modèle manquant dans la configuration.</div>`;
-                output.scrollTop = output.scrollHeight;
-                return;
-            }
-
-            // Message utilisateur
-            let userHtml = `<div class="mt-4 text-white p-3 bg-white/5 rounded-lg border border-white/5"><span class="text-brand-secondary font-bold">Vous:</span> ${escapeHtml(prompt)}`;
-            if (currentImageBase64) userHtml += `<br><span class="text-xs text-gray-400 italic">[Image jointe]</span>`;
-            userHtml += `</div>`;
-            output.innerHTML += userHtml;
-            input.value = '';
-            output.scrollTop = output.scrollHeight;
-
-            const loadingId = 'loading-' + Date.now();
-            output.innerHTML += `<div id="${loadingId}" class="mt-2 text-gray-500 italic flex items-center gap-2"><i class="fa-solid fa-circle-notch fa-spin text-fuchsia-400"></i> ${escapeHtml(config.model)} réfléchit...</div>`;
-            output.scrollTop = output.scrollHeight;
-
-            // Contenu utilisateur au format OpenAI (texte + image en vision si fournie)
-            let userContent;
-            if (currentImageBase64) {
-                userContent = [{ type: 'text', text: prompt || 'Décris cette image.' }];
-                userContent.push({ type: 'image_url', image_url: { url: `data:image/jpeg;base64,${currentImageBase64}` } });
-            } else {
-                userContent = prompt;
-            }
-
-            const payload = {
-                model: config.model,
-                messages: [{ role: 'user', content: userContent }],
-                stream: true
-            };
-
-            const headers = { 'Content-Type': 'application/json' };
-            if (config.apiKey) headers['Authorization'] = 'Bearer ' + config.apiKey;
-
-            try {
-                const response = await fetch(`${config.baseUrl}/chat/completions`, {
-                    method: 'POST',
-                    headers,
-                    body: JSON.stringify(payload)
-                });
-
-                if (!response.ok) {
-                    let msg = 'Erreur API ' + response.status;
-                    try { const err = await response.json(); msg = err.error?.message || err.message || msg; } catch {}
-                    throw new Error(msg);
-                }
-
-                document.getElementById(loadingId)?.remove();
-                removeImage();
-
-                const responseDiv = document.createElement('div');
-                responseDiv.className = "mt-4 text-gray-200 border-l-2 border-fuchsia-400 pl-4 py-1";
-                responseDiv.innerHTML = `<span class="text-fuchsia-400 font-bold text-sm mb-1 block"><i class="fa-solid fa-plug mr-1"></i>${escapeHtml(config.model)} :</span><span class="ai-stream-content"></span>`;
-                output.appendChild(responseDiv);
-                const streamTarget = responseDiv.querySelector('.ai-stream-content');
-                output.scrollTop = output.scrollHeight;
-
-                // Si le fournisseur ne supporte pas le streaming (réponse JSON classique), on gère aussi ce cas
-                const contentType = response.headers.get('content-type') || '';
-                let aiResponseText = '';
-
-                if (contentType.includes('application/json') && !contentType.includes('event-stream')) {
-                    const data = await response.json();
-                    aiResponseText = data.choices?.[0]?.message?.content || '(réponse vide)';
-                    streamTarget.innerHTML = marked.parse(escapeHtml(aiResponseText));
-                } else {
-                    const reader = response.body.getReader();
-                    const decoder = new TextDecoder();
-                    let buffer = '';
-
-                    while (true) {
-                        const { done, value } = await reader.read();
-                        if (done) break;
-                        buffer += decoder.decode(value, { stream: true });
-                        const lines = buffer.split('\n');
-                        buffer = lines.pop(); // garde la ligne incomplète pour le prochain chunk
-
-                        for (const line of lines) {
-                            const trimmed = line.trim();
-                            if (!trimmed.startsWith('data:')) continue;
-                            const dataStr = trimmed.slice(5).trim();
-                            if (dataStr === '[DONE]') continue;
-                            try {
-                                const json = JSON.parse(dataStr);
-                                const delta = json.choices?.[0]?.delta?.content || json.choices?.[0]?.message?.content || '';
-                                if (delta) {
-                                    aiResponseText += delta;
-                                    streamTarget.innerHTML = marked.parse(escapeHtml(aiResponseText));
-                                    output.scrollTop = output.scrollHeight;
-                                }
-                            } catch (e) { /* chunk partiel ou non-JSON, on ignore */ }
-                        }
-                    }
-                    if (!aiResponseText) streamTarget.innerHTML = '(réponse vide)';
-                }
-
-                output.scrollTop = output.scrollHeight;
-
-                saveChatHistoryEntry({ mode: 'custom', model: config.model, question: prompt, response: aiResponseText || '' });
-
+                clearTimeout(timer);
+                if (!response.ok) throw new Error('HTTP ' + response.status);
+                const status = await response.json();
+                const isPublicV7 = status.ok && String(status.version || '').startsWith('7')
+                    && status.mode === 'conversation-texte'
+                    && status.ollama === false
+                    && status.code_mode === false;
+                if (!isPublicV7) throw new Error('service V7 public non vérifié');
+                freevV7State.online = true;
+                setFreevV7Status('En ligne', 'ok');
             } catch (error) {
-                document.getElementById(loadingId)?.remove();
-                output.innerHTML += `<div class="mt-2 text-red-400 p-2 bg-red-900/20 rounded text-sm">Erreur (${escapeHtml(config.model)}): ${escapeHtml(error.message)}</div>`;
-                output.scrollTop = output.scrollHeight;
+                freevV7State.online = false;
+                setFreevV7Status('Migration V7 en cours', 'error');
             }
         }
 
-        // Enter key → sendMessage()
-        document.getElementById('ai-input').addEventListener('keydown', (e) => {
-            if (e.key === 'Enter' && !e.shiftKey) {
-                e.preventDefault();
-                sendMessage();
+        async function sendFreevV7Message(message) {
+            const prompt = String(message || '').trim();
+            if (!prompt || freevV7State.sending || !freevV7State.online) return;
+            appendFreevV7Message('user', prompt);
+            const waiting = appendFreevV7Message('assistant', 'Je réfléchis avec ma base V7…');
+            freevV7State.sending = true;
+            setFreevV7Status('Réponse en cours…', 'wait');
+            try {
+                const controller = new AbortController();
+                const timer = setTimeout(() => controller.abort(), 45000);
+                const response = await fetch(FREEV_V7_SERVER + '/api/chat', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
+                    body: JSON.stringify({ message: prompt }),
+                    signal: controller.signal
+                });
+                clearTimeout(timer);
+                const data = await response.json().catch(() => ({}));
+                if (!response.ok || !data.ok || data.version !== '7.0') {
+                    throw new Error(data.error || 'réponse V7 invalide');
+                }
+                waiting.querySelector('p:last-child').textContent = data.response || 'Réponse vide.';
+                freevV7State.online = true;
+                setFreevV7Status('En ligne', 'ok');
+            } catch (error) {
+                waiting.querySelector('p:last-child').textContent = 'Freev V7 est momentanément indisponible. Réessaie dans quelques instants.';
+                freevV7State.online = false;
+                setFreevV7Status('Indisponible', 'error');
+            } finally {
+                freevV7State.sending = false;
+                const send = document.getElementById('freev-v7-send');
+                if (send) send.disabled = !freevV7State.online;
+            }
+        }
+
+        const freevV7Form = document.getElementById('freev-v7-form');
+        const freevV7Input = document.getElementById('freev-v7-input');
+        freevV7Form?.addEventListener('submit', (event) => {
+            event.preventDefault();
+            const prompt = freevV7Input?.value || '';
+            if (freevV7Input) freevV7Input.value = '';
+            sendFreevV7Message(prompt);
+        });
+        freevV7Input?.addEventListener('keydown', (event) => {
+            if (event.key === 'Enter' && !event.shiftKey) {
+                event.preventDefault();
+                freevV7Form?.requestSubmit();
             }
         });
-
+        checkFreevV7();
     </script>
 <script>
       (() => {
@@ -4519,730 +3485,7 @@
     bindFallback();
   })();
 </script>
-<!-- Bibliothèque de modèles IA : moteur unique (recherche, filtres, runtime, installation, détection locale) -->
-<script id="freev-model-library-engine">
-(function () {
-  'use strict';
-  if (window.__freevModelLibraryEngineLoaded) return;
-  window.__freevModelLibraryEngineLoaded = true;
 
-  var CATALOG = window.FreevModelCatalog || [];
-  var TYPE_LABELS = window.FreevModelTypeLabels || {};
-  var BASE_MODELS = CATALOG.filter(function (m) { return !m.isVariant; });
-  var esc = function (v) { return (typeof escapeHtml === 'function') ? escapeHtml(String(v == null ? '' : v)) : String(v == null ? '' : v); };
-  var $ = function (id) { return document.getElementById(id); };
-
-  var PAGE_SIZE = 24;
-  var FAVORITES_KEY = 'freev_library_favorites_v2';
-  var RUNTIME_KEY = 'freev_library_runtime_v2';
-  var INSTALLED_RUNTIME_KEY = 'freev_local_runtime_v2';
-
-  var ACTIVE_TAB = 'px-4 py-2 rounded-full text-xs sm:text-sm font-bold bg-gradient-to-r from-fuchsia-500 to-purple-600 text-white';
-  var IDLE_TAB = 'px-4 py-2 rounded-full text-xs sm:text-sm font-bold bg-slate-800 text-gray-400 hover:text-white border border-white/10';
-  var ACTIVE_PILL = 'px-3 py-1.5 rounded-full font-bold bg-fuchsia-500 text-white';
-  var IDLE_PILL = 'px-3 py-1.5 rounded-full font-bold bg-slate-800 text-gray-400 hover:text-white border border-white/10';
-
-  function loadFavorites() {
-    try {
-      var raw = JSON.parse(localStorage.getItem(FAVORITES_KEY) || '[]');
-      return new Set(Array.isArray(raw) ? raw : []);
-    } catch (e) { return new Set(); }
-  }
-  function saveFavorites() {
-    try { localStorage.setItem(FAVORITES_KEY, JSON.stringify(Array.from(state.favorites))); } catch (e) {}
-  }
-
-  var state = {
-    runtime: (function () { try { return localStorage.getItem(RUNTIME_KEY) === 'lmstudio' ? 'lmstudio' : 'ollama'; } catch (e) { return 'ollama'; } })(),
-    installRuntime: 'ollama',
-    tab: 'recommended',
-    page: 1,
-    favorites: loadFavorites(),
-    deviceSpecs: null,
-    installIndex: null,
-    installedRuntime: (function () { try { return localStorage.getItem(INSTALLED_RUNTIME_KEY) === 'lmstudio' ? 'lmstudio' : 'ollama'; } catch (e) { return 'ollama'; } })(),
-    installedModels: { ollama: [], lmstudio: [] },
-    installedRequestId: 0,
-    installedController: null,
-    lastFocused: null,
-    searchDebounce: null
-  };
-
-  function catalogModel(idx) { return CATALOG[idx]; }
-
-  // ── Détection appareil ────────────────────────────────────────────────
-  function detectDevice() {
-    if (state.deviceSpecs) return state.deviceSpecs;
-    var cores = navigator.hardwareConcurrency || null;
-    var ramGB = navigator.deviceMemory || null;
-    var gpuRenderer = null;
-    try {
-      var c = document.createElement('canvas');
-      var gl = c.getContext('webgl') || c.getContext('experimental-webgl');
-      if (gl) { var d = gl.getExtension('WEBGL_debug_renderer_info'); if (d) gpuRenderer = gl.getParameter(d.UNMASKED_RENDERER_WEBGL); }
-    } catch (e) {}
-    state.deviceSpecs = { cores: cores, ramGB: ramGB, gpuRenderer: gpuRenderer, isMobile: /Mobi|Android|iPhone|iPad/i.test(navigator.userAgent) };
-    return state.deviceSpecs;
-  }
-
-  function renderDeviceBanner() {
-    var el = $('device-info-banner'); if (!el) return;
-    var s = detectDevice();
-    var ramText = s.ramGB ? (s.ramGB + ' Go' + (s.ramGB >= 8 ? ' ou plus (limite navigateur)' : ' de RAM détectée')) : 'RAM non détectable';
-    el.innerHTML = '<div class="flex flex-wrap gap-x-4 gap-y-1">' +
-      '<span><i class="fa-solid fa-microchip mr-1 text-fuchsia-400"></i>' + (s.cores ? s.cores + ' cœurs CPU' : 'CPU non détecté') + '</span>' +
-      '<span><i class="fa-solid fa-memory mr-1 text-fuchsia-400"></i>' + ramText + '</span>' +
-      '<span><i class="fa-solid fa-display mr-1 text-fuchsia-400"></i>' + (s.gpuRenderer ? esc(s.gpuRenderer) : 'GPU non détecté') + '</span>' +
-      '</div>' + (s.isMobile ? '<p class="text-yellow-400 mt-1">Mobile détecté : préfère les modèles très légers ou l’IA en ligne.</p>' : '');
-  }
-
-  function recommendedModels() {
-    var s = detectDevice();
-    var cap = s.isMobile ? 4 : (s.ramGB ? (s.ramGB >= 8 ? 16 : s.ramGB * 2) : 8);
-    return CATALOG.filter(function (m) { return m.ramGB <= cap && (!m.isVariant || /Q4_K_M|Q5_K_M|Q6_K|Q8_0|MLX 4-bit/.test(m.variant || '')); })
-      .sort(function (a, b) { return b.ramGB - a.ramGB; }).slice(0, 30);
-  }
-
-  // ── Recherche intelligente & filtres ─────────────────────────────────────
-  function normalize(v) { return String(v || '').normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase(); }
-
-  function parseSmartSearch(raw) {
-    var q = normalize(raw).trim();
-    var tokens = q.match(/(?:[^\s"]+|"[^"]*")+/g) || [];
-    var rules = { terms: [], family: null, type: null, quant: null, ramMax: null, ramMin: null, size: null };
-    tokens.forEach(function (t) {
-      var token = t.replace(/^"|"$/g, '');
-      var parts = token.split(':');
-      var key = parts[0], value = parts.slice(1).join(':');
-      if (value && (key === 'famille' || key === 'family')) { rules.family = normalize(value); return; }
-      if (value && (key === 'type' || key === 'usage')) { rules.type = normalize(value); return; }
-      if (value && (key === 'quant' || key === 'format')) { rules.quant = normalize(value); return; }
-      if (value && (key === 'taille' || key === 'size')) { rules.size = normalize(value); return; }
-      var cmp = token.match(/^ram\s*(<=|>=|<|>)\s*(\d+(?:[.,]\d+)?)$/i);
-      if (cmp) { var n = Number(cmp[2].replace(',', '.')); if (cmp[1].indexOf('<') !== -1) rules.ramMax = n; else rules.ramMin = n; return; }
-      rules.terms.push(normalize(token));
-    });
-    return rules;
-  }
-
-  function modelFormat(m) { return m.isVariant ? (m.format || 'GGUF') : 'official'; }
-  function sizeBucket(m) { return m.ramGB <= 4 ? 'tiny' : m.ramGB <= 8 ? 'small' : m.ramGB <= 16 ? 'medium' : 'large'; }
-  function haystack(m) { return normalize(m.name + ' ' + m.model + ' ' + m.family + ' ' + m.type + ' ' + m.desc + ' ' + m.tag + ' ' + (m.variant || '')); }
-
-  function matchesModel(m, rules, filters) {
-    if (filters.family !== 'all' && m.family !== filters.family) return false;
-    if (filters.type !== 'all' && m.type !== filters.type) return false;
-    if (filters.quant !== 'all' && modelFormat(m) !== filters.quant) return false;
-    if (filters.size !== 'all' && sizeBucket(m) !== filters.size) return false;
-    var hay = haystack(m);
-    if (rules.family && normalize(m.family).indexOf(rules.family) === -1) return false;
-    if (rules.type) {
-      var typeLabel = normalize(TYPE_LABELS[m.type] || '');
-      if ((normalize(m.type) + ' ' + typeLabel).indexOf(rules.type) === -1) return false;
-    }
-    if (rules.quant && (normalize(modelFormat(m)) + ' ' + hay).indexOf(rules.quant) === -1) return false;
-    if (rules.size && normalize(sizeBucket(m)).indexOf(rules.size) === -1 && normalize(m.tag).indexOf(rules.size) === -1) return false;
-    if (rules.ramMax !== null && m.ramGB > rules.ramMax) return false;
-    if (rules.ramMin !== null && m.ramGB < rules.ramMin) return false;
-    return rules.terms.every(function (t) { return hay.indexOf(t) !== -1; });
-  }
-
-  function scoreModel(m, rules) {
-    var hay = haystack(m);
-    var score = 0;
-    rules.terms.forEach(function (t) {
-      if (hay.indexOf(t) !== -1) score += 10;
-      if (normalize(m.name).indexOf(t) === 0) score += 8;
-      if (normalize(m.family) === t) score += 12;
-    });
-    return score + (m.popular ? 2 : 0) + (m.recent ? 1 : 0);
-  }
-
-  function sortModels(list, sort, rules) {
-    return list.sort(function (a, b) {
-      if (sort === 'ramAsc') return a.ramGB - b.ramGB || a.name.localeCompare(b.name);
-      if (sort === 'ramDesc') return b.ramGB - a.ramGB || a.name.localeCompare(b.name);
-      if (sort === 'diskAsc') return a.sizeGB - b.sizeGB || a.name.localeCompare(b.name);
-      if (sort === 'name') return a.name.localeCompare(b.name, 'fr');
-      if (sort === 'family') return a.family.localeCompare(b.family, 'fr') || a.name.localeCompare(b.name, 'fr');
-      return scoreModel(b, rules) - scoreModel(a, rules) || a.ramGB - b.ramGB || a.name.localeCompare(b.name, 'fr');
-    });
-  }
-
-  function currentFilters() {
-    return {
-      family: ($('model-library-family') || {}).value || 'all',
-      type: ($('model-library-type') || {}).value || 'all',
-      quant: ($('model-library-quant') || {}).value || 'all',
-      size: ($('model-library-size') || {}).value || 'all',
-      sort: ($('model-library-sort') || {}).value || 'relevance'
-    };
-  }
-
-  function modelsForTab() {
-    if (state.tab === 'recommended') return recommendedModels();
-    if (state.tab === 'popular') return CATALOG.filter(function (m) { return m.popular; });
-    if (state.tab === 'recent') return CATALOG.filter(function (m) { return m.recent; });
-    if (state.tab === 'favorites') return CATALOG.filter(function (m, i) { return state.favorites.has(i); });
-    return CATALOG;
-  }
-
-  function populateFamilyFilter() {
-    var select = $('model-library-family');
-    if (!select || select.dataset.ready) return;
-    var families = Array.from(new Set(BASE_MODELS.map(function (m) { return m.family; }))).sort(function (a, b) { return a.localeCompare(b, 'fr'); });
-    families.forEach(function (f) { select.insertAdjacentHTML('beforeend', '<option value="' + esc(f) + '">' + esc(f) + '</option>'); });
-    select.dataset.ready = '1';
-  }
-
-  // ── Commandes selon le runtime sélectionné ───────────────────────────────
-  function commandFor(m, runtime) {
-    if (runtime === 'lmstudio') return 'lms get "' + String(m.baseModelName || m.name).replace(/"/g, '') + '"';
-    return 'ollama pull ' + m.model;
-  }
-  function commandLabel(runtime) { return runtime === 'lmstudio' ? 'COMMANDE LM STUDIO' : 'COMMANDE OLLAMA'; }
-  function linkFor(m, runtime) {
-    if (runtime === 'ollama' && !m.isVariant) return 'https://ollama.com/library/' + encodeURIComponent(String(m.model).split(':')[0].toLowerCase());
-    return 'https://huggingface.co/models?search=' + encodeURIComponent(m.baseModelName || m.name);
-  }
-  function linkLabel(m, runtime) { return (runtime === 'ollama' && !m.isVariant) ? 'Voir la fiche Ollama' : 'Rechercher sur Hugging Face'; }
-
-  var FORMAT_BADGE = {
-    official: 'bg-emerald-500/10 text-emerald-200 border-emerald-500/20',
-    GGUF: 'bg-cyan-500/10 text-cyan-200 border-cyan-500/20',
-    AWQ: 'bg-amber-500/10 text-amber-200 border-amber-500/20',
-    GPTQ: 'bg-orange-500/10 text-orange-200 border-orange-500/20',
-    EXL2: 'bg-indigo-500/10 text-indigo-200 border-indigo-500/20',
-    MLX: 'bg-purple-500/10 text-purple-200 border-purple-500/20',
-    BF16: 'bg-rose-500/10 text-rose-200 border-rose-500/20'
-  };
-
-  function card(m, idx) {
-    var official = !m.isVariant;
-    var format = modelFormat(m);
-    var isFav = state.favorites.has(idx);
-    var command = commandFor(m, state.runtime);
-    var link = linkFor(m, state.runtime);
-    var badgeColor = FORMAT_BADGE[format] || 'bg-white/5 text-gray-300 border-white/10';
-    return (
-      '<article class="p-4 bg-slate-800/70 rounded-xl border border-white/10 hover:border-fuchsia-400/50 transition-all flex flex-col shadow-lg shadow-black/10">' +
-        '<div class="flex justify-between gap-2">' +
-          '<div class="min-w-0"><p class="text-[10px] uppercase tracking-wider text-fuchsia-300">' + esc(m.family) + ' · ' + esc(TYPE_LABELS[m.type] || m.type) + '</p>' +
-          '<h4 class="font-bold text-white text-sm mt-0.5 truncate" title="' + esc(m.name) + '">' + esc(m.name) + '</h4></div>' +
-          '<button type="button" data-action="favorite" data-index="' + idx + '" title="' + (isFav ? 'Retirer des favoris' : 'Ajouter aux favoris') + '" class="shrink-0 h-7 w-7 rounded-full flex items-center justify-center ' + (isFav ? 'text-amber-300' : 'text-gray-500 hover:text-amber-200') + '"><i class="fa-solid fa-star"></i></button>' +
-        '</div>' +
-        '<div class="mt-2 flex gap-1 flex-wrap">' +
-          '<span class="text-[9px] px-1.5 py-0.5 rounded border ' + badgeColor + '">' + esc(official ? 'OFFICIEL' : format) + '</span>' +
-          (m.popular ? '<span class="text-[9px] px-1.5 py-0.5 rounded bg-orange-400/10 text-orange-200">POPULAIRE</span>' : '') +
-          (m.recent ? '<span class="text-[9px] px-1.5 py-0.5 rounded bg-cyan-400/10 text-cyan-200">NOUVEAU</span>' : '') +
-        '</div>' +
-        '<div class="mt-2 rounded-lg border border-cyan-400/10 bg-black/20 px-2 py-1.5">' +
-          '<p class="text-[9px] text-gray-500 mb-0.5">' + commandLabel(state.runtime) + '</p>' +
-          '<code class="block text-[11px] text-cyan-300 overflow-x-auto">' + esc(command) + '</code>' +
-        '</div>' +
-        (m.isVariant ? '<p class="mt-1 text-[10px] text-amber-300"><i class="fa-solid fa-cube mr-1"></i>' + esc(m.variant) + '</p>' : '') +
-        '<p class="text-xs text-gray-400 flex-grow mt-2 mb-3 line-clamp-3">' + esc(m.desc) + '</p>' +
-        '<div class="flex items-center gap-3 text-[10px] text-gray-500 mb-3">' +
-          '<span><i class="fa-solid fa-hard-drive mr-1"></i>~' + m.sizeGB + ' Go</span>' +
-          '<span><i class="fa-solid fa-memory mr-1"></i>~' + m.ramGB + ' Go RAM</span>' +
-        '</div>' +
-        '<div class="grid grid-cols-2 gap-2 mt-auto">' +
-          '<button type="button" data-action="install" data-index="' + idx + '" class="px-3 py-2 bg-fuchsia-500 hover:bg-fuchsia-400 rounded-lg text-xs font-bold text-white transition-all"><i class="fa-solid fa-download mr-1"></i> Installer</button>' +
-          '<button type="button" data-action="use" data-index="' + idx + '" class="px-3 py-2 bg-white/5 hover:bg-white/10 border border-white/10 rounded-lg text-xs font-bold text-gray-200 transition-all"><i class="fa-solid fa-sliders mr-1"></i> Configurer</button>' +
-        '</div>' +
-        '<a href="' + esc(link) + '" target="_blank" rel="noopener noreferrer" class="mt-2 text-center text-[10px] text-fuchsia-300 hover:text-fuchsia-200"><i class="fa-solid fa-arrow-up-right-from-square mr-1"></i>' + esc(linkLabel(m, state.runtime)) + '</a>' +
-      '</article>'
-    );
-  }
-
-  function render() {
-    var grid = $('model-explorer-grid'); if (!grid) return;
-    var searchInput = $('model-library-search');
-    var raw = searchInput ? searchInput.value : '';
-    var rules = parseSmartSearch(raw);
-    var filters = currentFilters();
-    var list = modelsForTab().filter(function (m) { return matchesModel(m, rules, filters); });
-    list = sortModels(list, filters.sort, rules);
-    var total = list.length;
-    var totalPages = Math.max(1, Math.ceil(total / PAGE_SIZE));
-    if (state.page > totalPages) state.page = totalPages;
-    var start = (state.page - 1) * PAGE_SIZE;
-    var visible = list.slice(start, start + PAGE_SIZE);
-
-    var countEl = $('model-library-count');
-    if (countEl) countEl.textContent = total.toLocaleString('fr-FR') + ' résultat' + (total > 1 ? 's' : '') + ' · ' + CATALOG.length.toLocaleString('fr-FR') + ' configurations consultables';
-    var pageInfo = $('model-library-page-info');
-    if (pageInfo) pageInfo.textContent = total ? ('Résultats ' + (start + 1) + '–' + Math.min(start + PAGE_SIZE, total) + ' sur ' + total.toLocaleString('fr-FR') + ' · page ' + state.page + '/' + totalPages) : 'Aucun résultat';
-    var prev = $('model-page-prev'), next = $('model-page-next');
-    if (prev) prev.disabled = state.page <= 1 || !total;
-    if (next) next.disabled = state.page >= totalPages || !total;
-
-    if (!total) {
-      var emptyHint = state.tab === 'favorites'
-        ? 'Aucun favori pour le moment. Clique sur l’étoile d’un modèle pour l’ajouter ici.'
-        : 'Aucun modèle avec ces filtres. Essaie <strong class="text-fuchsia-300">famille:qwen</strong>, <strong class="text-fuchsia-300">type:code</strong>, <strong class="text-fuchsia-300">ram&lt;=8</strong>, ou réinitialise les filtres.';
-      grid.innerHTML = '<p class="text-gray-500 text-sm col-span-full rounded-xl border border-white/10 bg-slate-800/40 p-5">' + emptyHint + '</p>';
-      return;
-    }
-    grid.innerHTML = visible.map(function (m) { return card(m, CATALOG.indexOf(m)); }).join('');
-  }
-
-  // ── Suggestions de recherche ──────────────────────────────────────────
-  function searchSuggestions(raw) {
-    if (!raw || !raw.trim()) return [];
-    var rules = parseSmartSearch(raw);
-    var seen = {}, out = [];
-    BASE_MODELS.forEach(function (m) {
-      var h = normalize(m.name + ' ' + m.family + ' ' + m.type);
-      var matches = (rules.terms.length && rules.terms.every(function (t) { return h.indexOf(t) !== -1; })) ||
-        normalize(m.family).indexOf(normalize(raw)) !== -1 || normalize(m.name).indexOf(normalize(raw)) !== -1;
-      if (matches) {
-        var label = m.name + ' · ' + m.family;
-        if (!seen[label]) { seen[label] = true; out.push({ label: label, value: 'famille:' + m.family, hint: 'Filtrer la famille ' + m.family }); }
-      }
-    });
-    ['general', 'reasoning', 'code', 'vision', 'embedding', 'translate', 'audio'].forEach(function (type) {
-      var label = TYPE_LABELS[type];
-      if (normalize(label).indexOf(normalize(raw)) !== -1 || normalize(type).indexOf(normalize(raw)) !== -1) {
-        out.push({ label: 'Usage : ' + label, value: 'type:' + type, hint: 'Filtrer par usage' });
-      }
-    });
-    ['Q4_K_M', 'Q5_K_M', 'Q6_K', 'Q8_0', 'AWQ', 'GPTQ', 'EXL2', 'MLX'].forEach(function (q) {
-      if (normalize(q).indexOf(normalize(raw)) !== -1) out.push({ label: 'Format : ' + q, value: 'quant:' + q, hint: 'Filtrer les formats' });
-    });
-    return out.slice(0, 8);
-  }
-
-  function renderSuggestions() {
-    var input = $('model-library-search'), box = $('model-search-suggestions');
-    if (!input || !box) return;
-    var suggestions = searchSuggestions(input.value);
-    if (!suggestions.length) { box.classList.add('hidden'); box.innerHTML = ''; return; }
-    box.innerHTML = suggestions.map(function (s) {
-      return '<button type="button" data-suggestion="' + esc(s.value) + '" class="w-full text-left px-3 py-2 rounded-lg hover:bg-white/10 flex items-center justify-between gap-3"><span class="text-xs text-white">' + esc(s.label) + '</span><span class="text-[10px] text-gray-500">' + esc(s.hint) + '</span></button>';
-    }).join('');
-    box.classList.remove('hidden');
-  }
-
-  // ── Copie presse-papiers (avec repli) ────────────────────────────────────
-  function copyText(text, btn) {
-    function done() {
-      if (!btn) return;
-      var original = btn.dataset.originalHtml || btn.innerHTML;
-      btn.dataset.originalHtml = original;
-      btn.innerHTML = '<i class="fa-solid fa-check mr-1"></i> Copié';
-      setTimeout(function () { btn.innerHTML = btn.dataset.originalHtml; }, 1600);
-    }
-    function fallback() {
-      var area = document.createElement('textarea');
-      area.value = text; area.style.position = 'fixed'; area.style.opacity = '0';
-      document.body.appendChild(area); area.select();
-      try { document.execCommand('copy'); done(); } catch (e) { window.prompt('Copie cette commande :', text); }
-      area.remove();
-    }
-    if (navigator.clipboard && navigator.clipboard.writeText) {
-      navigator.clipboard.writeText(text).then(done).catch(fallback);
-    } else fallback();
-  }
-
-  // ── Actions principales de l'explorateur ─────────────────────────────────
-  function refreshExplorerRuntimeButtons() {
-    var o = $('explorer-runtime-ollama'), l = $('explorer-runtime-lmstudio');
-    if (o) o.className = state.runtime === 'ollama' ? ACTIVE_PILL : IDLE_PILL;
-    if (l) l.className = state.runtime === 'lmstudio' ? ACTIVE_PILL : IDLE_PILL;
-  }
-
-  function openModelExplorer() {
-    var modal = $('model-explorer-modal'); if (!modal) return;
-    state.lastFocused = document.activeElement;
-    modal.classList.remove('hidden');
-    populateFamilyFilter();
-    renderDeviceBanner();
-    refreshExplorerRuntimeButtons();
-    selectExplorerTab(state.tab || 'recommended');
-    var input = $('model-library-search');
-    if (input) setTimeout(function () { input.focus(); }, 60);
-  }
-  function closeModelExplorer() {
-    var modal = $('model-explorer-modal'); if (!modal) return;
-    modal.classList.add('hidden');
-    var box = $('model-search-suggestions'); if (box) box.classList.add('hidden');
-    if (state.lastFocused && state.lastFocused.focus) { try { state.lastFocused.focus(); } catch (e) {} }
-  }
-  function setExplorerRuntime(runtime) {
-    state.runtime = runtime === 'lmstudio' ? 'lmstudio' : 'ollama';
-    try { localStorage.setItem(RUNTIME_KEY, state.runtime); } catch (e) {}
-    refreshExplorerRuntimeButtons();
-    render();
-  }
-  function selectExplorerTab(tab) {
-    state.tab = tab; state.page = 1;
-    ['recommended', 'all', 'popular', 'recent', 'favorites'].forEach(function (t) {
-      var b = $('explorer-tab-' + t);
-      if (b) b.className = t === tab ? ACTIVE_TAB : IDLE_TAB;
-    });
-    render();
-  }
-  function handleModelSearch() {
-    renderSuggestions();
-    clearTimeout(state.searchDebounce);
-    state.searchDebounce = setTimeout(function () { state.page = 1; render(); }, 120);
-  }
-  function handleModelSearchKey(ev) {
-    var box = $('model-search-suggestions');
-    if (ev.key === 'Enter') {
-      var first = box && box.querySelector('[data-suggestion]');
-      if (first && !box.classList.contains('hidden')) { ev.preventDefault(); applyModelSearch(first.dataset.suggestion); }
-    }
-    if (ev.key === 'Escape' && box) box.classList.add('hidden');
-  }
-  function applyModelSearch(value) {
-    var input = $('model-library-search'); if (input) input.value = value;
-    var box = $('model-search-suggestions'); if (box) box.classList.add('hidden');
-    state.page = 1; render();
-  }
-  function clearModelSearchOnly() {
-    var input = $('model-library-search'); if (input) { input.value = ''; input.focus(); }
-    var box = $('model-search-suggestions'); if (box) box.classList.add('hidden');
-    state.page = 1; render();
-  }
-  function clearModelFilters() {
-    ['model-library-search', 'model-library-family', 'model-library-type', 'model-library-quant', 'model-library-size', 'model-library-sort'].forEach(function (id) {
-      var el = $(id); if (!el) return;
-      el.value = id === 'model-library-search' ? '' : (id === 'model-library-sort' ? 'relevance' : 'all');
-    });
-    var box = $('model-search-suggestions'); if (box) box.classList.add('hidden');
-    state.page = 1; selectExplorerTab('recommended');
-  }
-  function changeModelPage(delta) {
-    state.page = Math.max(1, state.page + delta);
-    render();
-    var grid = $('model-explorer-grid'); if (grid) grid.scrollIntoView({ behavior: 'smooth', block: 'start' });
-  }
-  function toggleFavorite(idx) {
-    if (state.favorites.has(idx)) state.favorites.delete(idx); else state.favorites.add(idx);
-    saveFavorites();
-    render();
-  }
-  function useModel(idx) {
-    var m = catalogModel(idx); if (!m) return;
-    var presetSel = $('custom-provider-preset');
-    if (presetSel) { presetSel.value = state.runtime; if (typeof window.applyCustomPreset === 'function') window.applyCustomPreset(); }
-    var nameInput = $('custom-model-name');
-    if (nameInput) nameInput.value = state.runtime === 'lmstudio' ? (m.baseModelName || m.name) : m.model;
-    var hint = $('local-model-cmd-hint');
-    if (hint) hint.textContent = commandFor(m, state.runtime);
-    closeModelExplorer();
-    closeInstallGuide();
-    if (typeof window.setAiMode === 'function') window.setAiMode('custom');
-    var panel = $('api-settings-custom');
-    if (panel) { panel.classList.remove('hidden'); panel.scrollIntoView({ behavior: 'smooth', block: 'center' }); }
-  }
-  function toggleInstallQuickGuide() {
-    var guide = $('install-quick-guide'), icon = $('install-quick-guide-icon');
-    var btn = document.querySelector('[aria-controls="install-quick-guide"]');
-    if (!guide) return;
-    guide.classList.toggle('hidden');
-    var expanded = !guide.classList.contains('hidden');
-    if (icon) icon.className = expanded ? 'fa-solid fa-chevron-up text-xs text-fuchsia-300' : 'fa-solid fa-chevron-down text-xs text-fuchsia-300';
-    if (btn) btn.setAttribute('aria-expanded', String(expanded));
-  }
-
-  // ── Guide d'installation ─────────────────────────────────────────────────
-  function ollamaLibraryUrl(model) { return 'https://ollama.com/library/' + encodeURIComponent(String(model || '').split(':')[0].trim().toLowerCase()); }
-  function hfSearchUrl(m) { return 'https://huggingface.co/models?search=' + encodeURIComponent(((m.baseModelName || m.name) + ' ' + (m.format || modelFormat(m)) + ' ' + (m.variant || '')).trim()); }
-
-  function refreshInstallRuntimeButtons() {
-    var o = $('install-guide-ollama'), l = $('install-guide-lmstudio');
-    var active = 'rounded-xl px-3 py-2 text-xs font-bold bg-fuchsia-500 text-white';
-    var idle = 'rounded-xl px-3 py-2 text-xs font-bold border border-white/10 bg-slate-800 text-gray-300 hover:text-white';
-    if (o) o.className = state.installRuntime === 'ollama' ? active : idle;
-    if (l) l.className = state.installRuntime === 'lmstudio' ? active : idle;
-  }
-
-  function renderInstallGuide() {
-    var m = catalogModel(state.installIndex); if (!m) return;
-    var title = $('install-guide-title'), meta = $('install-guide-meta'), content = $('install-guide-content');
-    if (title) title.textContent = m.name;
-    if (meta) meta.textContent = m.family + ' · ' + (TYPE_LABELS[m.type] || m.type) + ' · environ ' + m.sizeGB + ' Go disque · ' + m.ramGB + ' Go RAM conseillés';
-    if (!content) return;
-    if (state.installRuntime === 'ollama') {
-      var command = 'ollama run ' + m.model;
-      content.innerHTML =
-        '<div class="space-y-4">' +
-          '<div class="rounded-xl border border-cyan-400/20 bg-cyan-500/5 p-4">' +
-            '<p class="text-sm font-bold text-white"><i class="fa-solid fa-terminal text-cyan-300 mr-2"></i>Terminal — Windows, macOS, Linux</p>' +
-            '<p class="mt-1 text-xs text-gray-400">Ollama télécharge automatiquement le modèle puis ouvre une discussion.</p>' +
-            '<div class="mt-3 flex flex-col sm:flex-row gap-2">' +
-              '<code class="flex-1 rounded-lg bg-black/40 px-3 py-2 text-sm text-cyan-300 overflow-x-auto">' + esc(command) + '</code>' +
-              '<button type="button" data-copy="' + esc(command) + '" class="rounded-lg px-3 py-2 text-xs font-bold bg-cyan-400 text-slate-950 hover:bg-cyan-300"><i class="fa-regular fa-copy mr-1"></i> Copier</button>' +
-            '</div>' +
-          '</div>' +
-          '<ol class="space-y-2 text-xs text-gray-300 list-decimal list-inside">' +
-            '<li>Vérifie qu’Ollama est installé et ouvert.</li><li>Ouvre ton terminal.</li><li>Colle la commande et appuie sur Entrée.</li><li>Après le téléchargement, écris ton premier message.</li>' +
-          '</ol>' +
-          (m.isVariant ? '<div class="rounded-lg border border-amber-400/20 bg-amber-500/5 p-3 text-xs text-amber-100"><i class="fa-solid fa-circle-info mr-1"></i>Variante locale <strong>' + esc(m.variant || '') + '</strong> : Ollama peut utiliser un tag différent. Vérifie la fiche avant le téléchargement.</div>' : '') +
-          '<div class="flex flex-wrap gap-2">' +
-            '<a target="_blank" rel="noopener noreferrer" href="' + esc(ollamaLibraryUrl(m.model)) + '" class="rounded-lg px-3 py-2 text-xs font-bold border border-fuchsia-400/30 text-fuchsia-200 hover:bg-fuchsia-500/10"><i class="fa-solid fa-arrow-up-right-from-square mr-1"></i> Voir sur Ollama</a>' +
-            '<button type="button" data-use="1" class="rounded-lg px-3 py-2 text-xs font-bold bg-fuchsia-500 text-white hover:bg-fuchsia-400"><i class="fa-solid fa-plug mr-1"></i> Configurer Freev</button>' +
-          '</div>' +
-        '</div>';
-    } else {
-      var url = hfSearchUrl(m);
-      var lmsCmd = 'lms get "' + String(m.baseModelName || m.name).replace(/"/g, '') + '"';
-      content.innerHTML =
-        '<div class="space-y-4">' +
-          '<div class="rounded-xl border border-amber-400/20 bg-amber-500/5 p-4">' +
-            '<p class="text-sm font-bold text-white"><i class="fa-solid fa-window-maximize text-amber-300 mr-2"></i>Installation dans LM Studio</p>' +
-            '<p class="mt-1 text-xs text-gray-400">LM Studio télécharge les modèles depuis Hugging Face. Sur Windows, commence en GGUF Q4_K_M.</p>' +
-            '<div class="mt-3 flex flex-col sm:flex-row gap-2">' +
-              '<code class="flex-1 rounded-lg bg-black/40 px-3 py-2 text-sm text-amber-200 overflow-x-auto">' + esc(lmsCmd) + '</code>' +
-              '<button type="button" data-copy="' + esc(lmsCmd) + '" class="rounded-lg px-3 py-2 text-xs font-bold bg-amber-300 text-slate-950 hover:bg-amber-200"><i class="fa-regular fa-copy mr-1"></i> Copier</button>' +
-            '</div>' +
-            '<div class="mt-3 flex flex-wrap gap-2">' +
-              '<a target="_blank" rel="noopener noreferrer" href="' + esc(url) + '" class="rounded-lg px-3 py-2 text-xs font-bold border border-amber-300/40 text-amber-100 hover:bg-amber-500/10"><i class="fa-solid fa-magnifying-glass mr-1"></i> Ouvrir Hugging Face</a>' +
-            '</div>' +
-          '</div>' +
-          '<ol class="space-y-2 text-xs text-gray-300 list-decimal list-inside">' +
-            '<li>Dans LM Studio, ouvre <strong class="text-white">Discover</strong> (ou utilise <code>lms get</code> dans un terminal).</li>' +
-            '<li>Cherche le nom du modèle ou colle le lien Hugging Face.</li>' +
-            '<li>Choisis un fichier <strong class="text-fuchsia-200">GGUF Q4_K_M</strong> adapté à ta RAM (ou <strong class="text-white">MLX</strong> sur Mac Apple Silicon).</li>' +
-            '<li>Télécharge-le puis charge-le dans l’onglet Chat.</li>' +
-          '</ol>' +
-          '<div class="flex flex-wrap gap-2"><button type="button" data-use="1" class="rounded-lg px-3 py-2 text-xs font-bold bg-fuchsia-500 text-white hover:bg-fuchsia-400"><i class="fa-solid fa-plug mr-1"></i> Configurer Freev avec ce modèle</button></div>' +
-        '</div>';
-    }
-  }
-  function openInstallGuide(idx) {
-    if (!catalogModel(idx)) return;
-    state.installIndex = idx;
-    state.installRuntime = state.runtime;
-    var modal = $('model-install-modal'); if (modal) modal.classList.remove('hidden');
-    refreshInstallRuntimeButtons();
-    renderInstallGuide();
-  }
-  function closeInstallGuide() {
-    var modal = $('model-install-modal'); if (modal) modal.classList.add('hidden');
-  }
-  function setInstallRuntime(runtime) {
-    state.installRuntime = runtime === 'lmstudio' ? 'lmstudio' : 'ollama';
-    refreshInstallRuntimeButtons();
-    renderInstallGuide();
-  }
-
-  // ── Détection des modèles installés (Ollama / LM Studio, localhost only) ──
-  function endpointFor(runtime) { return runtime === 'ollama' ? 'http://localhost:11434/v1' : 'http://localhost:1234/v1'; }
-  function bytesLabel(n) {
-    var v = Number(n);
-    return (isFinite(v) && v > 0) ? (v / 1024 / 1024 / 1024).toLocaleString('fr-FR', { maximumFractionDigits: 2 }) + ' Go' : 'Taille inconnue';
-  }
-  function fetchJSON(url, controller, timeout) {
-    timeout = timeout || 4500;
-    var timer = setTimeout(function () { try { controller.abort(); } catch (e) {} }, timeout);
-    return fetch(url, { signal: controller.signal, headers: { Accept: 'application/json' } })
-      .then(function (res) { clearTimeout(timer); if (!res.ok) throw new Error('HTTP ' + res.status); return res.json(); })
-      .catch(function (err) { clearTimeout(timer); throw err; });
-  }
-  function tryEndpoints(endpoints, normalizeFn, controller) {
-    var i = 0;
-    function attempt() {
-      if (i >= endpoints.length) return Promise.reject(new Error('service local non détecté'));
-      var url = endpoints[i]; i += 1;
-      return fetchJSON(url, controller).then(normalizeFn).catch(function (err) {
-        if (controller.signal.aborted) throw err;
-        return attempt();
-      });
-    }
-    return attempt();
-  }
-  function normalizeOllamaModels(data) {
-    var list = Array.isArray(data && data.models) ? data.models : [];
-    return list.map(function (m) {
-      return { id: String(m.name || m.model || ''), name: String(m.name || m.model || ''), runtime: 'ollama', size: Number(m.size || 0), format: String((m.details && (m.details.format || m.details.family)) || 'Modèle Ollama') };
-    }).filter(function (m) { return m.id; });
-  }
-  function normalizeLMStudioModels(data) {
-    var raw = Array.isArray(data && data.data) ? data.data : (Array.isArray(data) ? data : []);
-    var seen = {}, out = [];
-    raw.forEach(function (m) {
-      var id = String(m.id || m.model_key || m.key || m.name || '');
-      if (!id || seen[id]) return;
-      seen[id] = true;
-      out.push({ id: id, name: id, runtime: 'lmstudio', size: Number(m.size_bytes || m.size || 0), format: String(m.format || m.architecture || m.publisher || 'Modèle LM Studio') });
-    });
-    return out;
-  }
-  function fetchOllamaModels(controller) {
-    return tryEndpoints(['http://localhost:11434/api/tags', 'http://127.0.0.1:11434/api/tags'], normalizeOllamaModels, controller);
-  }
-  function fetchLMStudioModels(controller) {
-    return tryEndpoints(['http://localhost:1234/api/v0/models', 'http://localhost:1234/v1/models', 'http://127.0.0.1:1234/api/v0/models', 'http://127.0.0.1:1234/v1/models'], normalizeLMStudioModels, controller);
-  }
-  function setInstalledStatus(message, tone) {
-    var el = $('freev-local-status'); if (!el) return;
-    var styles = { error: 'border-red-400/25 bg-red-500/5 text-red-100', ok: 'border-emerald-400/25 bg-emerald-500/5 text-emerald-50', warn: 'border-amber-400/25 bg-amber-500/5 text-amber-50', normal: 'border-white/10 bg-slate-900/70 text-gray-300' };
-    el.className = 'rounded-xl border p-3 text-xs ' + (styles[tone] || styles.normal);
-    el.innerHTML = message;
-  }
-  function refreshInstalledRuntimeButtons() {
-    var a = $('freev-local-runtime-ollama'), b = $('freev-local-runtime-lmstudio');
-    var active = 'rounded-xl px-3 py-2 text-xs font-bold bg-emerald-500 text-slate-950';
-    var idle = 'rounded-xl border border-white/10 bg-slate-800 px-3 py-2 text-xs font-bold text-gray-300 hover:text-white';
-    if (a) a.className = state.installedRuntime === 'ollama' ? active : idle;
-    if (b) b.className = state.installedRuntime === 'lmstudio' ? active : idle;
-  }
-  function visibleInstalledModels() {
-    var q = String(($('freev-local-search') || {}).value || '').trim().toLocaleLowerCase('fr');
-    var list = (state.installedModels[state.installedRuntime] || []).slice().sort(function (a, b) { return a.name.localeCompare(b.name, 'fr', { numeric: true }); });
-    return q ? list.filter(function (m) { return (m.name + ' ' + m.format).toLocaleLowerCase('fr').indexOf(q) !== -1; }) : list;
-  }
-  function renderInstalledList() {
-    var host = $('freev-installed-list'); if (!host) return;
-    var all = state.installedModels[state.installedRuntime] || [];
-    var list = visibleInstalledModels();
-    if (!all.length) {
-      host.innerHTML = '<div class="rounded-xl border border-dashed border-white/10 p-6 text-center text-sm text-gray-500"><i class="fa-solid fa-box-open mb-2 text-lg block"></i>Aucun modèle détecté. Clique sur <strong class="text-gray-300">Actualiser</strong>.</div>';
-      return;
-    }
-    if (!list.length) {
-      host.innerHTML = '<div class="rounded-xl border border-dashed border-white/10 p-5 text-center text-sm text-gray-500">Aucun modèle ne correspond à cette recherche.</div>';
-      return;
-    }
-    host.innerHTML = list.map(function (m) {
-      return '<article class="rounded-xl border border-white/10 bg-slate-900/70 p-3 flex items-center justify-between gap-3">' +
-        '<div class="min-w-0"><p class="truncate font-bold text-sm text-white"><i class="fa-solid ' + (m.runtime === 'ollama' ? 'fa-terminal text-cyan-300' : 'fa-window-maximize text-amber-300') + ' mr-2"></i>' + esc(m.name) + '</p>' +
-        '<p class="mt-1 text-[11px] text-gray-500">' + (m.runtime === 'ollama' ? 'Ollama' : 'LM Studio') + ' · ' + esc(m.format) + ' · ' + bytesLabel(m.size) + '</p></div>' +
-        '<button type="button" data-select-id="' + esc(m.id) + '" class="shrink-0 rounded-lg bg-fuchsia-500 px-3 py-2 text-xs font-bold text-white hover:bg-fuchsia-400"><i class="fa-solid fa-plug mr-1"></i> Utiliser</button>' +
-      '</article>';
-    }).join('');
-  }
-  function selectInstalledModel(id) {
-    var list = state.installedModels[state.installedRuntime] || [];
-    var m = null;
-    for (var i = 0; i < list.length; i++) { if (list[i].id === id) { m = list[i]; break; } }
-    if (!m) return;
-    var payload = { id: m.id, name: m.name, runtime: m.runtime, endpoint: endpointFor(m.runtime), selectedAt: new Date().toISOString() };
-    try { localStorage.setItem('freev_active_local_model', JSON.stringify(payload)); } catch (e) {}
-    var presetSel = $('custom-provider-preset');
-    if (presetSel) { presetSel.value = m.runtime; if (typeof window.applyCustomPreset === 'function') window.applyCustomPreset(); }
-    var nameInput = $('custom-model-name'); if (nameInput) nameInput.value = m.id;
-    var hint = $('local-model-cmd-hint'); if (hint) hint.textContent = m.id;
-    var selectedBox = $('freev-installed-selected');
-    if (selectedBox) { selectedBox.classList.remove('hidden'); selectedBox.innerHTML = '<i class="fa-solid fa-circle-check mr-1 text-fuchsia-300"></i><strong>' + esc(m.name) + '</strong> est connecté à Freev via <strong>' + (m.runtime === 'ollama' ? 'Ollama' : 'LM Studio') + '</strong>.'; }
-    setInstalledStatus('<strong>' + esc(m.name) + '</strong> est maintenant configuré. Ferme cette fenêtre pour discuter.', 'ok');
-  }
-  function openInstalledModels() {
-    var modal = $('freev-installed-models-modal'); if (!modal) return;
-    modal.classList.remove('hidden');
-    refreshInstalledRuntimeButtons();
-    renderInstalledList();
-  }
-  function closeInstalledModels() {
-    var modal = $('freev-installed-models-modal'); if (modal) modal.classList.add('hidden');
-    if (state.installedController) { try { state.installedController.abort(); } catch (e) {} }
-  }
-  function setInstalledRuntime(runtime) {
-    state.installedRuntime = runtime === 'lmstudio' ? 'lmstudio' : 'ollama';
-    try { localStorage.setItem(INSTALLED_RUNTIME_KEY, state.installedRuntime); } catch (e) {}
-    refreshInstalledRuntimeButtons();
-    renderInstalledList();
-    setInstalledStatus('Moteur sélectionné : <strong>' + (state.installedRuntime === 'ollama' ? 'Ollama' : 'LM Studio') + '</strong>. Clique sur Actualiser pour lire les modèles installés.', 'normal');
-  }
-  function filterInstalledModels() { renderInstalledList(); }
-  function refreshInstalledModels() {
-    var runtime = state.installedRuntime;
-    var button = $('freev-local-refresh');
-    if (state.installedController) { try { state.installedController.abort(); } catch (e) {} }
-    var controller = new AbortController();
-    state.installedController = controller;
-    var requestId = ++state.installedRequestId;
-    if (button) { button.disabled = true; button.innerHTML = '<i class="fa-solid fa-circle-notch fa-spin mr-1"></i> Recherche…'; }
-    setInstalledStatus('<i class="fa-solid fa-spinner fa-spin mr-1"></i>Lecture des modèles ' + (runtime === 'ollama' ? 'Ollama' : 'LM Studio') + ' sur ton ordinateur…', 'normal');
-    var fetchFn = runtime === 'ollama' ? fetchOllamaModels : fetchLMStudioModels;
-    fetchFn(controller).then(function (models) {
-      if (requestId !== state.installedRequestId) return;
-      state.installedModels[runtime] = models;
-      renderInstalledList();
-      setInstalledStatus(models.length ? (models.length + ' modèle' + (models.length > 1 ? 's' : '') + ' détecté' + (models.length > 1 ? 's' : '') + '.') : 'Aucun modèle trouvé sur ce moteur.', models.length ? 'ok' : 'warn');
-    }).catch(function () {
-      if (requestId !== state.installedRequestId || controller.signal.aborted) return;
-      var target = runtime === 'ollama' ? 'Ollama (port 11434)' : 'LM Studio (port 1234)';
-      var hint = runtime === 'ollama' ? '<code class="text-red-100">ollama serve</code> puis actualise.' : 'Dans LM Studio : <strong>Developer → Start Server</strong>, puis actualise.';
-      setInstalledStatus('Impossible de joindre ' + target + '. ' + hint, 'error');
-    }).then(function () {
-      if (button) { button.disabled = false; button.innerHTML = '<i class="fa-solid fa-rotate-right mr-1"></i> Actualiser'; }
-    });
-  }
-
-  // ── Liaisons d'événements (une seule fois, sur des conteneurs stables) ────
-  var grid = $('model-explorer-grid');
-  if (grid) grid.addEventListener('click', function (ev) {
-    var btn = ev.target.closest('[data-action]'); if (!btn) return;
-    var idx = Number(btn.dataset.index);
-    var action = btn.dataset.action;
-    if (action === 'favorite') toggleFavorite(idx);
-    else if (action === 'install') openInstallGuide(idx);
-    else if (action === 'use') useModel(idx);
-  });
-
-  var suggestBox = $('model-search-suggestions');
-  if (suggestBox) suggestBox.addEventListener('click', function (ev) {
-    var btn = ev.target.closest('[data-suggestion]'); if (!btn) return;
-    applyModelSearch(btn.dataset.suggestion);
-  });
-
-  var installContent = $('install-guide-content');
-  if (installContent) installContent.addEventListener('click', function (ev) {
-    var copyBtn = ev.target.closest('[data-copy]');
-    if (copyBtn) { copyText(copyBtn.getAttribute('data-copy'), copyBtn); return; }
-    var useBtn = ev.target.closest('[data-use]');
-    if (useBtn) useModel(state.installIndex);
-  });
-
-  var installedList = $('freev-installed-list');
-  if (installedList) installedList.addEventListener('click', function (ev) {
-    var btn = ev.target.closest('[data-select-id]'); if (!btn) return;
-    selectInstalledModel(btn.getAttribute('data-select-id'));
-  });
-
-  document.addEventListener('click', function (ev) {
-    var btn = ev.target.closest && ev.target.closest('[data-freev-copy-command]');
-    if (btn) copyText(btn.getAttribute('data-freev-copy-command'), btn);
-  });
-
-  document.addEventListener('keydown', function (ev) {
-    if (ev.key !== 'Escape') return;
-    var installedModal = $('freev-installed-models-modal');
-    var installModal = $('model-install-modal');
-    var explorerModal = $('model-explorer-modal');
-    if (installedModal && !installedModal.classList.contains('hidden')) { closeInstalledModels(); return; }
-    if (installModal && !installModal.classList.contains('hidden')) { closeInstallGuide(); return; }
-    if (explorerModal && !explorerModal.classList.contains('hidden')) closeModelExplorer();
-  });
-
-  // ── Exposition globale (compatible avec les attributs onclick existants) ─
-  window.openModelExplorer = openModelExplorer;
-  window.closeModelExplorer = closeModelExplorer;
-  window.setExplorerRuntime = setExplorerRuntime;
-  window.selectExplorerTab = selectExplorerTab;
-  window.handleModelSearch = handleModelSearch;
-  window.handleModelSearchKey = handleModelSearchKey;
-  window.clearModelSearchOnly = clearModelSearchOnly;
-  window.applyModelSearch = applyModelSearch;
-  window.clearModelFilters = clearModelFilters;
-  window.changeModelPage = changeModelPage;
-  window.renderModelGrid = render;
-  window.toggleInstallQuickGuide = toggleInstallQuickGuide;
-  window.openInstallGuide = openInstallGuide;
-  window.closeInstallGuide = closeInstallGuide;
-  window.setInstallRuntime = setInstallRuntime;
-  window.openInstalledModels = openInstalledModels;
-  window.closeInstalledModels = closeInstalledModels;
-  window.setInstalledRuntime = setInstalledRuntime;
-  window.refreshInstalledModels = refreshInstalledModels;
-  window.filterInstalledModels = filterInstalledModels;
-})();
-</script>
 
 </body>
 </html>
