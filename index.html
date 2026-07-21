@@ -1795,6 +1795,7 @@ Freev Brain V7 répond avec la base propre de Freev. Tu peux aussi connecter ta 
 <option value="groq">Groq</option>
 <option value="deepseek">DeepSeek</option>
 <option value="together">Together AI</option>
+<option value="nvidia">NVIDIA NIM</option>
 <option value="ollama">Ollama — local</option>
 <option value="lmstudio">LM Studio — local</option>
 </select>
@@ -1815,7 +1816,7 @@ Freev Brain V7 répond avec la base propre de Freev. Tu peux aussi connecter ta 
 <button class="rounded-lg bg-fuchsia-500 px-4 py-2.5 text-xs font-bold text-white hover:bg-fuchsia-400" id="freev-save-api-settings" type="button">Enregistrer et utiliser</button>
 <button class="rounded-lg border border-white/10 px-4 py-2.5 text-xs font-bold text-gray-300 hover:bg-white/5" id="freev-clear-api-key" type="button">Effacer la clé enregistrée</button>
 </div>
-<p class="text-[10px] leading-relaxed text-gray-500">La configuration reste dans le stockage local de ce navigateur. Ne l’enregistre pas sur un appareil public. Les API distantes ou locales doivent autoriser les requêtes depuis ce site.</p>
+<p class="text-[10px] leading-relaxed text-gray-500">La configuration reste dans le stockage local de ce navigateur. Ne l’enregistre pas sur un appareil public. Les appels distants transitent par le relais HTTPS privé Freev sans enregistrer ta clé ; les modèles locaux restent directement reliés à ton appareil.</p>
 </div>
 <div class="grid grid-cols-1 sm:grid-cols-2 gap-3" aria-label="Nouveautés de Freev Brain V7">
 <div class="rounded-xl border border-white/10 bg-white/5 p-4">
@@ -2896,6 +2897,7 @@ Freev Brain V7 répond avec la base propre de Freev. Tu peux aussi connecter ta 
         const FREEV_V7_SERVER = ['127.0.0.1', 'localhost'].includes(window.location.hostname)
             ? 'http://127.0.0.1:10000'
             : 'https://freev-iies.onrender.com';
+        window.FreevV7Server = FREEV_V7_SERVER;
         const freevV7State = { online: false, sending: false, mode: 'freev' };
 
         function setFreevV7Status(label, tone) {

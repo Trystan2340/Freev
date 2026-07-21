@@ -19,6 +19,7 @@
     groq: { baseUrl: 'https://api.groq.com/openai/v1', model: 'llama-3.3-70b-versatile' },
     deepseek: { baseUrl: 'https://api.deepseek.com/v1', model: 'deepseek-chat' },
     together: { baseUrl: 'https://api.together.xyz/v1', model: 'meta-llama/Llama-3.3-70B-Instruct-Turbo' },
+    nvidia: { baseUrl: 'https://integrate.api.nvidia.com/v1', model: 'nvidia/nemotron-3-super-120b-a12b' },
     ollama: { baseUrl: 'http://localhost:11434/v1', model: 'qwen3:8b' },
     lmstudio: { baseUrl: 'http://localhost:1234/v1', model: 'local-model' }
   };
@@ -308,34 +309,45 @@
 
     const controller = new AbortController();
     const timer = setTimeout(() => controller.abort(), 60000);
-    const endpoint = /\/chat\/completions\/?$/.test(config.baseUrl)
-      ? config.baseUrl
-      : `${config.baseUrl}/chat/completions`;
+    const isLocalProvider = /^http:\/\/(localhost|127\.0\.0\.1)(?::\d+)?(?:\/|$)/i.test(config.baseUrl);
+    const endpoint = isLocalProvider
+      ? (/\/chat\/completions\/?$/.test(config.baseUrl) ? config.baseUrl : `${config.baseUrl}/chat/completions`)
+      : `${window.FreevV7Server || 'https://freev-iies.onrender.com'}/api/provider/chat`;
     const headers = { 'Content-Type': 'application/json', Accept: 'application/json' };
-    if (config.apiKey) headers.Authorization = `Bearer ${config.apiKey}`;
+    if (isLocalProvider && config.apiKey) headers.Authorization = `Bearer ${config.apiKey}`;
 
     try {
       const response = await fetch(endpoint, {
         method: 'POST',
         headers,
-        body: JSON.stringify({
+        body: JSON.stringify(isLocalProvider ? {
           model: config.model,
+          messages: [{ role: 'user', content: prompt }]
+        } : {
+          base_url: config.baseUrl,
+          model: config.model,
+          api_key: config.apiKey,
           messages: [{ role: 'user', content: prompt }]
         }),
         signal: controller.signal
       });
       const data = await response.json().catch(() => ({}));
-      if (!response.ok) throw new Error(`HTTP ${response.status}`);
-      const content = data?.choices?.[0]?.message?.content ?? data?.choices?.[0]?.text;
+      if (!response.ok || data?.ok === false) throw new Error(data?.error || `HTTP ${response.status}`);
+      const content = isLocalProvider
+        ? (data?.choices?.[0]?.message?.content ?? data?.choices?.[0]?.text)
+        : data?.response;
       if (!content) throw new Error('Réponse vide');
       finishWaiting(String(content));
       saveHistory({ mode: 'custom', model: config.model, question: prompt, response: String(content) });
       chat.setStatus('Modèle prêt', 'ok');
     } catch (error) {
-      const localHint = /^http:\/\/(localhost|127\.0\.0\.1)/i.test(config.baseUrl)
+      const localHint = isLocalProvider
         ? ' Vérifie que le serveur local est démarré et autorise les requêtes du navigateur.'
         : '';
-      finishWaiting(`Impossible de joindre ce modèle.${localHint}`);
+      const reason = String(error?.message || '').trim();
+      finishWaiting(reason && !/^HTTP \d+$/.test(reason)
+        ? `Modèle indisponible : ${reason}.${localHint}`
+        : `Impossible de joindre ce modèle.${localHint}`);
       chat.setStatus('Modèle indisponible', 'error');
     } finally {
       clearTimeout(timer);
