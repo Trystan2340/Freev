@@ -703,10 +703,25 @@
     }
   });
 
+  const sanitizeAiConfigForCloud = (config) => {
+    if (!config || typeof config !== "object") return {};
+    const safe = {
+      preset: String(config.preset || "custom").slice(0, 40),
+      baseUrl: String(config.baseUrl || "").trim().replace(/\/+$/, "").slice(0, 500),
+      model: String(config.model || "").trim().slice(0, 200),
+    };
+    const secretId = String(config.secretId || "").trim().toLowerCase();
+    if (/^[a-f0-9]{40}$/.test(secretId)) {
+      safe.secretId = secretId;
+      safe.hasCloudKey = true;
+    }
+    return safe;
+  };
+
   async function saveAiConfigToCloud(config) {
     if (!auth.currentUser) return false;
     const userRef = doc(db, "users", auth.currentUser.uid);
-    await setDoc(userRef, { aiConfig: config }, { merge: true });
+    await setDoc(userRef, { aiConfig: sanitizeAiConfigForCloud(config) }, { merge: true });
     return true;
   }
 
@@ -714,14 +729,22 @@
     if (!auth.currentUser) return null;
     const userRef = doc(db, "users", auth.currentUser.uid);
     const snapshot = await getDoc(userRef);
-    if (snapshot.exists() && snapshot.data().aiConfig) return snapshot.data().aiConfig;
+    if (snapshot.exists() && snapshot.data().aiConfig) {
+      const raw = snapshot.data().aiConfig;
+      const safe = sanitizeAiConfigForCloud(raw);
+      if (JSON.stringify(raw) !== JSON.stringify(safe)) {
+        await setDoc(userRef, { aiConfig: safe }, { merge: true });
+      }
+      return safe;
+    }
     return null;
   }
 
   async function saveAiConfigsListToCloud(list) {
     if (!auth.currentUser) return false;
     const userRef = doc(db, "users", auth.currentUser.uid);
-    await setDoc(userRef, { aiConfigsList: list }, { merge: true });
+    const safeList = Array.isArray(list) ? list.map(sanitizeAiConfigForCloud).slice(-100) : [];
+    await setDoc(userRef, { aiConfigsList: safeList }, { merge: true });
     return true;
   }
 
@@ -729,7 +752,14 @@
     if (!auth.currentUser) return null;
     const userRef = doc(db, "users", auth.currentUser.uid);
     const snapshot = await getDoc(userRef);
-    if (snapshot.exists() && Array.isArray(snapshot.data().aiConfigsList)) return snapshot.data().aiConfigsList;
+    if (snapshot.exists() && Array.isArray(snapshot.data().aiConfigsList)) {
+      const rawList = snapshot.data().aiConfigsList;
+      const safeList = rawList.map(sanitizeAiConfigForCloud).slice(-100);
+      if (JSON.stringify(rawList) !== JSON.stringify(safeList)) {
+        await setDoc(userRef, { aiConfigsList: safeList }, { merge: true });
+      }
+      return safeList;
+    }
     return null;
   }
 

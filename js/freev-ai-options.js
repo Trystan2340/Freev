@@ -10,6 +10,8 @@
   const HISTORY_KEY = 'freev_chat_history';
   const HISTORY_MAX = 300;
   const PAGE_SIZE = 18;
+  const FREEV_SERVER = () => window.FreevV7Server || 'https://freev-iies.onrender.com';
+  const sessionApiKeys = new Map();
   const PRESETS = {
     custom: { baseUrl: '', model: '' },
     openai: { baseUrl: 'https://api.openai.com/v1', model: 'gpt-4o-mini' },
@@ -42,6 +44,34 @@
       }
     } catch (_) {}
     return config;
+  }
+
+  function sanitizeConfig(config, captureLegacyKey = false) {
+    const migrated = migrateStoredConfig(config);
+    if (!migrated || typeof migrated !== 'object') return {};
+    const sanitized = {
+      preset: String(migrated.preset || 'custom').slice(0, 40),
+      baseUrl: String(migrated.baseUrl || '').trim().replace(/\/+$/, '').slice(0, 500),
+      model: String(migrated.model || '').trim().slice(0, 200)
+    };
+    const secretId = String(migrated.secretId || '').trim().toLowerCase();
+    if (/^[a-f0-9]{40}$/.test(secretId)) {
+      sanitized.secretId = secretId;
+      sanitized.hasCloudKey = true;
+    }
+    const legacyKey = String(migrated.apiKey || '').trim();
+    if (captureLegacyKey && legacyKey && sanitized.baseUrl && sanitized.model) {
+      sessionApiKeys.set(configKey(sanitized), legacyKey);
+    }
+    return sanitized;
+  }
+
+  function sessionApiKey(config) {
+    return sessionApiKeys.get(configKey(config)) || '';
+  }
+
+  function hasUsableKey(config) {
+    return Boolean(config?.secretId && config?.hasCloudKey) || Boolean(sessionApiKey(config));
   }
 
   const CATALOG = [
@@ -114,8 +144,10 @@
   function readStoredConfig() {
     try {
       const value = JSON.parse(localStorage.getItem(STORAGE_KEY) || '{}');
-      const config = migrateStoredConfig(value);
-      if (config !== value) localStorage.setItem(STORAGE_KEY, JSON.stringify(config));
+      const config = sanitizeConfig(value, true);
+      if (JSON.stringify(config) !== JSON.stringify(value)) {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(config));
+      }
       return config;
     } catch (_) {
       return {};
@@ -131,7 +163,7 @@
       const value = JSON.parse(localStorage.getItem(SAVED_MODELS_KEY) || '[]');
       if (!Array.isArray(value)) return [];
       const list = value
-        .map(migrateStoredConfig)
+        .map((config) => sanitizeConfig(config, true))
         .filter((config) => config && config.baseUrl && config.model);
       if (JSON.stringify(list) !== JSON.stringify(value)) {
         localStorage.setItem(SAVED_MODELS_KEY, JSON.stringify(list.slice(-100)));
@@ -144,7 +176,8 @@
 
   function writeSavedModels(list) {
     try {
-      localStorage.setItem(SAVED_MODELS_KEY, JSON.stringify(list.slice(-100)));
+      const sanitized = list.map((config) => sanitizeConfig(config)).slice(-100);
+      localStorage.setItem(SAVED_MODELS_KEY, JSON.stringify(sanitized));
       return true;
     } catch (_) {
       return false;
@@ -206,6 +239,9 @@
     const list = readHistory();
     list.push(entry);
     writeHistory(list);
+    if (window.FreevAuthActions?.getCurrentUser?.() && window.FreevAuthActions?.saveChatHistoryEntry) {
+      window.FreevAuthActions.saveChatHistoryEntry(entry).catch(() => {});
+    }
     if (!byId('freev-history-modal')?.classList.contains('hidden')) renderHistory();
   }
 
@@ -231,7 +267,12 @@
     if (byId('freev-provider-preset')) byId('freev-provider-preset').value = config.preset || 'custom';
     if (byId('freev-custom-base-url')) byId('freev-custom-base-url').value = config.baseUrl || '';
     if (byId('freev-custom-model')) byId('freev-custom-model').value = config.model || '';
-    if (byId('freev-custom-api-key')) byId('freev-custom-api-key').value = config.apiKey || '';
+    if (byId('freev-custom-api-key')) {
+      byId('freev-custom-api-key').value = sessionApiKey(config);
+      byId('freev-custom-api-key').placeholder = config.secretId
+        ? 'Clé chiffrée dans Firebase · laisse vide pour la conserver'
+        : 'Colle ta clé API';
+    }
   }
 
   function updateModeButton(button, active, color) {
@@ -254,9 +295,11 @@
       const config = readStoredConfig();
       const label = config.model || 'Autre IA';
       const configured = Boolean(config.baseUrl && config.model);
-      const missingRemoteKey = configured && !isLocalProviderUrl(config.baseUrl) && !config.apiKey;
+      const missingRemoteKey = configured && !isLocalProviderUrl(config.baseUrl) && !hasUsableKey(config);
       if (title) title.textContent = label;
-      if (description) description.textContent = 'Fournisseur configuré dans ce navigateur';
+      if (description) description.textContent = config.secretId
+        ? 'Clé chiffrée dans Firebase · déchiffrée uniquement par Render'
+        : 'Fournisseur configuré dans ce navigateur';
       if (byId('freev-current-model-label')) byId('freev-current-model-label').textContent = label;
       chat.setStatus(missingRemoteKey ? 'Clé API requise' : (configured ? 'Modèle prêt' : 'À configurer'),
         configured && !missingRemoteKey ? 'ok' : 'error');
@@ -279,37 +322,133 @@
     if (preset.model) byId('freev-custom-model').value = preset.model;
   }
 
-  function saveConfig(options = {}) {
+  async function firebaseSession() {
+    const user = window.FreevAuthActions?.getCurrentUser?.();
+    if (!user || typeof user.getIdToken !== 'function') {
+      throw new Error('Connecte-toi à ton compte Freev pour protéger cette clé dans Firebase');
+    }
+    return { user, token: await user.getIdToken() };
+  }
+
+  async function secureRenderRequest(path, payload) {
+    const { token } = await firebaseSession();
+    const response = await fetch(`${FREEV_SERVER()}${path}`, {
+      method: 'POST',
+      headers: {
+        Accept: 'application/json',
+        Authorization: `Bearer ${token}`,
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(payload)
+    });
+    const data = await response.json().catch(() => ({}));
+    if (!response.ok || data?.ok === false) {
+      throw new Error(data?.error || `HTTP ${response.status}`);
+    }
+    return data;
+  }
+
+  async function syncConfigMetadataToCloud(config, list) {
+    if (!window.FreevAuthActions?.getCurrentUser?.()) return false;
+    await Promise.all([
+      window.FreevAuthActions.saveAiConfig?.(sanitizeConfig(config)),
+      window.FreevAuthActions.saveAiConfigsList?.(list.map((item) => sanitizeConfig(item)))
+    ]);
+    return true;
+  }
+
+  async function saveConfig(options = {}) {
     const config = currentFormConfig();
     if (!config.baseUrl || !config.model || !isAllowedBaseUrl(config.baseUrl)) {
       chat.appendMessage('assistant', 'Renseigne une URL HTTP/HTTPS valide et le nom du modèle.', 'Configuration');
       return false;
     }
+    const existing = readStoredConfig();
+    const sameConfig = configKey(existing) === configKey(config);
+    if (sameConfig && existing.secretId) {
+      config.secretId = existing.secretId;
+      config.hasCloudKey = true;
+    }
+    const localProvider = isLocalProviderUrl(config.baseUrl);
+    const enteredKey = config.apiKey || sessionApiKey(config);
+    if (enteredKey) sessionApiKeys.set(configKey(config), enteredKey);
+
+    if (!localProvider) {
+      if (enteredKey) {
+        try {
+          const saved = await secureRenderRequest('/api/provider/secrets', {
+            base_url: config.baseUrl,
+            model: config.model,
+            api_key: enteredKey
+          });
+          config.secretId = saved.secret_id;
+          config.hasCloudKey = true;
+        } catch (error) {
+          chat.appendMessage('assistant', `Clé non enregistrée : ${String(error?.message || 'Firebase indisponible')}.`, 'Sécurité');
+          return false;
+        }
+      } else if (!config.secretId) {
+        chat.appendMessage('assistant', 'Ajoute une clé API et connecte-toi à ton compte Freev avant de l’enregistrer.', 'Sécurité');
+        return false;
+      }
+    }
+
+    const publicConfig = sanitizeConfig(config);
     try {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(config));
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(publicConfig));
     } catch (_) {
       chat.appendMessage('assistant', 'Le navigateur refuse l’enregistrement local de la configuration.', 'Configuration');
       return false;
     }
-    upsertSavedModel(config);
+    const list = upsertSavedModel(publicConfig);
+    try {
+      await syncConfigMetadataToCloud(publicConfig, list);
+    } catch (_) {
+      chat.appendMessage('assistant', 'La clé est protégée, mais la synchronisation des informations du modèle a échoué.', 'Firebase');
+    }
+    if (!localProvider) {
+      sessionApiKeys.delete(configKey(publicConfig));
+      if (byId('freev-custom-api-key')) byId('freev-custom-api-key').value = '';
+    }
     setMode('custom');
     if (!options.keepPanel) byId('freev-api-settings')?.classList.add('hidden');
+    chat.appendMessage('assistant', localProvider
+      ? 'Configuration locale enregistrée sans stocker de clé persistante.'
+      : 'Clé chiffrée dans Firebase. Elle ne sera jamais renvoyée au navigateur.', 'Sécurité');
     return true;
   }
 
-  function clearApiKey() {
-    const config = currentFormConfig();
-    config.apiKey = '';
+  async function clearApiKey() {
+    const formConfig = currentFormConfig();
+    const stored = readStoredConfig();
+    const config = configKey(formConfig) === configKey(stored) ? stored : sanitizeConfig(formConfig);
+    if (!window.confirm('Supprimer cette clé API chiffrée de Firebase et de cette session ?')) return;
+    if (config.secretId && !isLocalProviderUrl(config.baseUrl)) {
+      try {
+        await secureRenderRequest('/api/provider/secrets/delete', {
+          base_url: config.baseUrl,
+          model: config.model,
+          secret_id: config.secretId
+        });
+      } catch (error) {
+        chat.appendMessage('assistant', `Suppression refusée : ${String(error?.message || 'Firebase indisponible')}.`, 'Sécurité');
+        return;
+      }
+    }
+    sessionApiKeys.delete(configKey(config));
+    delete config.secretId;
+    delete config.hasCloudKey;
     if (byId('freev-custom-api-key')) byId('freev-custom-api-key').value = '';
     try {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(config));
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(sanitizeConfig(config)));
     } catch (_) {}
     const list = readSavedModels().map((saved) => configKey(saved) === configKey(config)
-      ? { ...saved, apiKey: '' }
+      ? sanitizeConfig({ preset: saved.preset, baseUrl: saved.baseUrl, model: saved.model })
       : saved);
     writeSavedModels(list);
+    try { await syncConfigMetadataToCloud(config, list); } catch (_) {}
     renderSavedModels();
-    chat.appendMessage('assistant', 'La clé API enregistrée dans ce navigateur a été effacée.', 'Configuration');
+    chat.appendMessage('assistant', 'La clé API chiffrée a été supprimée de Firebase et de cette session.', 'Sécurité');
   }
 
   async function sendCustomMessage(prompt) {
@@ -320,8 +459,9 @@
       return;
     }
     const isLocalProvider = isLocalProviderUrl(config.baseUrl);
-    if (!isLocalProvider && !config.apiKey) {
-      chat.appendMessage('assistant', 'Ajoute ta clé API avec le bouton « Configurer une clé API », puis enregistre la configuration.', 'Configuration');
+    const transientKey = sessionApiKey(config);
+    if (!isLocalProvider && !config.secretId) {
+      chat.appendMessage('assistant', 'Ajoute ta clé API, connecte-toi à Freev, puis enregistre-la dans le coffre Firebase.', 'Configuration');
       byId('freev-api-settings')?.classList.remove('hidden');
       chat.setStatus('Clé API requise', 'error');
       return;
@@ -348,11 +488,16 @@
     const timer = setTimeout(() => controller.abort(), 60000);
     const endpoint = isLocalProvider
       ? (/\/chat\/completions\/?$/.test(config.baseUrl) ? config.baseUrl : `${config.baseUrl}/chat/completions`)
-      : `${window.FreevV7Server || 'https://freev-iies.onrender.com'}/api/provider/chat`;
+      : `${FREEV_SERVER()}/api/provider/chat`;
     const headers = { 'Content-Type': 'application/json', Accept: 'application/json' };
-    if (isLocalProvider && config.apiKey) headers.Authorization = `Bearer ${config.apiKey}`;
 
     try {
+      if (isLocalProvider && transientKey) {
+        headers.Authorization = `Bearer ${transientKey}`;
+      } else if (!isLocalProvider) {
+        const { token } = await firebaseSession();
+        headers.Authorization = `Bearer ${token}`;
+      }
       const response = await fetch(endpoint, {
         method: 'POST',
         headers,
@@ -362,7 +507,7 @@
         } : {
           base_url: config.baseUrl,
           model: config.model,
-          api_key: config.apiKey,
+          secret_id: config.secretId,
           messages: [{ role: 'user', content: prompt }]
         }),
         signal: controller.signal
@@ -406,10 +551,24 @@
     setMode('custom');
   }
 
-  function removeSavedModel(index) {
+  async function removeSavedModel(index) {
     const list = readSavedModels();
     const config = list[index];
-    if (!config || !window.confirm(`Supprimer la configuration enregistrée pour « ${config.model} » ?`)) return;
+    const warning = config?.secretId ? ' et sa clé chiffrée dans Firebase' : '';
+    if (!config || !window.confirm(`Supprimer la configuration « ${config.model} »${warning} ?`)) return;
+    if (config.secretId && !isLocalProviderUrl(config.baseUrl)) {
+      try {
+        await secureRenderRequest('/api/provider/secrets/delete', {
+          base_url: config.baseUrl,
+          model: config.model,
+          secret_id: config.secretId
+        });
+      } catch (error) {
+        chat.appendMessage('assistant', `Suppression refusée : ${String(error?.message || 'Firebase indisponible')}.`, 'Sécurité');
+        return;
+      }
+    }
+    sessionApiKeys.delete(configKey(config));
     list.splice(index, 1);
     writeSavedModels(list);
     if (configKey(readStoredConfig()) === configKey(config)) {
@@ -419,6 +578,7 @@
     } else {
       renderSavedModels();
     }
+    try { await syncConfigMetadataToCloud(readStoredConfig(), list); } catch (_) {}
   }
 
   function renderSavedModels() {
@@ -734,14 +894,14 @@
     setTimeout(() => { button.textContent = previous; }, 1400);
   }
 
-  function useLocalModel(modelName) {
+  async function useLocalModel(modelName) {
     const presetName = libraryState.runtime === 'ollama' ? 'ollama' : 'lmstudio';
     const preset = PRESETS[presetName];
     byId('freev-provider-preset').value = presetName;
     byId('freev-custom-base-url').value = preset.baseUrl;
     byId('freev-custom-model').value = modelName;
     byId('freev-custom-api-key').value = '';
-    saveConfig();
+    await saveConfig();
     closeLibrary();
     chat.appendMessage('assistant', `${modelName} est sélectionné. Démarre ${libraryState.runtime === 'ollama' ? 'Ollama' : 'le serveur local LM Studio'} avant d’envoyer un message.`, 'Configuration');
   }
@@ -774,6 +934,56 @@
       select.appendChild(option);
     });
   }
+
+  window.syncAiConfigFromCloud = async function syncAiConfigFromCloud() {
+    if (!window.FreevAuthActions?.loadAiConfig) return;
+    try {
+      const cloudConfigRaw = await window.FreevAuthActions.loadAiConfig();
+      const cloudListRaw = await window.FreevAuthActions.loadAiConfigsList?.();
+      const cloudConfig = sanitizeConfig(cloudConfigRaw, true);
+      const cloudList = Array.isArray(cloudListRaw)
+        ? cloudListRaw.map((item) => sanitizeConfig(item, true)).filter((item) => item.baseUrl && item.model)
+        : [];
+      if (cloudConfig.baseUrl && cloudConfig.model) {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(cloudConfig));
+        fillConfig(cloudConfig);
+      }
+      if (cloudList.length) writeSavedModels(cloudList);
+      const active = cloudConfig.baseUrl ? cloudConfig : readStoredConfig();
+      const list = cloudList.length ? cloudList : readSavedModels();
+      await syncConfigMetadataToCloud(active, list);
+      renderSavedModels();
+      if (chat.state.mode === 'custom') setMode('custom');
+    } catch (_) {
+      chat.appendMessage('assistant', 'Connexion établie, mais les modèles Firebase ne sont pas encore synchronisés.', 'Firebase');
+    }
+  };
+
+  window.syncChatHistoryFromCloud = async function syncChatHistoryFromCloud() {
+    if (!window.FreevAuthActions?.loadChatHistory) return;
+    try {
+      const cloudList = await window.FreevAuthActions.loadChatHistory();
+      if (!Array.isArray(cloudList)) return;
+      const local = readHistory();
+      const merged = new Map(local.map((entry) => [entry.id, entry]));
+      cloudList.forEach((entry) => {
+        const id = String(entry?.id || '').slice(0, 100);
+        if (!id || merged.has(id)) return;
+        merged.set(id, {
+          id,
+          date: String(entry?.date || new Date().toISOString()).slice(0, 40),
+          mode: entry?.mode === 'custom' ? 'custom' : 'freev',
+          model: String(entry?.model || 'Freev Brain V7').slice(0, 200),
+          question: String(entry?.question || '').slice(0, 4000),
+          response: String(entry?.response || '').slice(0, 20000)
+        });
+      });
+      writeHistory([...merged.values()]
+        .sort((a, b) => new Date(a.date) - new Date(b.date))
+        .slice(-HISTORY_MAX));
+      if (!byId('freev-history-modal')?.classList.contains('hidden')) renderHistory();
+    } catch (_) {}
+  };
 
   function init() {
     fillConfig(readStoredConfig());
