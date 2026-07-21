@@ -1,0 +1,1056 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Freev Convert Studio</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: { sans: ['Inter', 'system-ui', 'sans-serif'] },
+          colors: {
+            ink: '#08111f',
+            panel: '#101b2d',
+            line: 'rgba(148,163,184,.18)',
+            cyanx: '#20d3ee',
+            rosex: '#ff4d8d',
+            limex: '#a3e635'
+          }
+        }
+      }
+    };
+  </script>
+  <style>
+    :root {
+      color-scheme: dark;
+      --bg: #07111f;
+      --panel: rgba(15, 23, 42, .84);
+      --panel-2: rgba(30, 41, 59, .74);
+      --line: rgba(148, 163, 184, .18);
+      --text: #f8fafc;
+      --muted: #94a3b8;
+      --accent: #20d3ee;
+      --accent-2: #ff4d8d;
+      --good: #34d399;
+      --warn: #fbbf24;
+      --shadow: 0 24px 80px rgba(0, 0, 0, .35);
+    }
+
+    * { box-sizing: border-box; }
+    body {
+      min-height: 100vh;
+      margin: 0;
+      font-family: Inter, system-ui, sans-serif;
+      color: var(--text);
+      background:
+        radial-gradient(circle at top left, rgba(32, 211, 238, .18), transparent 30vw),
+        radial-gradient(circle at top right, rgba(255, 77, 141, .16), transparent 34vw),
+        linear-gradient(135deg, #07111f 0%, #0b1220 45%, #111827 100%);
+      overflow-x: hidden;
+    }
+
+    body.light {
+      color-scheme: light;
+      --bg: #f7fafc;
+      --panel: rgba(255, 255, 255, .86);
+      --panel-2: rgba(241, 245, 249, .92);
+      --line: rgba(15, 23, 42, .14);
+      --text: #0f172a;
+      --muted: #475569;
+      background:
+        radial-gradient(circle at top left, rgba(32, 211, 238, .22), transparent 34vw),
+        radial-gradient(circle at top right, rgba(255, 77, 141, .16), transparent 38vw),
+        linear-gradient(135deg, #f8fafc 0%, #eef6ff 48%, #fff7fb 100%);
+    }
+
+    #bg-canvas {
+      position: fixed;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      opacity: .42;
+      z-index: -1;
+    }
+
+    .shell { max-width: 1180px; margin: 0 auto; padding: 96px 18px 32px; }
+    .topbar {
+      position: fixed;
+      inset: 0 0 auto;
+      z-index: 50;
+      border-bottom: 1px solid var(--line);
+      background: color-mix(in srgb, var(--bg) 72%, transparent);
+      backdrop-filter: blur(18px);
+    }
+
+    .brand-dot { color: var(--accent-2); }
+    .card {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      box-shadow: var(--shadow);
+    }
+
+    .tool-card {
+      background: var(--panel-2);
+      border: 1px solid var(--line);
+      border-radius: 14px;
+    }
+
+    .input {
+      width: 100%;
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      background: rgba(2, 6, 23, .32);
+      color: var(--text);
+      padding: 12px 14px;
+      outline: none;
+      transition: border-color .18s ease, box-shadow .18s ease, background .18s ease;
+    }
+
+    body.light .input { background: rgba(255, 255, 255, .78); }
+    .input:focus { border-color: var(--accent); box-shadow: 0 0 0 4px rgba(32, 211, 238, .12); }
+    select.input { cursor: pointer; }
+    textarea.input { min-height: 168px; resize: vertical; }
+
+    .tab-btn, .pill, .action-btn, .icon-btn {
+      border: 1px solid var(--line);
+      background: rgba(148, 163, 184, .08);
+      color: var(--muted);
+      transition: transform .18s ease, background .18s ease, color .18s ease, border-color .18s ease;
+    }
+
+    .tab-btn:hover, .pill:hover, .action-btn:hover, .icon-btn:hover {
+      transform: translateY(-1px);
+      color: var(--text);
+      border-color: rgba(32, 211, 238, .42);
+      background: rgba(32, 211, 238, .1);
+    }
+
+    .tab-btn.active, .pill.active {
+      color: #06101c;
+      border-color: transparent;
+      background: linear-gradient(135deg, var(--accent), #a3e635);
+      box-shadow: 0 10px 28px rgba(32, 211, 238, .18);
+    }
+
+    .primary {
+      color: #06101c;
+      background: linear-gradient(135deg, var(--accent), #a3e635);
+      border: 0;
+    }
+
+    .danger { background: rgba(244, 63, 94, .14); color: #fecdd3; border-color: rgba(244, 63, 94, .28); }
+    body.light .danger { color: #be123c; }
+    .muted { color: var(--muted); }
+    .hide { display: none !important; }
+    .tab-panel { display: none; animation: fadeIn .22s ease-out; }
+    .tab-panel.active { display: block; }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(8px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    input[type=range] { accent-color: var(--accent); }
+    .drop-zone.dragover { border-color: var(--accent); background: rgba(32, 211, 238, .11); }
+    .checker {
+      background-image:
+        linear-gradient(45deg, rgba(148,163,184,.16) 25%, transparent 25%),
+        linear-gradient(-45deg, rgba(148,163,184,.16) 25%, transparent 25%),
+        linear-gradient(45deg, transparent 75%, rgba(148,163,184,.16) 75%),
+        linear-gradient(-45deg, transparent 75%, rgba(148,163,184,.16) 75%);
+      background-size: 20px 20px;
+      background-position: 0 0, 0 10px, 10px -10px, -10px 0;
+    }
+
+    .toast {
+      position: fixed;
+      left: 50%;
+      bottom: 26px;
+      z-index: 80;
+      transform: translate(-50%, 24px);
+      opacity: 0;
+      pointer-events: none;
+      transition: .22s ease;
+    }
+    .toast.show { transform: translate(-50%, 0); opacity: 1; }
+
+    @media (max-width: 760px) {
+      .shell { padding-top: 84px; }
+      .mobile-scroll { overflow-x: auto; scrollbar-width: none; }
+      .mobile-scroll::-webkit-scrollbar { display: none; }
+    }
+  </style>
+</head>
+<body>
+  <canvas id="bg-canvas"></canvas>
+
+  <header class="topbar">
+    <div class="max-w-[1180px] mx-auto px-4 py-3 flex items-center justify-between gap-3">
+      <a href="../index.html" class="flex items-center gap-3 min-w-0">
+        <span class="w-10 h-10 rounded-xl grid place-items-center bg-cyanx/15 border border-cyanx/30 text-cyanx"><i class="fa-solid fa-shuffle"></i></span>
+        <span class="font-extrabold tracking-tight text-lg sm:text-xl truncate">FREEV<span class="brand-dot">.</span> Convert Studio</span>
+      </a>
+      <div class="flex items-center gap-2">
+        <button class="icon-btn w-10 h-10 rounded-xl" id="theme-toggle" title="Changer le thème"><i class="fa-solid fa-moon"></i></button>
+        <button type="button" data-freev-cloud-action="save" class="icon-btn w-10 h-10 rounded-xl text-emerald-300" title="Enregistrer"><i class="fa-solid fa-cloud-arrow-up"></i></button>
+        <button type="button" data-freev-cloud-action="history" class="icon-btn w-10 h-10 rounded-xl text-cyanx" title="Historique cloud"><i class="fa-solid fa-clock-rotate-left"></i></button>
+      </div>
+    </div>
+  </header>
+
+  <main class="shell">
+    <section class="mb-6 grid lg:grid-cols-[1.1fr_.9fr] gap-4 items-end">
+      <div>
+        <div class="inline-flex items-center gap-2 rounded-full border border-cyanx/30 bg-cyanx/10 px-3 py-1 text-xs font-bold text-cyanx uppercase tracking-wide mb-3">
+          <i class="fa-solid fa-bolt"></i> Tout-en-un local
+        </div>
+        <h1 class="text-4xl sm:text-5xl font-extrabold tracking-tight mb-3">Convertir, optimiser, calculer.</h1>
+        <p class="muted max-w-2xl">Devises avec mise à jour automatique, unités avancées, images, texte, couleurs et outils rapides dans une seule page.</p>
+      </div>
+      <div class="grid grid-cols-3 gap-2">
+        <div class="tool-card p-3"><div class="text-2xl font-extrabold" id="stat-conversions">0</div><div class="text-xs muted">actions</div></div>
+        <div class="tool-card p-3"><div class="text-2xl font-extrabold">13</div><div class="text-xs muted">outils</div></div>
+        <div class="tool-card p-3"><div class="text-2xl font-extrabold">0%</div><div class="text-xs muted">upload serveur</div></div>
+      </div>
+    </section>
+
+    <section class="card overflow-hidden">
+      <nav class="mobile-scroll border-b border-line p-2">
+        <div class="grid grid-cols-6 min-w-[720px] md:min-w-0 gap-2">
+          <button class="tab-btn active rounded-xl px-3 py-3 font-bold" data-tab="currency"><i class="fa-solid fa-coins mr-2"></i>Devises</button>
+          <button class="tab-btn rounded-xl px-3 py-3 font-bold" data-tab="units"><i class="fa-solid fa-ruler-combined mr-2"></i>Unités</button>
+          <button class="tab-btn rounded-xl px-3 py-3 font-bold" data-tab="image"><i class="fa-solid fa-image mr-2"></i>Images</button>
+          <button class="tab-btn rounded-xl px-3 py-3 font-bold" data-tab="text"><i class="fa-solid fa-font mr-2"></i>Texte</button>
+          <button class="tab-btn rounded-xl px-3 py-3 font-bold" data-tab="colors"><i class="fa-solid fa-palette mr-2"></i>Couleurs</button>
+          <button class="tab-btn rounded-xl px-3 py-3 font-bold" data-tab="calc"><i class="fa-solid fa-calculator mr-2"></i>Calculs</button>
+        </div>
+      </nav>
+
+      <div class="p-4 sm:p-6 lg:p-8">
+        <section class="tab-panel active" id="panel-currency">
+          <div class="grid lg:grid-cols-[1fr_320px] gap-6">
+            <div>
+              <div class="flex flex-wrap items-center justify-between gap-3 mb-5">
+                <h2 class="text-2xl font-extrabold">Convertisseur de devises</h2>
+                <span class="text-xs muted border border-line rounded-full px-3 py-1" id="currency-status">Taux locaux en attente...</span>
+              </div>
+              <div class="grid md:grid-cols-[1fr_auto_1fr] gap-3 items-end mb-4">
+                <label class="block">
+                  <span class="block text-xs font-bold uppercase muted mb-2">Montant source</span>
+                  <input class="input text-2xl font-extrabold" id="currency-amount" type="number" value="1" step="any">
+                </label>
+                <button class="action-btn rounded-xl w-12 h-12 mb-0 md:mb-[1px]" id="currency-swap" title="Inverser"><i class="fa-solid fa-right-left"></i></button>
+                <div class="grid grid-cols-2 gap-3">
+                  <label>
+                    <span class="block text-xs font-bold uppercase muted mb-2">De</span>
+                    <select class="input" id="currency-from"></select>
+                  </label>
+                  <label>
+                    <span class="block text-xs font-bold uppercase muted mb-2">Vers</span>
+                    <select class="input" id="currency-to"></select>
+                  </label>
+                </div>
+              </div>
+              <div class="tool-card p-5 sm:p-6 mb-4 relative">
+                <div class="text-xs font-bold uppercase muted mb-2">Résultat</div>
+                <div class="flex flex-wrap items-end gap-3">
+                  <div class="text-4xl sm:text-6xl font-extrabold tracking-tight" id="currency-result">1.09</div>
+                  <div class="text-2xl font-bold text-cyanx" id="currency-code">USD</div>
+                </div>
+                <div class="muted mt-3" id="currency-rate-line"></div>
+                <button class="icon-btn absolute top-4 right-4 rounded-xl w-10 h-10" data-copy="#currency-result" title="Copier"><i class="fa-regular fa-copy"></i></button>
+              </div>
+              <div class="grid md:grid-cols-4 gap-3">
+                <button class="primary rounded-xl px-4 py-3 font-extrabold" id="currency-update"><i class="fa-solid fa-rotate mr-2"></i>Mettre à jour</button>
+                <button class="action-btn rounded-xl px-4 py-3 font-bold" id="currency-favorite"><i class="fa-regular fa-star mr-2"></i>Favori</button>
+                <button class="action-btn rounded-xl px-4 py-3 font-bold" id="currency-export"><i class="fa-solid fa-file-export mr-2"></i>Exporter JSON</button>
+                <button class="action-btn rounded-xl px-4 py-3 font-bold" id="currency-reset"><i class="fa-solid fa-rotate-left mr-2"></i>Réinitialiser</button>
+              </div>
+            </div>
+            <aside class="tool-card p-4">
+              <h3 class="font-extrabold mb-3">Paires favorites</h3>
+              <div class="space-y-2 mb-5" id="favorite-pairs"></div>
+              <h3 class="font-extrabold mb-3">Taux</h3>
+              <p class="text-xs muted mb-3">Base EUR. Les taux se mettent à jour automatiquement et restent modifiables à la main.</p>
+              <div class="grid grid-cols-2 gap-2" id="rates-editor"></div>
+            </aside>
+          </div>
+        </section>
+
+        <section class="tab-panel" id="panel-units">
+          <div class="flex flex-wrap items-center justify-between gap-3 mb-5">
+            <h2 class="text-2xl font-extrabold">Unités avancées</h2>
+            <button class="action-btn rounded-xl px-4 py-2 font-bold" id="unit-swap"><i class="fa-solid fa-right-left mr-2"></i>Inverser</button>
+          </div>
+          <div class="mobile-scroll mb-5">
+            <div class="flex gap-2 min-w-max" id="unit-types"></div>
+          </div>
+          <div class="grid md:grid-cols-[1fr_1fr] gap-4 mb-5">
+            <div class="tool-card p-4">
+              <label class="block text-xs font-bold uppercase muted mb-2">Valeur</label>
+              <input class="input text-2xl font-extrabold mb-3" id="unit-value" type="number" value="1" step="any">
+              <select class="input" id="unit-from"></select>
+            </div>
+            <div class="tool-card p-4 relative">
+              <label class="block text-xs font-bold uppercase muted mb-2">Résultat</label>
+              <div class="input text-2xl font-extrabold min-h-[55px]" id="unit-result">100</div>
+              <select class="input mt-3" id="unit-to"></select>
+              <button class="icon-btn absolute top-4 right-4 rounded-xl w-10 h-10" data-copy="#unit-result"><i class="fa-regular fa-copy"></i></button>
+            </div>
+          </div>
+          <div class="tool-card p-4">
+            <div class="text-sm muted mb-2">Conversions rapides</div>
+            <div class="grid sm:grid-cols-2 lg:grid-cols-4 gap-2" id="unit-quick"></div>
+          </div>
+        </section>
+
+        <section class="tab-panel" id="panel-image">
+          <div class="grid lg:grid-cols-[.9fr_1.1fr] gap-6">
+            <div>
+              <h2 class="text-2xl font-extrabold mb-4">Studio image</h2>
+              <div id="drop-zone" class="drop-zone checker tool-card min-h-[310px] grid place-items-center text-center p-5 cursor-pointer border-2 border-dashed">
+                <input id="image-input" type="file" accept="image/*" class="hidden">
+                <div id="image-empty">
+                  <div class="w-16 h-16 rounded-2xl bg-cyanx/15 text-cyanx grid place-items-center mx-auto mb-4 text-2xl"><i class="fa-solid fa-cloud-arrow-up"></i></div>
+                  <div class="font-extrabold text-lg">Déposer une image</div>
+                  <div class="text-sm muted">JPG, PNG, WEBP, GIF statique</div>
+                </div>
+                <canvas id="image-canvas" class="hidden max-w-full max-h-[420px] rounded-xl shadow-2xl"></canvas>
+              </div>
+              <div class="grid grid-cols-2 gap-2 mt-3">
+                <button class="action-btn rounded-xl px-4 py-3 font-bold" id="image-reset"><i class="fa-solid fa-trash mr-2"></i>Effacer</button>
+                <button class="primary rounded-xl px-4 py-3 font-extrabold" id="image-download"><i class="fa-solid fa-download mr-2"></i>Télécharger</button>
+              </div>
+            </div>
+            <div class="grid sm:grid-cols-2 gap-4">
+              <div class="tool-card p-4">
+                <label class="block text-xs font-bold uppercase muted mb-2">Format</label>
+                <select class="input" id="image-format">
+                  <option value="image/jpeg">JPG</option>
+                  <option value="image/png">PNG</option>
+                  <option value="image/webp">WEBP</option>
+                </select>
+              </div>
+              <div class="tool-card p-4">
+                <div class="flex justify-between text-xs font-bold uppercase muted mb-2"><span>Qualité</span><span id="quality-label">90%</span></div>
+                <input class="w-full" id="image-quality" type="range" min="10" max="100" value="90">
+              </div>
+              <div class="tool-card p-4">
+                <div class="flex justify-between text-xs font-bold uppercase muted mb-2"><span>Largeur</span><span id="width-label">auto</span></div>
+                <input class="input" id="image-width" type="number" min="1" placeholder="auto">
+              </div>
+              <div class="tool-card p-4">
+                <div class="flex justify-between text-xs font-bold uppercase muted mb-2"><span>Hauteur</span><span id="height-label">auto</span></div>
+                <input class="input" id="image-height" type="number" min="1" placeholder="auto">
+              </div>
+              <div class="tool-card p-4">
+                <div class="flex justify-between text-xs font-bold uppercase muted mb-2"><span>Rotation</span><span id="rotate-label">0°</span></div>
+                <input class="w-full" id="image-rotate" type="range" min="-180" max="180" value="0">
+              </div>
+              <div class="tool-card p-4">
+                <div class="flex justify-between text-xs font-bold uppercase muted mb-2"><span>Luminosité</span><span id="brightness-label">100%</span></div>
+                <input class="w-full" id="image-brightness" type="range" min="40" max="180" value="100">
+              </div>
+              <div class="tool-card p-4">
+                <div class="flex justify-between text-xs font-bold uppercase muted mb-2"><span>Contraste</span><span id="contrast-label">100%</span></div>
+                <input class="w-full" id="image-contrast" type="range" min="40" max="180" value="100">
+              </div>
+              <div class="tool-card p-4">
+                <div class="flex justify-between text-xs font-bold uppercase muted mb-2"><span>Flou</span><span id="blur-label">0px</span></div>
+                <input class="w-full" id="image-blur" type="range" min="0" max="12" value="0">
+              </div>
+              <div class="tool-card p-4 sm:col-span-2">
+                <label class="block text-xs font-bold uppercase muted mb-2">Filigrane</label>
+                <input class="input" id="image-watermark" type="text" placeholder="Texte à ajouter en bas à droite">
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section class="tab-panel" id="panel-text">
+          <div class="grid lg:grid-cols-[1fr_320px] gap-5">
+            <div>
+              <h2 class="text-2xl font-extrabold mb-4">Outils texte</h2>
+              <textarea class="input" id="text-input" placeholder="Collez votre texte ici..."></textarea>
+              <div class="grid sm:grid-cols-2 lg:grid-cols-4 gap-2 mt-3">
+                <button class="action-btn rounded-xl px-3 py-3 font-bold" data-text-action="upper">MAJUSCULES</button>
+                <button class="action-btn rounded-xl px-3 py-3 font-bold" data-text-action="lower">minuscules</button>
+                <button class="action-btn rounded-xl px-3 py-3 font-bold" data-text-action="title">Titre</button>
+                <button class="action-btn rounded-xl px-3 py-3 font-bold" data-text-action="slug">slug-url</button>
+                <button class="action-btn rounded-xl px-3 py-3 font-bold" data-text-action="base64enc">Base64 +</button>
+                <button class="action-btn rounded-xl px-3 py-3 font-bold" data-text-action="base64dec">Base64 -</button>
+                <button class="action-btn rounded-xl px-3 py-3 font-bold" data-text-action="urlenc">URL +</button>
+                <button class="action-btn rounded-xl px-3 py-3 font-bold" data-text-action="urldec">URL -</button>
+              </div>
+            </div>
+            <aside class="tool-card p-4">
+              <h3 class="font-extrabold mb-3">Statistiques</h3>
+              <div class="grid grid-cols-2 gap-2 mb-4" id="text-stats"></div>
+              <button class="primary w-full rounded-xl px-4 py-3 font-extrabold mb-2" data-copy="#text-input"><i class="fa-regular fa-copy mr-2"></i>Copier</button>
+              <button class="action-btn w-full rounded-xl px-4 py-3 font-bold" id="text-clear"><i class="fa-solid fa-eraser mr-2"></i>Vider</button>
+            </aside>
+          </div>
+        </section>
+
+        <section class="tab-panel" id="panel-colors">
+          <div class="grid lg:grid-cols-[360px_1fr] gap-5">
+            <div class="tool-card p-4">
+              <h2 class="text-2xl font-extrabold mb-4">Couleurs</h2>
+              <input id="color-picker" class="w-full h-28 rounded-xl border border-line bg-transparent mb-4" type="color" value="#20d3ee">
+              <input class="input font-mono mb-3" id="color-hex" value="#20d3ee">
+              <button class="primary w-full rounded-xl px-4 py-3 font-extrabold" data-copy="#color-report"><i class="fa-regular fa-copy mr-2"></i>Copier les valeurs</button>
+            </div>
+            <div class="tool-card p-4">
+              <div id="color-swatch" class="h-28 rounded-xl mb-4 border border-line"></div>
+              <pre id="color-report" class="input whitespace-pre-wrap font-mono text-sm"></pre>
+              <div class="grid sm:grid-cols-5 gap-2 mt-4" id="color-palette"></div>
+            </div>
+          </div>
+        </section>
+
+        <section class="tab-panel" id="panel-calc">
+          <div class="grid lg:grid-cols-3 gap-4">
+            <div class="tool-card p-4">
+              <h2 class="text-xl font-extrabold mb-4">TVA / Pourcentage</h2>
+              <input class="input mb-3" id="vat-base" type="number" value="100" step="any" placeholder="Montant HT">
+              <input class="input mb-3" id="vat-rate" type="number" value="20" step="any" placeholder="TVA %">
+              <div class="text-3xl font-extrabold" id="vat-result">120.00</div>
+              <div class="text-sm muted">TTC</div>
+            </div>
+            <div class="tool-card p-4">
+              <h2 class="text-xl font-extrabold mb-4">Remise</h2>
+              <input class="input mb-3" id="discount-base" type="number" value="99" step="any" placeholder="Prix">
+              <input class="input mb-3" id="discount-rate" type="number" value="15" step="any" placeholder="Remise %">
+              <div class="text-3xl font-extrabold" id="discount-result">84.15</div>
+              <div class="text-sm muted" id="discount-save">Économie 14.85</div>
+            </div>
+            <div class="tool-card p-4">
+              <h2 class="text-xl font-extrabold mb-4">Règle de trois</h2>
+              <div class="grid grid-cols-3 gap-2 mb-3">
+                <input class="input" id="rule-a" type="number" value="10" step="any">
+                <input class="input" id="rule-b" type="number" value="25" step="any">
+                <input class="input" id="rule-c" type="number" value="4" step="any">
+              </div>
+              <div class="text-3xl font-extrabold" id="rule-result">10</div>
+              <div class="text-sm muted">si A vaut B, C vaut...</div>
+            </div>
+          </div>
+          <div class="tool-card p-4 mt-4">
+            <h2 class="text-xl font-extrabold mb-3">Historique local</h2>
+            <div id="history-list" class="grid md:grid-cols-2 gap-2"></div>
+            <button class="danger rounded-xl px-4 py-3 font-bold mt-3" id="history-clear"><i class="fa-solid fa-trash mr-2"></i>Vider l’historique</button>
+          </div>
+        </section>
+      </div>
+    </section>
+
+    <footer class="text-center muted text-sm mt-6">Freev Convert Studio · Tout se calcule dans le navigateur · 2026</footer>
+  </main>
+
+  <div class="toast rounded-full bg-slate-950 text-white border border-white/10 px-5 py-3 shadow-2xl font-bold" id="toast">
+    <i class="fa-solid fa-check text-emerald-400 mr-2"></i><span id="toast-text">OK</span>
+  </div>
+
+  <script>
+    const $ = (sel, root = document) => root.querySelector(sel);
+    const $$ = (sel, root = document) => [...root.querySelectorAll(sel)];
+    const store = {
+      get(key, fallback) {
+        try { return JSON.parse(localStorage.getItem(key)) ?? fallback; } catch { return fallback; }
+      },
+      set(key, value) { localStorage.setItem(key, JSON.stringify(value)); }
+    };
+
+    const currencyApiUrl = 'https://open.er-api.com/v6/latest/EUR';
+    const rateCacheMs = 60 * 60 * 1000;
+    const defaultRates = {
+      EUR: 1, USD: 1.09, GBP: .85, JPY: 161.5, CAD: 1.47, CHF: .95, AUD: 1.65, NZD: 1.78,
+      CNY: 7.85, HKD: 8.55, SGD: 1.47, KRW: 1450, INR: 90.7, IDR: 17000, THB: 39.2,
+      MAD: 10.86, DZD: 146.8, TND: 3.38, XOF: 655.96, XAF: 655.96, ZAR: 20.2,
+      AED: 4.0, SAR: 4.09, QAR: 3.97, TRY: 35.5, PLN: 4.34, SEK: 11.3, NOK: 11.4,
+      DKK: 7.46, CZK: 24.7, HUF: 389, RON: 4.98, BGN: 1.96, MXN: 18.5, BRL: 5.42,
+      ARS: 970, CLP: 1000, COP: 4200, PEN: 4.05, EGP: 52.8, NGN: 1650, BTC: .000016
+    };
+    const currencyNames = {
+      EUR: 'Euro', USD: 'Dollar US', GBP: 'Livre sterling', JPY: 'Yen japonais', CAD: 'Dollar canadien',
+      CHF: 'Franc suisse', AUD: 'Dollar australien', NZD: 'Dollar néo-zélandais', CNY: 'Yuan chinois',
+      HKD: 'Dollar de Hong Kong', SGD: 'Dollar de Singapour', KRW: 'Won sud-coréen', INR: 'Roupie indienne',
+      IDR: 'Roupie indonésienne', THB: 'Baht thaïlandais', MAD: 'Dirham marocain', DZD: 'Dinar algérien',
+      TND: 'Dinar tunisien', XOF: 'Franc CFA BCEAO', XAF: 'Franc CFA BEAC', ZAR: 'Rand sud-africain',
+      AED: 'Dirham émirati', SAR: 'Riyal saoudien', QAR: 'Riyal qatari', TRY: 'Livre turque',
+      PLN: 'Zloty polonais', SEK: 'Couronne suédoise', NOK: 'Couronne norvégienne', DKK: 'Couronne danoise',
+      CZK: 'Couronne tchèque', HUF: 'Forint hongrois', RON: 'Leu roumain', BGN: 'Lev bulgare',
+      MXN: 'Peso mexicain', BRL: 'Real brésilien', ARS: 'Peso argentin', CLP: 'Peso chilien',
+      COP: 'Peso colombien', PEN: 'Sol péruvien', EGP: 'Livre égyptienne', NGN: 'Naira nigérian',
+      BTC: 'Bitcoin'
+    };
+    const preferredCurrencyOrder = Object.keys(currencyNames);
+    const storedRates = store.get('freev-rates', {});
+    let rates = { ...defaultRates, ...storedRates, EUR: 1 };
+    let ratesMeta = store.get('freev-rates-meta', { source: 'local', updatedAt: null });
+    let history = store.get('freev-history', []);
+    let imageState = { img: null, fileName: 'image', naturalWidth: 0, naturalHeight: 0 };
+
+    function toast(message) {
+      $('#toast-text').textContent = message;
+      $('#toast').classList.add('show');
+      clearTimeout(window.toastTimer);
+      window.toastTimer = setTimeout(() => $('#toast').classList.remove('show'), 1800);
+    }
+
+    function addHistory(type, label, value) {
+      history.unshift({ type, label, value, date: new Date().toLocaleString('fr-FR') });
+      history = history.slice(0, 18);
+      store.set('freev-history', history);
+      $('#stat-conversions').textContent = history.length;
+      renderHistory();
+    }
+
+    function formatNumber(value, max = 6) {
+      if (!Number.isFinite(value)) return '0';
+      if (Math.abs(value) > 0 && Math.abs(value) < .0001) return value.toExponential(4);
+      return new Intl.NumberFormat('fr-FR', { maximumFractionDigits: max }).format(value);
+    }
+
+    function formatRateDate(value) {
+      if (!value) return 'jamais';
+      return new Intl.DateTimeFormat('fr-FR', {
+        dateStyle: 'short',
+        timeStyle: 'short'
+      }).format(new Date(value));
+    }
+
+    function copyText(text) {
+      navigator.clipboard?.writeText(text).then(() => toast('Copié')).catch(() => toast('Copie impossible'));
+    }
+
+    $$('[data-copy]').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const el = $(btn.dataset.copy);
+        copyText(el.value ?? el.textContent);
+      });
+    });
+
+    $$('.tab-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        $$('.tab-btn').forEach(b => b.classList.remove('active'));
+        $$('.tab-panel').forEach(p => p.classList.remove('active'));
+        btn.classList.add('active');
+        $(`#panel-${btn.dataset.tab}`).classList.add('active');
+      });
+    });
+
+    $('#theme-toggle').addEventListener('click', () => {
+      document.body.classList.toggle('light');
+      store.set('freev-theme', document.body.classList.contains('light') ? 'light' : 'dark');
+      $('#theme-toggle i').className = document.body.classList.contains('light') ? 'fa-solid fa-sun' : 'fa-solid fa-moon';
+    });
+    if (store.get('freev-theme', 'dark') === 'light') $('#theme-toggle').click();
+
+    function getCurrencyCodes() {
+      return preferredCurrencyOrder.filter(code => Number.isFinite(rates[code]));
+    }
+
+    function renderCurrencyStatus(message) {
+      const sourceLabel = ratesMeta.source === 'api' ? 'auto' : ratesMeta.source === 'personnalisé' ? 'personnalisés' : 'locaux';
+      const label = message || `Taux ${sourceLabel} · MAJ ${formatRateDate(ratesMeta.updatedAt)}`;
+      $('#currency-status').textContent = label;
+    }
+
+    function renderCurrencyOptions(keepFrom = $('#currency-from')?.value || 'EUR', keepTo = $('#currency-to')?.value || 'USD') {
+      const options = getCurrencyCodes().map(code => `<option value="${code}">${code} · ${currencyNames[code] || code}</option>`).join('');
+      $('#currency-from').innerHTML = options;
+      $('#currency-to').innerHTML = options;
+      $('#currency-from').value = rates[keepFrom] ? keepFrom : 'EUR';
+      $('#currency-to').value = rates[keepTo] ? keepTo : 'USD';
+    }
+
+    function initCurrency() {
+      renderCurrencyOptions();
+      renderRatesEditor();
+      renderFavorites();
+      renderCurrencyStatus();
+      convertCurrency();
+      updateRatesIfStale();
+    }
+
+    function convertCurrency(log = false) {
+      const amount = parseFloat($('#currency-amount').value) || 0;
+      const from = $('#currency-from').value;
+      const to = $('#currency-to').value;
+      if (!rates[from] || !rates[to]) {
+        $('#currency-result').textContent = '0';
+        $('#currency-code').textContent = to || '';
+        $('#currency-rate-line').textContent = 'Taux indisponible pour cette devise.';
+        return;
+      }
+      const result = amount * (rates[to] / rates[from]);
+      const digits = to === 'BTC' ? 8 : 4;
+      $('#currency-result').textContent = formatNumber(result, digits);
+      $('#currency-code').textContent = to;
+      $('#currency-rate-line').textContent = `1 ${from} = ${formatNumber(rates[to] / rates[from], digits)} ${to}`;
+      if (log) addHistory('devise', `${amount} ${from} vers ${to}`, `${formatNumber(result, digits)} ${to}`);
+    }
+
+    async function updateCurrencyRates(manual = false) {
+      const button = $('#currency-update');
+      try {
+        button.disabled = true;
+        button.innerHTML = '<i class="fa-solid fa-spinner fa-spin mr-2"></i>Mise à jour...';
+        renderCurrencyStatus('Mise à jour des taux...');
+        const response = await fetch(currencyApiUrl, { cache: 'no-store' });
+        if (!response.ok) throw new Error(`HTTP ${response.status}`);
+        const data = await response.json();
+        if (data.result !== 'success' || !data.rates || !data.rates.USD) throw new Error('Réponse API invalide');
+
+        const nextRates = { ...rates, EUR: 1 };
+        preferredCurrencyOrder.forEach(code => {
+          if (Number.isFinite(data.rates[code])) nextRates[code] = data.rates[code];
+        });
+        rates = nextRates;
+        ratesMeta = {
+          source: 'api',
+          updatedAt: data.time_last_update_unix ? data.time_last_update_unix * 1000 : Date.now(),
+          nextUpdateAt: data.time_next_update_unix ? data.time_next_update_unix * 1000 : Date.now() + rateCacheMs
+        };
+        store.set('freev-rates', rates);
+        store.set('freev-rates-meta', ratesMeta);
+        renderCurrencyOptions();
+        renderRatesEditor();
+        renderFavorites();
+        convertCurrency();
+        renderCurrencyStatus();
+        if (manual) toast('Taux mis à jour');
+      } catch (error) {
+        renderCurrencyStatus(`Hors-ligne · derniers taux ${formatRateDate(ratesMeta.updatedAt)}`);
+        if (manual) toast('Mise à jour impossible, cache utilisé');
+      } finally {
+        button.disabled = false;
+        button.innerHTML = '<i class="fa-solid fa-rotate mr-2"></i>Mettre à jour';
+      }
+    }
+
+    function updateRatesIfStale() {
+      const last = ratesMeta.updatedAt ? Number(ratesMeta.updatedAt) : 0;
+      if (!last || Date.now() - last > rateCacheMs) updateCurrencyRates(false);
+    }
+
+    ['currency-amount', 'currency-from', 'currency-to'].forEach(id => $(`#${id}`).addEventListener('input', () => convertCurrency(true)));
+    $('#currency-update').addEventListener('click', () => updateCurrencyRates(true));
+    $('#currency-swap').addEventListener('click', () => {
+      [$('#currency-from').value, $('#currency-to').value] = [$('#currency-to').value, $('#currency-from').value];
+      convertCurrency(true);
+    });
+    $('#currency-reset').addEventListener('click', () => {
+      rates = { ...defaultRates };
+      ratesMeta = { source: 'local', updatedAt: null };
+      store.set('freev-rates', rates);
+      store.set('freev-rates-meta', ratesMeta);
+      renderCurrencyOptions();
+      renderRatesEditor();
+      renderCurrencyStatus();
+      convertCurrency(true);
+      toast('Taux réinitialisés');
+    });
+    $('#currency-export').addEventListener('click', () => downloadText('freev-devises.json', JSON.stringify({ rates, ratesMeta, date: new Date().toISOString() }, null, 2), 'application/json'));
+    $('#currency-favorite').addEventListener('click', () => {
+      const pair = `${$('#currency-from').value}-${$('#currency-to').value}`;
+      const favs = store.get('freev-favorites', []);
+      if (!favs.includes(pair)) favs.unshift(pair);
+      store.set('freev-favorites', favs.slice(0, 8));
+      renderFavorites();
+      toast('Paire ajoutée');
+    });
+
+    function renderRatesEditor() {
+      $('#rates-editor').innerHTML = getCurrencyCodes().map(code => `
+        <label class="text-xs font-bold muted">${code}
+          <input class="input mt-1 py-2 text-sm" data-rate="${code}" type="number" step="any" value="${rates[code]}" ${code === 'EUR' ? 'disabled' : ''}>
+        </label>`).join('');
+      $$('[data-rate]').forEach(input => input.addEventListener('change', () => {
+        const next = parseFloat(input.value);
+        if (!Number.isFinite(next) || next <= 0) {
+          input.value = rates[input.dataset.rate] || defaultRates[input.dataset.rate] || 1;
+          toast('Taux invalide');
+          return;
+        }
+        rates[input.dataset.rate] = next;
+        ratesMeta = { source: 'personnalisé', updatedAt: Date.now() };
+        store.set('freev-rates', rates);
+        store.set('freev-rates-meta', ratesMeta);
+        renderCurrencyStatus();
+        convertCurrency(true);
+      }));
+    }
+
+    function renderFavorites() {
+      const favs = store.get('freev-favorites', ['EUR-USD', 'EUR-MAD', 'USD-EUR']);
+      $('#favorite-pairs').innerHTML = favs.map(pair => {
+        const [from, to] = pair.split('-');
+        return `<button class="action-btn w-full rounded-xl px-3 py-2 text-left font-bold" data-pair="${pair}">${from} → ${to}</button>`;
+      }).join('');
+      $$('[data-pair]').forEach(btn => btn.addEventListener('click', () => {
+        const [from, to] = btn.dataset.pair.split('-');
+        $('#currency-from').value = from;
+        $('#currency-to').value = to;
+        convertCurrency(true);
+      }));
+    }
+
+    const units = {
+      length: { label: 'Longueur', base: 'm', values: { mm: .001, cm: .01, m: 1, km: 1000, in: .0254, ft: .3048, yd: .9144, mi: 1609.344 } },
+      area: { label: 'Surface', base: 'm²', values: { 'cm²': .0001, 'm²': 1, 'km²': 1e6, ha: 10000, acre: 4046.856, 'ft²': .092903 } },
+      volume: { label: 'Volume', base: 'L', values: { ml: .001, cl: .01, L: 1, 'm³': 1000, gal: 3.78541, cup: .236588 } },
+      mass: { label: 'Masse', base: 'kg', values: { mg: .000001, g: .001, kg: 1, t: 1000, oz: .0283495, lb: .453592 } },
+      speed: { label: 'Vitesse', base: 'km/h', values: { 'km/h': 1, 'm/s': 3.6, mph: 1.609344, kn: 1.852 } },
+      time: { label: 'Temps', base: 's', values: { ms: .001, s: 1, min: 60, h: 3600, j: 86400, sem: 604800 } },
+      data: { label: 'Données', base: 'octet', values: { B: 1, KB: 1024, MB: 1048576, GB: 1073741824, TB: 1099511627776 } },
+      energy: { label: 'Énergie', base: 'J', values: { J: 1, kJ: 1000, cal: 4.184, kcal: 4184, Wh: 3600, kWh: 3600000 } },
+      temp: { label: 'Température', base: 'C', values: { C: 1, F: 1, K: 1 } }
+    };
+    let unitType = 'length';
+
+    function initUnits() {
+      $('#unit-types').innerHTML = Object.entries(units).map(([key, data]) => `<button class="pill rounded-full px-4 py-2 font-bold ${key === unitType ? 'active' : ''}" data-unit-type="${key}">${data.label}</button>`).join('');
+      $$('[data-unit-type]').forEach(btn => btn.addEventListener('click', () => setUnitType(btn.dataset.unitType)));
+      setUnitType(unitType);
+    }
+
+    function setUnitType(type) {
+      unitType = type;
+      $$('[data-unit-type]').forEach(btn => btn.classList.toggle('active', btn.dataset.unitType === type));
+      const keys = Object.keys(units[type].values);
+      $('#unit-from').innerHTML = keys.map(k => `<option>${k}</option>`).join('');
+      $('#unit-to').innerHTML = keys.map(k => `<option>${k}</option>`).join('');
+      $('#unit-to').value = keys[1] || keys[0];
+      convertUnit();
+      renderQuickUnits();
+    }
+
+    function tempToC(value, unit) {
+      if (unit === 'F') return (value - 32) * 5 / 9;
+      if (unit === 'K') return value - 273.15;
+      return value;
+    }
+
+    function cToTemp(value, unit) {
+      if (unit === 'F') return value * 9 / 5 + 32;
+      if (unit === 'K') return value + 273.15;
+      return value;
+    }
+
+    function convertUnit(log = false) {
+      const value = parseFloat($('#unit-value').value) || 0;
+      const from = $('#unit-from').value;
+      const to = $('#unit-to').value;
+      let result;
+      if (unitType === 'temp') result = cToTemp(tempToC(value, from), to);
+      else result = value * units[unitType].values[from] / units[unitType].values[to];
+      $('#unit-result').textContent = `${formatNumber(result, 8)} ${to}`;
+      if (log) addHistory('unité', `${value} ${from} vers ${to}`, `${formatNumber(result, 8)} ${to}`);
+    }
+
+    function renderQuickUnits() {
+      const value = parseFloat($('#unit-value').value) || 0;
+      const from = $('#unit-from').value;
+      const keys = Object.keys(units[unitType].values).filter(k => k !== from).slice(0, 8);
+      $('#unit-quick').innerHTML = keys.map(to => {
+        let result = unitType === 'temp' ? cToTemp(tempToC(value, from), to) : value * units[unitType].values[from] / units[unitType].values[to];
+        return `<div class="rounded-xl border border-line p-3"><div class="font-extrabold">${formatNumber(result, 5)} ${to}</div><div class="text-xs muted">${units[unitType].label}</div></div>`;
+      }).join('');
+    }
+
+    ['unit-value', 'unit-from', 'unit-to'].forEach(id => $(`#${id}`).addEventListener('input', () => { convertUnit(true); renderQuickUnits(); }));
+    $('#unit-swap').addEventListener('click', () => {
+      [$('#unit-from').value, $('#unit-to').value] = [$('#unit-to').value, $('#unit-from').value];
+      convertUnit(true);
+      renderQuickUnits();
+    });
+
+    function handleImageFile(file) {
+      if (!file || !file.type.startsWith('image/')) return;
+      const img = new Image();
+      img.onload = () => {
+        imageState = { img, fileName: file.name.replace(/\.[^.]+$/, '') || 'image', naturalWidth: img.naturalWidth, naturalHeight: img.naturalHeight };
+        $('#image-empty').classList.add('hide');
+        $('#image-canvas').classList.remove('hidden');
+        $('#image-width').value = img.naturalWidth;
+        $('#image-height').value = img.naturalHeight;
+        drawImage();
+        addHistory('image', file.name, `${img.naturalWidth} x ${img.naturalHeight}`);
+      };
+      img.src = URL.createObjectURL(file);
+    }
+
+    function drawImage() {
+      if (!imageState.img) return;
+      const canvas = $('#image-canvas');
+      const ctx = canvas.getContext('2d');
+      const width = Math.max(1, parseInt($('#image-width').value) || imageState.naturalWidth);
+      const height = Math.max(1, parseInt($('#image-height').value) || imageState.naturalHeight);
+      const angle = (parseInt($('#image-rotate').value) || 0) * Math.PI / 180;
+      const rotated = Math.abs(Math.sin(angle)) > .001;
+      canvas.width = rotated ? Math.abs(width * Math.cos(angle)) + Math.abs(height * Math.sin(angle)) : width;
+      canvas.height = rotated ? Math.abs(width * Math.sin(angle)) + Math.abs(height * Math.cos(angle)) : height;
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      ctx.save();
+      ctx.translate(canvas.width / 2, canvas.height / 2);
+      ctx.rotate(angle);
+      ctx.filter = `brightness(${$('#image-brightness').value}%) contrast(${$('#image-contrast').value}%) blur(${$('#image-blur').value}px)`;
+      ctx.drawImage(imageState.img, -width / 2, -height / 2, width, height);
+      ctx.restore();
+      const watermark = $('#image-watermark').value.trim();
+      if (watermark) {
+        ctx.font = `${Math.max(16, Math.round(canvas.width / 34))}px Inter, sans-serif`;
+        ctx.textAlign = 'right';
+        ctx.textBaseline = 'bottom';
+        ctx.fillStyle = 'rgba(0,0,0,.48)';
+        ctx.fillRect(canvas.width - ctx.measureText(watermark).width - 30, canvas.height - 48, ctx.measureText(watermark).width + 20, 34);
+        ctx.fillStyle = 'white';
+        ctx.fillText(watermark, canvas.width - 20, canvas.height - 20);
+      }
+      updateImageLabels();
+    }
+
+    function updateImageLabels() {
+      $('#quality-label').textContent = `${$('#image-quality').value}%`;
+      $('#width-label').textContent = $('#image-width').value || 'auto';
+      $('#height-label').textContent = $('#image-height').value || 'auto';
+      $('#rotate-label').textContent = `${$('#image-rotate').value}°`;
+      $('#brightness-label').textContent = `${$('#image-brightness').value}%`;
+      $('#contrast-label').textContent = `${$('#image-contrast').value}%`;
+      $('#blur-label').textContent = `${$('#image-blur').value}px`;
+    }
+
+    $('#image-input').addEventListener('change', event => handleImageFile(event.target.files[0]));
+    $('#drop-zone').addEventListener('click', event => {
+      if (event.target.id !== 'image-input') $('#image-input').click();
+    });
+    ['dragenter', 'dragover'].forEach(type => $('#drop-zone').addEventListener(type, event => { event.preventDefault(); $('#drop-zone').classList.add('dragover'); }));
+    ['dragleave', 'drop'].forEach(type => $('#drop-zone').addEventListener(type, event => { event.preventDefault(); $('#drop-zone').classList.remove('dragover'); }));
+    $('#drop-zone').addEventListener('drop', event => handleImageFile(event.dataTransfer.files[0]));
+    ['image-format', 'image-quality', 'image-width', 'image-height', 'image-rotate', 'image-brightness', 'image-contrast', 'image-blur', 'image-watermark'].forEach(id => $(`#${id}`).addEventListener('input', drawImage));
+    $('#image-reset').addEventListener('click', () => {
+      imageState = { img: null, fileName: 'image', naturalWidth: 0, naturalHeight: 0 };
+      $('#image-input').value = '';
+      $('#image-canvas').classList.add('hidden');
+      $('#image-empty').classList.remove('hide');
+      toast('Image retirée');
+    });
+    $('#image-download').addEventListener('click', () => {
+      if (!imageState.img) return toast('Ajoutez une image');
+      const format = $('#image-format').value;
+      const ext = format.split('/')[1].replace('jpeg', 'jpg');
+      $('#image-canvas').toBlob(blob => downloadBlob(blob, `freev-${imageState.fileName}.${ext}`), format, parseInt($('#image-quality').value) / 100);
+    });
+
+    function updateTextStats() {
+      const text = $('#text-input').value;
+      const words = text.trim() ? text.trim().split(/\s+/).length : 0;
+      const lines = text ? text.split(/\n/).length : 0;
+      const stats = [
+        ['Caractères', text.length], ['Mots', words], ['Lignes', lines], ['Lecture', `${Math.max(1, Math.ceil(words / 220))} min`]
+      ];
+      $('#text-stats').innerHTML = stats.map(([label, value]) => `<div class="rounded-xl border border-line p-3"><div class="text-2xl font-extrabold">${value}</div><div class="text-xs muted">${label}</div></div>`).join('');
+    }
+
+    $$('[data-text-action]').forEach(btn => btn.addEventListener('click', () => {
+      let text = $('#text-input').value;
+      try {
+        if (btn.dataset.textAction === 'upper') text = text.toUpperCase();
+        if (btn.dataset.textAction === 'lower') text = text.toLowerCase();
+        if (btn.dataset.textAction === 'title') text = text.toLowerCase().replace(/\p{L}+/gu, w => w.charAt(0).toUpperCase() + w.slice(1));
+        if (btn.dataset.textAction === 'slug') text = text.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
+        if (btn.dataset.textAction === 'base64enc') text = btoa(unescape(encodeURIComponent(text)));
+        if (btn.dataset.textAction === 'base64dec') text = decodeURIComponent(escape(atob(text)));
+        if (btn.dataset.textAction === 'urlenc') text = encodeURIComponent(text);
+        if (btn.dataset.textAction === 'urldec') text = decodeURIComponent(text);
+        $('#text-input').value = text;
+        addHistory('texte', btn.textContent.trim(), `${text.length} caractères`);
+      } catch { toast('Transformation impossible'); }
+      updateTextStats();
+    }));
+    $('#text-input').addEventListener('input', updateTextStats);
+    $('#text-clear').addEventListener('click', () => { $('#text-input').value = ''; updateTextStats(); });
+
+    function hexToRgb(hex) {
+      const clean = hex.replace('#', '').trim();
+      if (!/^[0-9a-f]{3}$|^[0-9a-f]{6}$/i.test(clean)) return null;
+      const full = clean.length === 3 ? clean.split('').map(c => c + c).join('') : clean.padEnd(6, '0').slice(0, 6);
+      const num = parseInt(full, 16);
+      return { r: (num >> 16) & 255, g: (num >> 8) & 255, b: num & 255, hex: `#${full}` };
+    }
+
+    function rgbToHsl({ r, g, b }) {
+      r /= 255; g /= 255; b /= 255;
+      const max = Math.max(r, g, b), min = Math.min(r, g, b);
+      let h = 0, s = 0, l = (max + min) / 2;
+      if (max !== min) {
+        const d = max - min;
+        s = l > .5 ? d / (2 - max - min) : d / (max + min);
+        h = max === r ? (g - b) / d + (g < b ? 6 : 0) : max === g ? (b - r) / d + 2 : (r - g) / d + 4;
+        h /= 6;
+      }
+      return { h: Math.round(h * 360), s: Math.round(s * 100), l: Math.round(l * 100) };
+    }
+
+    function updateColor() {
+      const rgb = hexToRgb($('#color-hex').value);
+      if (!rgb) {
+        toast('Couleur invalide');
+        $('#color-hex').value = $('#color-picker').value;
+        return;
+      }
+      const hsl = rgbToHsl(rgb);
+      $('#color-picker').value = rgb.hex;
+      $('#color-hex').value = rgb.hex;
+      $('#color-swatch').style.background = rgb.hex;
+      $('#color-report').textContent = `HEX ${rgb.hex}\nRGB rgb(${rgb.r}, ${rgb.g}, ${rgb.b})\nHSL hsl(${hsl.h}, ${hsl.s}%, ${hsl.l}%)`;
+      $('#color-palette').innerHTML = [-30, -15, 0, 15, 30].map(delta => {
+        const light = Math.max(8, Math.min(92, hsl.l + delta));
+        const color = `hsl(${hsl.h}, ${hsl.s}%, ${light}%)`;
+        return `<button class="rounded-xl h-20 border border-line" style="background:${color}" data-color="${color}" title="${color}"></button>`;
+      }).join('');
+      $$('[data-color]').forEach(btn => btn.addEventListener('click', () => copyText(btn.dataset.color)));
+    }
+    $('#color-picker').addEventListener('input', () => { $('#color-hex').value = $('#color-picker').value; updateColor(); });
+    $('#color-hex').addEventListener('change', updateColor);
+
+    function updateCalculators() {
+      const vatBase = parseFloat($('#vat-base').value) || 0;
+      const vatRate = parseFloat($('#vat-rate').value) || 0;
+      $('#vat-result').textContent = formatNumber(vatBase * (1 + vatRate / 100), 2);
+      const discountBase = parseFloat($('#discount-base').value) || 0;
+      const discountRate = parseFloat($('#discount-rate').value) || 0;
+      const save = discountBase * discountRate / 100;
+      $('#discount-result').textContent = formatNumber(discountBase - save, 2);
+      $('#discount-save').textContent = `Économie ${formatNumber(save, 2)}`;
+      const a = parseFloat($('#rule-a').value) || 0;
+      const b = parseFloat($('#rule-b').value) || 0;
+      const c = parseFloat($('#rule-c').value) || 0;
+      $('#rule-result').textContent = formatNumber(a === 0 ? 0 : b * c / a, 4);
+    }
+    ['vat-base', 'vat-rate', 'discount-base', 'discount-rate', 'rule-a', 'rule-b', 'rule-c'].forEach(id => $(`#${id}`).addEventListener('input', updateCalculators));
+
+    function renderHistory() {
+      $('#stat-conversions').textContent = history.length;
+      $('#history-list').innerHTML = history.length ? history.map(item => `
+        <div class="rounded-xl border border-line p-3">
+          <div class="text-xs uppercase muted font-bold">${item.type} · ${item.date}</div>
+          <div class="font-extrabold">${item.label}</div>
+          <div class="muted text-sm">${item.value}</div>
+        </div>`).join('') : '<div class="muted">Aucune action enregistrée pour le moment.</div>';
+    }
+    $('#history-clear').addEventListener('click', () => {
+      history = [];
+      store.set('freev-history', history);
+      renderHistory();
+      toast('Historique vidé');
+    });
+
+    function downloadBlob(blob, fileName) {
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = fileName;
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+      URL.revokeObjectURL(url);
+      toast('Téléchargement lancé');
+    }
+
+    function downloadText(fileName, text, type = 'text/plain') {
+      downloadBlob(new Blob([text], { type }), fileName);
+    }
+
+    const bg = $('#bg-canvas');
+    const bgCtx = bg.getContext('2d');
+    let dots = [];
+    function resizeBg() {
+      bg.width = innerWidth * devicePixelRatio;
+      bg.height = innerHeight * devicePixelRatio;
+      bg.style.width = `${innerWidth}px`;
+      bg.style.height = `${innerHeight}px`;
+      bgCtx.setTransform(devicePixelRatio, 0, 0, devicePixelRatio, 0, 0);
+      dots = Array.from({ length: Math.min(70, Math.floor(innerWidth / 18)) }, () => ({
+        x: Math.random() * innerWidth, y: Math.random() * innerHeight,
+        vx: (Math.random() - .5) * .25, vy: (Math.random() - .5) * .25, r: Math.random() * 2 + .6
+      }));
+    }
+    function tickBg() {
+      bgCtx.clearRect(0, 0, innerWidth, innerHeight);
+      dots.forEach(dot => {
+        dot.x += dot.vx; dot.y += dot.vy;
+        if (dot.x < 0 || dot.x > innerWidth) dot.vx *= -1;
+        if (dot.y < 0 || dot.y > innerHeight) dot.vy *= -1;
+        bgCtx.beginPath();
+        bgCtx.arc(dot.x, dot.y, dot.r, 0, Math.PI * 2);
+        bgCtx.fillStyle = Math.random() > .5 ? 'rgba(32,211,238,.55)' : 'rgba(255,77,141,.45)';
+        bgCtx.fill();
+      });
+      requestAnimationFrame(tickBg);
+    }
+    addEventListener('resize', resizeBg);
+
+    window.freevGetSaveData = function() {
+      return {
+        app: 'Freev Convert Studio',
+        currency: { amount: $('#currency-amount').value, from: $('#currency-from').value, to: $('#currency-to').value, rates, ratesMeta },
+        units: { type: unitType, value: $('#unit-value').value, from: $('#unit-from').value, to: $('#unit-to').value },
+        imageSettings: {
+          format: $('#image-format').value, quality: $('#image-quality').value, width: $('#image-width').value,
+          height: $('#image-height').value, rotate: $('#image-rotate').value
+        },
+        history,
+        summary: 'convert studio complet',
+        savedFrom: 'freevconvert-studio'
+      };
+    };
+
+    window.freevApplySaveData = function(payload = {}) {
+      if (payload.currency) {
+        if (payload.currency.rates) rates = { ...defaultRates, ...payload.currency.rates, EUR: 1 };
+        if (payload.currency.ratesMeta) ratesMeta = payload.currency.ratesMeta;
+        renderCurrencyOptions(payload.currency.from || 'EUR', payload.currency.to || 'USD');
+        $('#currency-amount').value = payload.currency.amount || 1;
+        $('#currency-from').value = payload.currency.from || 'EUR';
+        $('#currency-to').value = payload.currency.to || 'USD';
+        renderRatesEditor();
+        renderCurrencyStatus();
+        convertCurrency();
+      }
+      if (payload.units) {
+        setUnitType(payload.units.type || 'length');
+        $('#unit-value').value = payload.units.value || 1;
+        if (payload.units.from) $('#unit-from').value = payload.units.from;
+        if (payload.units.to) $('#unit-to').value = payload.units.to;
+        convertUnit();
+      }
+      if (payload.history) {
+        history = payload.history;
+        store.set('freev-history', history);
+        renderHistory();
+      }
+    };
+
+    initCurrency();
+    initUnits();
+    updateTextStats();
+    updateColor();
+    updateCalculators();
+    renderHistory();
+    resizeBg();
+    tickBg();
+  </script>
+  <script type="module" src="../freev-cloud-save.js"></script>
+</body>
+</html>

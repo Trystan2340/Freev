@@ -1,0 +1,1968 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <title>Tron Light Cycles - Ultra Edition Améliorée</title>
+    <style>
+        :root {
+            --bg-color: #02030a;
+            --panel: rgba(5, 10, 22, 0.88);
+            --panel-soft: rgba(255, 255, 255, 0.055);
+            --border: rgba(255,255,255,0.16);
+            --p1-color: #00f3ff;
+            --p2-color: #ff0055;
+            --bonus-turbo: #f7ff00;
+            --bonus-shield: #36ff8f;
+            --bonus-slow: #bc5cff;
+            --bonus-erase: #ffffff;
+            --text-color: #ffffff;
+            --muted: rgba(255,255,255,0.58);
+            --danger: #ff2b55;
+            --success: #36ff8f;
+            --shadow-strong: 0 0 35px rgba(0, 243, 255, 0.28);
+        }
+
+        * { box-sizing: border-box; }
+
+        html, body {
+            margin: 0;
+            min-height: 100%;
+            overscroll-behavior: none;
+            -webkit-text-size-adjust: 100%;
+            background:
+                radial-gradient(circle at 18% 12%, rgba(0,243,255,0.18), transparent 34%),
+                radial-gradient(circle at 86% 82%, rgba(255,0,85,0.16), transparent 34%),
+                linear-gradient(135deg, #02030a 0%, #03050d 45%, #08010a 100%);
+            color: var(--text-color);
+            font-family: Orbitron, Rajdhani, Eurostile, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+            overflow: hidden;
+            user-select: none;
+        }
+
+        body {
+            min-height: 100dvh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 16px;
+        }
+
+        body.high-contrast {
+            --bg-color: #000;
+            --panel: rgba(0,0,0,0.94);
+            --border: rgba(255,255,255,0.44);
+            --muted: rgba(255,255,255,0.76);
+        }
+
+        body.reduced-effects *, body.reduced-effects *::before, body.reduced-effects *::after {
+            animation-duration: 0.001ms !important;
+            transition-duration: 0.001ms !important;
+        }
+
+        #freev-back-btn {
+            position: fixed;
+            top: max(14px, env(safe-area-inset-top));
+            left: max(14px, env(safe-area-inset-left));
+            z-index: 9999;
+            display: flex;
+            align-items: center;
+            gap: 7px;
+            padding: 8px 15px;
+            background: rgba(15,23,42,0.78);
+            border: 1px solid var(--border);
+            border-radius: 999px;
+            color: #cbd5e1;
+            font-family: system-ui, sans-serif;
+            font-size: 12px;
+            font-weight: 700;
+            text-decoration: none;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 0 0 rgba(34,211,238,0);
+            transition: all .18s ease;
+        }
+        #freev-back-btn:hover, #freev-back-btn:focus-visible {
+            color: #fff;
+            border-color: rgba(34,211,238,.7);
+            box-shadow: 0 0 18px rgba(34,211,238,.28);
+            outline: none;
+        }
+
+        .freev-manual-cloud-actions {
+            position: fixed;
+            top: max(14px, env(safe-area-inset-top));
+            right: max(14px, env(safe-area-inset-right));
+            z-index: 9999;
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+            justify-content: flex-end;
+        }
+        .freev-manual-cloud-actions button, .top-pill {
+            color: #e5faff;
+            background: rgba(15, 23, 42, .78);
+            border: 1px solid var(--border);
+            border-radius: 999px;
+            padding: 8px 12px;
+            cursor: pointer;
+            font-weight: 700;
+            font-size: 12px;
+            backdrop-filter: blur(10px);
+        }
+        .freev-manual-cloud-actions button:hover, .top-pill:hover,
+        .freev-manual-cloud-actions button:focus-visible, .top-pill:focus-visible {
+            border-color: rgba(0,243,255,.75);
+            box-shadow: 0 0 16px rgba(0,243,255,.22);
+            outline: none;
+        }
+
+        #game-shell {
+            width: min(100%, 1120px);
+            display: grid;
+            justify-items: center;
+            gap: 10px;
+        }
+
+        #top-actions {
+            width: min(96vw, 900px);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 8px;
+            flex-wrap: wrap;
+            min-height: 34px;
+        }
+
+        #game-container {
+            position: relative;
+            width: min(96vw, 900px);
+            max-height: calc(100dvh - 120px);
+            aspect-ratio: 3 / 2;
+            border: 2px solid rgba(255,255,255,.18);
+            border-radius: 18px;
+            background: #000;
+            overflow: hidden;
+            box-shadow:
+                0 0 0 1px rgba(0,243,255,.08) inset,
+                0 0 60px rgba(0, 243, 255, 0.16),
+                0 0 90px rgba(255, 0, 85, 0.08);
+        }
+
+        canvas {
+            display: block;
+            width: 100%;
+            height: 100%;
+            background: #000;
+            touch-action: none;
+        }
+
+        #game-container::after {
+            content: "";
+            position: absolute;
+            inset: 0;
+            pointer-events: none;
+            background:
+                linear-gradient(rgba(255,255,255,0.035) 50%, rgba(0,0,0,0.03) 50%),
+                radial-gradient(circle at center, transparent 52%, rgba(0,0,0,0.55));
+            background-size: 100% 4px, 100% 100%;
+            mix-blend-mode: screen;
+            opacity: .55;
+            z-index: 3;
+        }
+        body.reduced-effects #game-container::after { opacity: .18; }
+
+        .ui-layer {
+            position: absolute;
+            inset: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            background: rgba(0, 0, 0, 0.84);
+            backdrop-filter: blur(10px);
+            z-index: 20;
+            padding: clamp(16px, 3vw, 34px);
+            text-align: center;
+            opacity: 1;
+            transform: scale(1);
+            transition: opacity .25s ease, transform .25s ease;
+        }
+        .ui-layer.hidden {
+            opacity: 0 !important;
+            pointer-events: none !important;
+            transform: scale(1.025);
+        }
+        .hidden { opacity: 0 !important; pointer-events: none !important; }
+
+        h1 {
+            margin: 0;
+            font-size: clamp(2.2rem, 7vw, 5.25rem);
+            line-height: .9;
+            text-transform: uppercase;
+            letter-spacing: clamp(4px, .8vw, 10px);
+            background: linear-gradient(90deg, var(--p1-color), #fff, var(--p2-color));
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+            filter: drop-shadow(0 0 14px rgba(255,255,255,0.35));
+        }
+        h2 { margin: 0; font-size: clamp(1.8rem, 4.5vw, 3.4rem); letter-spacing: 6px; text-transform: uppercase; }
+        h3 { margin: 4px 0 0; letter-spacing: 3px; text-transform: uppercase; }
+        .credits, .hint, .small { color: var(--muted); font-size: .78rem; letter-spacing: 1.4px; }
+        .credits { text-transform: uppercase; margin-bottom: 4px; }
+
+        .btn-row { display: flex; gap: 10px; flex-wrap: wrap; justify-content: center; }
+        .btn {
+            min-width: 210px;
+            background: rgba(255, 255, 255, 0.055);
+            color: #fff;
+            border: 2px solid var(--p1-color);
+            border-radius: 12px;
+            padding: 13px 24px;
+            font-size: 1rem;
+            font-family: inherit;
+            font-weight: 900;
+            cursor: pointer;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            transition: transform .16s ease, background .16s ease, box-shadow .16s ease, border-color .16s ease;
+        }
+        .btn:hover, .btn:focus-visible {
+            background: var(--p1-color);
+            color: #001015;
+            box-shadow: 0 0 26px rgba(0,243,255,.55);
+            transform: translateY(-1px) scale(1.025);
+            outline: none;
+        }
+        .btn.secondary { border-color: var(--p2-color); }
+        .btn.secondary:hover, .btn.secondary:focus-visible { background: var(--p2-color); color: #fff; box-shadow: 0 0 26px rgba(255,0,85,.52); }
+        .btn.ghost { border-color: rgba(255,255,255,.28); min-width: 155px; }
+        .btn.ghost:hover, .btn.ghost:focus-visible { background: rgba(255,255,255,.9); color: #000; box-shadow: 0 0 20px rgba(255,255,255,.35); }
+        .btn.success { border-color: var(--success); }
+        .btn.success:hover, .btn.success:focus-visible { background: var(--success); color: #001408; box-shadow: 0 0 24px rgba(54,255,143,.5); }
+
+        .options-grid {
+            width: min(760px, 100%);
+            display: grid;
+            grid-template-columns: repeat(2, minmax(180px, 1fr));
+            gap: 10px;
+            margin: 10px 0 2px;
+        }
+        .field {
+            display: grid;
+            gap: 5px;
+            text-align: left;
+            background: var(--panel-soft);
+            border: 1px solid rgba(255,255,255,.1);
+            border-radius: 12px;
+            padding: 10px;
+        }
+        .field label {
+            font-size: .68rem;
+            color: var(--muted);
+            letter-spacing: 1.2px;
+            text-transform: uppercase;
+        }
+        select, input[type="range"] {
+            width: 100%;
+            color: #fff;
+            background: rgba(0,0,0,.45);
+            border: 1px solid rgba(255,255,255,.18);
+            border-radius: 9px;
+            padding: 9px 10px;
+            font: inherit;
+            font-size: .82rem;
+            outline: none;
+        }
+        select:focus-visible, input:focus-visible { box-shadow: 0 0 0 3px rgba(0,243,255,.26); }
+        .check-row { display: flex; gap: 10px; align-items: center; justify-content: space-between; }
+        input[type="checkbox"] { width: 18px; height: 18px; accent-color: var(--p1-color); }
+
+        #hud {
+            position: absolute;
+            top: 0;
+            width: 100%;
+            min-height: 76px;
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            padding: 14px clamp(12px, 3vw, 30px);
+            pointer-events: none;
+            z-index: 6;
+            background: linear-gradient(to bottom, rgba(0,0,0,.62), transparent);
+        }
+        .player-hud { width: 180px; display: grid; gap: 5px; align-items: center; }
+        .p2-hud { justify-items: end; text-align: right; }
+        .score { font-size: clamp(1.55rem, 4vw, 2.3rem); font-weight: 950; line-height: .88; }
+        .p1-hud .score { color: var(--p1-color); text-shadow: 0 0 15px var(--p1-color); }
+        .p2-hud .score { color: var(--p2-color); text-shadow: 0 0 15px var(--p2-color); }
+        .bar-container {
+            width: min(135px, 24vw);
+            height: 8px;
+            background: #141414;
+            border: 1px solid rgba(255,255,255,.24);
+            overflow: hidden;
+            border-radius: 999px;
+        }
+        .bar { height: 100%; width: 100%; transition: width .08s linear; border-radius: inherit; }
+        .p1-hud .bar { background: var(--p1-color); box-shadow: 0 0 10px var(--p1-color); }
+        .p2-hud .bar { background: var(--p2-color); box-shadow: 0 0 10px var(--p2-color); }
+        .status-line { height: 14px; color: var(--muted); font-size: .64rem; letter-spacing: 1px; text-transform: uppercase; }
+        #center-hud { text-align: center; color: var(--muted); font-size: .72rem; letter-spacing: 1.4px; padding-top: 4px; }
+        #round-message { margin-top: 4px; color: #fff; text-shadow: 0 0 10px rgba(255,255,255,.55); }
+
+        #countdown-text {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: clamp(4rem, 18vw, 9.5rem);
+            font-weight: 1000;
+            color: #fff;
+            text-shadow: 0 0 34px #fff, 0 0 70px rgba(0,243,255,.5);
+            z-index: 15;
+            pointer-events: none;
+            transition: opacity .18s ease, transform .18s ease;
+        }
+
+        #toast {
+            position: absolute;
+            left: 50%;
+            bottom: 20px;
+            transform: translateX(-50%);
+            z-index: 18;
+            min-width: 220px;
+            padding: 10px 16px;
+            border: 1px solid rgba(255,255,255,.16);
+            border-radius: 999px;
+            background: rgba(0,0,0,.72);
+            color: #fff;
+            text-align: center;
+            font-size: .78rem;
+            letter-spacing: 1.2px;
+            box-shadow: var(--shadow-strong);
+            transition: opacity .25s ease, transform .25s ease;
+        }
+        #toast.hidden { transform: translateX(-50%) translateY(8px); }
+
+        .controls-panel {
+            width: min(720px, 100%);
+            display: grid;
+            gap: 10px;
+            grid-template-columns: repeat(2, minmax(200px, 1fr));
+            text-align: left;
+        }
+        .card {
+            background: var(--panel-soft);
+            border: 1px solid rgba(255,255,255,.12);
+            border-radius: 16px;
+            padding: 14px;
+        }
+        .card strong { color: #fff; }
+        .key { display: inline-flex; align-items: center; justify-content: center; min-width: 28px; height: 26px; padding: 0 8px; margin: 2px; border-radius: 7px; background: rgba(255,255,255,.12); border: 1px solid rgba(255,255,255,.18); font-weight: 900; }
+        .legend { display: flex; gap: 8px; align-items: center; justify-content: center; flex-wrap: wrap; font-size: .72rem; color: var(--muted); }
+        .dot { width: 12px; height: 12px; border-radius: 50%; display: inline-block; box-shadow: 0 0 12px currentColor; }
+
+        #touch-controls {
+            position: fixed;
+            left: 0;
+            right: 0;
+            bottom: max(8px, env(safe-area-inset-bottom));
+            z-index: 25;
+            display: none;
+            justify-content: center;
+            align-items: flex-end;
+            gap: clamp(8px, 2vw, 18px);
+            padding: 0 max(8px, env(safe-area-inset-left)) 0 max(8px, env(safe-area-inset-right));
+            pointer-events: none;
+        }
+        .touch-player {
+            position: relative;
+            display: flex;
+            align-items: flex-end;
+            gap: 8px;
+            padding: 18px 8px 8px;
+            border: 1px solid rgba(0,243,255,.22);
+            border-radius: 18px;
+            background: rgba(0, 7, 15, .46);
+            backdrop-filter: blur(10px);
+            box-shadow: 0 0 24px rgba(0,243,255,.10);
+            pointer-events: none;
+        }
+        .touch-p2 { display: none; border-color: rgba(255,0,85,.28); box-shadow: 0 0 24px rgba(255,0,85,.10); }
+        body.two-player-touch #touch-controls { justify-content: space-between; }
+        body.two-player-touch .touch-p2 { display: flex; }
+        body.two-player-touch .touch-help { display: none; }
+        .touch-label {
+            position: absolute;
+            left: 10px;
+            top: 4px;
+            color: var(--p1-color);
+            font-size: 10px;
+            font-weight: 1000;
+            letter-spacing: 1.4px;
+            text-transform: uppercase;
+            text-shadow: 0 0 9px currentColor;
+        }
+        .touch-p2 .touch-label { color: var(--p2-color); }
+        .dpad {
+            display: grid;
+            grid-template-columns: repeat(3, clamp(42px, 12vw, 56px));
+            grid-template-rows: repeat(3, clamp(38px, 10vw, 52px));
+            gap: 5px;
+            pointer-events: auto;
+        }
+        .touch-btn {
+            border: 1px solid rgba(255,255,255,.24);
+            border-radius: 14px;
+            color: #fff;
+            background: rgba(0, 10, 18, .70);
+            box-shadow: 0 0 18px rgba(0,243,255,.12);
+            font-weight: 1000;
+            font-size: 1rem;
+            backdrop-filter: blur(8px);
+            touch-action: none;
+            -webkit-tap-highlight-color: transparent;
+        }
+        .touch-btn:active, .touch-btn.active-touch { background: var(--p1-color); color: #001015; transform: scale(.96); }
+        .touch-p2 .touch-btn:active, .touch-p2 .touch-btn.active-touch { background: var(--p2-color); color: #fff; }
+        .touch-turbo {
+            width: clamp(68px, 17vw, 88px);
+            height: clamp(68px, 17vw, 88px);
+            border-radius: 50%;
+            border-color: var(--bonus-turbo);
+            color: var(--bonus-turbo);
+            pointer-events: auto;
+            font-size: clamp(.68rem, 2.5vw, .9rem);
+        }
+        .touch-actions {
+            display: grid;
+            gap: 7px;
+            align-content: end;
+            pointer-events: auto;
+            margin-bottom: 8px;
+        }
+        .touch-mini {
+            min-width: 76px;
+            min-height: 38px;
+            padding: 8px 10px;
+            border-radius: 999px;
+            font-size: .68rem;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+        }
+        .touch-help {
+            max-width: 150px;
+            padding: 8px 10px;
+            border: 1px solid rgba(255,255,255,.16);
+            border-radius: 12px;
+            background: rgba(0,0,0,.42);
+            color: rgba(255,255,255,.72);
+            font-size: 10px;
+            line-height: 1.25;
+            text-align: center;
+            pointer-events: none;
+        }
+        .up { grid-column: 2; grid-row: 1; } .left { grid-column: 1; grid-row: 2; } .right { grid-column: 3; grid-row: 2; } .down { grid-column: 2; grid-row: 3; }
+
+        @keyframes shake {
+            0%, 100% { transform: translate(0,0); }
+            20% { transform: translate(-6px, 3px); }
+            40% { transform: translate(4px, -5px); }
+            60% { transform: translate(-3px, -3px); }
+            80% { transform: translate(5px, 2px); }
+        }
+        .shake { animation: shake .42s; }
+        @keyframes pulseGlow {
+            0%, 100% { filter: drop-shadow(0 0 8px rgba(0,243,255,.25)); }
+            50% { filter: drop-shadow(0 0 22px rgba(255,255,255,.5)); }
+        }
+        .logo-pulse { animation: pulseGlow 2.4s ease-in-out infinite; }
+
+        @media (max-width: 760px) {
+            body { padding: 8px; align-items: center; }
+            body.touch-visible { padding-bottom: 132px; }
+            body.touch-visible #touch-controls { display: flex; }
+            #game-shell { gap: 7px; }
+            #top-actions {
+                margin-top: 34px;
+                width: 98vw;
+                gap: 6px;
+            }
+            .top-pill { padding: 7px 9px; font-size: 11px; }
+            #game-container { width: 98vw; max-height: calc(100dvh - 192px); border-radius: 12px; }
+            .freev-manual-cloud-actions { display: none; }
+            .options-grid, .controls-panel { grid-template-columns: 1fr; }
+            .btn { min-width: min(250px, 86vw); padding: 11px 18px; font-size: .88rem; }
+            .ui-layer { overflow: auto; justify-content: flex-start; padding-top: 34px; padding-bottom: 28px; }
+            #hud { padding: 8px 9px; min-height: 64px; }
+            .player-hud { width: 110px; }
+            #center-hud { font-size: .56rem; max-width: 116px; }
+            .bar-container { width: min(112px, 28vw); height: 7px; }
+            .status-line { font-size: .52rem; }
+            #toast { bottom: 136px; max-width: 88vw; font-size: .68rem; }
+        }
+
+        @media (max-width: 760px) and (orientation: portrait) {
+            body.touch-visible { padding-bottom: 146px; }
+            #game-container { max-height: 52dvh; }
+            body.two-player-touch #game-container { max-height: 46dvh; }
+            .touch-help::after { content: ' Tourne le téléphone en paysage pour plus de confort.'; }
+            .dpad { grid-template-columns: repeat(3, 42px); grid-template-rows: repeat(3, 38px); gap: 4px; }
+            .touch-turbo { width: 64px; height: 64px; }
+            .touch-player { gap: 5px; padding-left: 6px; padding-right: 6px; }
+            body.two-player-touch .touch-actions { display: none; }
+            body.two-player-touch .dpad { grid-template-columns: repeat(3, 34px); grid-template-rows: repeat(3, 32px); gap: 3px; }
+            body.two-player-touch .touch-turbo { width: 48px; height: 58px; font-size: .56rem; }
+            body.two-player-touch .touch-player { gap: 4px; padding-left: 4px; padding-right: 4px; }
+        }
+
+        @media (max-height: 520px) and (orientation: landscape) {
+            body.touch-visible { padding-bottom: 104px; }
+            #top-actions { margin-top: 18px; }
+            #game-container { max-height: calc(100dvh - 128px); width: min(86vw, 900px); }
+            .dpad { grid-template-columns: repeat(3, 42px); grid-template-rows: repeat(3, 36px); gap: 4px; }
+            .touch-turbo { width: 62px; height: 62px; }
+            .touch-player { padding-top: 16px; }
+            #toast { bottom: 108px; }
+        }
+
+        @media (hover: none) and (pointer: coarse) {
+            body.touch-visible { padding-bottom: 132px; }
+            body.touch-visible #touch-controls { display: flex; }
+            body.touch-visible #game-container { max-height: calc(100dvh - 176px); }
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            *, *::before, *::after { animation-duration: 0.001ms !important; transition-duration: 0.001ms !important; scroll-behavior: auto !important; }
+        }
+    </style>
+</head>
+<body>
+    <a href="../index.html" id="freev-back-btn">&#8592; Retour</a>
+    <div class="freev-manual-cloud-actions freev-game-cloud-actions" aria-label="Sauvegardes">
+        <button type="button" data-freev-cloud-action="save" id="cloud-save-btn">Enregistrer</button>
+        <button type="button" data-freev-cloud-action="history" id="cloud-history-btn">Historique</button>
+    </div>
+
+    <main id="game-shell">
+        <div id="top-actions" aria-label="Actions rapides">
+            <button class="top-pill" type="button" id="fullscreen-btn">Plein écran</button>
+            <button class="top-pill" type="button" id="mute-btn">Son : ON</button>
+            <button class="top-pill" type="button" id="quick-save-btn">Save locale</button>
+            <button class="top-pill" type="button" id="quick-load-btn">Charger</button>
+        </div>
+
+        <div id="game-container">
+            <canvas id="gameCanvas" aria-label="Arène Tron" width="900" height="600"></canvas>
+
+            <div id="hud" class="hidden">
+                <div class="player-hud p1-hud">
+                    <div class="score"><span id="score1">0</span></div>
+                    <div class="bar-container"><div id="turbo1" class="bar"></div></div>
+                    <div id="status1" class="status-line"></div>
+                </div>
+                <div id="center-hud">
+                    <div>VITESSE <span id="speed-val">100</span>%</div>
+                    <div id="round-message">Prêt</div>
+                </div>
+                <div class="player-hud p2-hud">
+                    <div class="score"><span id="score2">0</span></div>
+                    <div class="bar-container"><div id="turbo2" class="bar"></div></div>
+                    <div id="status2" class="status-line"></div>
+                </div>
+            </div>
+
+            <div id="countdown-text" class="hidden">3</div>
+            <div id="toast" class="hidden">Sauvegardé</div>
+
+            <section id="main-menu" class="ui-layer">
+                <h1 class="logo-pulse">TRON <span style="font-size:.36em; -webkit-text-fill-color:#fff; color:#fff;">ULTRA+</span></h1>
+                <div class="credits">Version améliorée complète — créé par Freev</div>
+
+                <div class="btn-row">
+                    <button class="btn" type="button" id="solo-btn">Mode Solo IA</button>
+                    <button class="btn secondary" type="button" id="duel-btn">Mode Duel Local</button>
+                </div>
+
+                <div class="options-grid" aria-label="Options de partie">
+                    <div class="field">
+                        <label for="difficulty-select">Difficulté IA</label>
+                        <select id="difficulty-select">
+                            <option value="easy">Facile</option>
+                            <option value="normal" selected>Normal</option>
+                            <option value="hard">Difficile</option>
+                            <option value="expert">Expert</option>
+                        </select>
+                    </div>
+                    <div class="field">
+                        <label for="speed-select">Vitesse de départ</label>
+                        <select id="speed-select">
+                            <option value="70">Lente</option>
+                            <option value="55" selected>Normale</option>
+                            <option value="42">Rapide</option>
+                            <option value="34">Ultra</option>
+                        </select>
+                    </div>
+                    <div class="field">
+                        <label for="arena-select">Taille de l'arène</label>
+                        <select id="arena-select">
+                            <option value="small">Petite</option>
+                            <option value="normal" selected>Normale</option>
+                            <option value="large">Grande</option>
+                        </select>
+                    </div>
+                    <div class="field">
+                        <label for="score-select">Score gagnant</label>
+                        <select id="score-select">
+                            <option value="3">3 points</option>
+                            <option value="5" selected>5 points</option>
+                            <option value="7">7 points</option>
+                            <option value="10">10 points</option>
+                        </select>
+                    </div>
+                    <div class="field">
+                        <label for="bonus-select">Bonus</label>
+                        <select id="bonus-select">
+                            <option value="low">Peu</option>
+                            <option value="normal" selected>Normal</option>
+                            <option value="chaos">Chaos</option>
+                        </select>
+                    </div>
+                    <div class="field">
+                        <label>Accessibilité / rendu</label>
+                        <div class="check-row"><span class="small">Effets néon</span><input id="effects-check" type="checkbox" checked></div>
+                        <div class="check-row"><span class="small">Contraste fort</span><input id="contrast-check" type="checkbox"></div>
+                    </div>
+                </div>
+
+                <div class="legend" aria-label="Légende bonus">
+                    <span><span class="dot" style="color:var(--bonus-turbo);background:var(--bonus-turbo)"></span> Turbo</span>
+                    <span><span class="dot" style="color:var(--bonus-shield);background:var(--bonus-shield)"></span> Bouclier</span>
+                    <span><span class="dot" style="color:var(--bonus-slow);background:var(--bonus-slow)"></span> Ralentir</span>
+                    <span><span class="dot" style="color:var(--bonus-erase);background:var(--bonus-erase)"></span> Effacer</span>
+                </div>
+                <div class="btn-row">
+                    <button class="btn ghost" type="button" id="controls-btn">Contrôles</button>
+                    <button class="btn ghost" type="button" id="load-menu-btn">Charger sauvegarde</button>
+                </div>
+                <p class="hint">J1 : ZQSD / WASD + E turbo — J2 : flèches + M turbo — Pause : P ou Espace.</p>
+            </section>
+
+            <section id="controls-screen" class="ui-layer hidden">
+                <h2>Contrôles</h2>
+                <div class="controls-panel">
+                    <div class="card">
+                        <h3 style="color:var(--p1-color)">Joueur 1</h3>
+                        <p><span class="key">Z</span><span class="key">Q</span><span class="key">S</span><span class="key">D</span> ou <span class="key">W</span><span class="key">A</span><span class="key">S</span><span class="key">D</span></p>
+                        <p><span class="key">E</span> Turbo</p>
+                        <p class="small">Mobile : swipe sur l'arène, D-pad, bouton turbo et vibrations.</p>
+                    </div>
+                    <div class="card">
+                        <h3 style="color:var(--p2-color)">Joueur 2</h3>
+                        <p><span class="key">↑</span><span class="key">←</span><span class="key">↓</span><span class="key">→</span></p>
+                        <p><span class="key">M</span> Turbo</p>
+                        <p class="small">En solo, l'IA contrôle le rouge. En duel mobile, le rouge a son D-pad à droite.</p>
+                    </div>
+                    <div class="card">
+                        <h3>Bonus</h3>
+                        <p><strong>Jaune</strong> recharge le turbo. <strong>Vert</strong> donne un bouclier contre une trace. <strong>Violet</strong> ralentit l'adversaire. <strong>Blanc</strong> efface une partie de ta trace.</p>
+                    </div>
+                    <div class="card">
+                        <h3>Touches système</h3>
+                        <p><span class="key">P</span> ou <span class="key">Espace</span> Pause</p>
+                        <p><span class="key">F</span> Plein écran</p>
+                        <p><span class="key">N</span> Nouveau match depuis l'écran de fin</p>
+                    </div>
+                </div>
+                <button class="btn" type="button" id="back-menu-from-controls">Retour menu</button>
+            </section>
+
+            <section id="pause-screen" class="ui-layer hidden">
+                <h2>Pause</h2>
+                <p class="hint">La reprise lance un compte à rebours pour éviter une mort injuste.</p>
+                <div class="btn-row">
+                    <button class="btn success" type="button" id="resume-btn">Reprendre</button>
+                    <button class="btn ghost" type="button" id="pause-save-btn">Sauvegarder</button>
+                    <button class="btn secondary" type="button" id="quit-btn">Quitter</button>
+                </div>
+            </section>
+
+            <section id="game-over" class="ui-layer hidden">
+                <h2 id="winner-text">-</h2>
+                <p id="final-score" class="hint">Score : 0 - 0</p>
+                <div class="btn-row">
+                    <button class="btn" type="button" id="revenge-btn">Manche suivante</button>
+                    <button class="btn success" type="button" id="new-match-btn">Nouveau match</button>
+                    <button class="btn secondary" type="button" id="menu-btn">Menu</button>
+                </div>
+            </section>
+        </div>
+    </main>
+
+    <div id="touch-controls" aria-label="Contrôles tactiles mobile">
+        <div class="touch-player touch-p1" aria-label="Contrôles tactiles joueur bleu">
+            <div class="touch-label">Bleu</div>
+            <div class="dpad">
+                <button class="touch-btn up" data-player="1" data-dir="0,-1" type="button">▲</button>
+                <button class="touch-btn left" data-player="1" data-dir="-1,0" type="button">◀</button>
+                <button class="touch-btn right" data-player="1" data-dir="1,0" type="button">▶</button>
+                <button class="touch-btn down" data-player="1" data-dir="0,1" type="button">▼</button>
+            </div>
+            <button class="touch-btn touch-turbo" data-turbo-player="1" type="button">TURBO</button>
+        </div>
+
+        <div class="touch-actions" aria-label="Actions tactiles">
+            <button class="touch-btn touch-mini" id="touch-pause-btn" type="button">Pause</button>
+            <button class="touch-btn touch-mini" id="touch-fullscreen-btn" type="button">Écran</button>
+            <div class="touch-help">Swipe aussi possible sur l'arène.</div>
+        </div>
+
+        <div class="touch-player touch-p2" aria-label="Contrôles tactiles joueur rouge">
+            <div class="touch-label">Rouge</div>
+            <button class="touch-btn touch-turbo" data-turbo-player="2" type="button">TURBO</button>
+            <div class="dpad">
+                <button class="touch-btn up" data-player="2" data-dir="0,-1" type="button">▲</button>
+                <button class="touch-btn left" data-player="2" data-dir="-1,0" type="button">◀</button>
+                <button class="touch-btn right" data-player="2" data-dir="1,0" type="button">▶</button>
+                <button class="touch-btn down" data-player="2" data-dir="0,1" type="button">▼</button>
+            </div>
+        </div>
+    </div>
+
+<script>
+(() => {
+    'use strict';
+
+    const canvas = document.getElementById('gameCanvas');
+    const ctx = canvas.getContext('2d');
+    const gameContainer = document.getElementById('game-container');
+    const screens = {
+        menu: document.getElementById('main-menu'),
+        controls: document.getElementById('controls-screen'),
+        pause: document.getElementById('pause-screen'),
+        gameover: document.getElementById('game-over')
+    };
+    const hud = document.getElementById('hud');
+    const countdownEl = document.getElementById('countdown-text');
+    const toastEl = document.getElementById('toast');
+
+    const COLORS = {
+        bg: '#000000',
+        grid: 'rgba(0, 243, 255, .12)',
+        p1: '#00f3ff',
+        p2: '#ff0055',
+        turbo: '#f7ff00',
+        shield: '#36ff8f',
+        slow: '#bc5cff',
+        erase: '#ffffff'
+    };
+
+    const ARENAS = {
+        small: { w: 760, h: 520, cell: 10 },
+        normal: { w: 900, h: 600, cell: 10 },
+        large: { w: 1040, h: 680, cell: 10 }
+    };
+
+    const BONUS_CONFIG = {
+        low: { max: 2, chance: 0.012 },
+        normal: { max: 3, chance: 0.020 },
+        chaos: { max: 5, chance: 0.035 }
+    };
+
+    const DEFAULT_SETTINGS = {
+        difficulty: 'normal',
+        startSpeed: 55,
+        arena: 'normal',
+        winningScore: 5,
+        bonuses: 'normal',
+        effects: true,
+        highContrast: false,
+        muted: false,
+        volume: 0.34
+    };
+
+    const STORAGE_KEY = 'freev-tron-ultra-plus-save';
+    const SETTINGS_KEY = 'freev-tron-ultra-plus-settings';
+    const clamp = (value, min, max) => Math.max(min, Math.min(max, value));
+    const randomInt = (min, max) => Math.floor(Math.random() * (max - min + 1)) + min;
+
+    let settings = { ...DEFAULT_SETTINGS, ...safeJSON(localStorage.getItem(SETTINGS_KEY), {}) };
+    let logicalWidth = 900;
+    let logicalHeight = 600;
+    let CELL_SIZE = 10;
+    let GAP = 1;
+    let gridWidth = 90;
+    let gridHeight = 60;
+    let dpr = 1;
+    let grid = [];
+    let bonuses = [];
+    let particles = [];
+    let shockwaves = [];
+    let floatingTexts = [];
+    let scores = { p1: 0, p2: 0 };
+    let isTwoPlayer = false;
+    let gameState = 'menu'; // menu, controls, countdown, playing, paused, gameover
+    let countdownTimer = null;
+    let countdownToken = 0;
+    let currentInterval = settings.startSpeed;
+    let tickCount = 0;
+    let accumulator = 0;
+    let lastTimestamp = 0;
+    let rafId = null;
+    let matchOver = false;
+    let toastTimer = null;
+    let touchStarts = new Map();
+    let audio = { ctx: null, master: null, enabled: false };
+
+    class Bike {
+        constructor(id, color) {
+            this.id = id;
+            this.color = color;
+            this.reset();
+        }
+        reset() {
+            this.x = this.id === 1 ? Math.max(4, Math.floor(gridWidth * 0.16)) : Math.min(gridWidth - 5, Math.floor(gridWidth * 0.84));
+            this.y = Math.floor(gridHeight / 2);
+            this.dx = this.id === 1 ? 1 : -1;
+            this.dy = 0;
+            this.nextDx = this.dx;
+            this.nextDy = this.dy;
+            this.dead = false;
+            this.turboFuel = 100;
+            this.isTurbo = false;
+            this.shieldTicks = 0;
+            this.slowTicks = 0;
+            this.turnCooldown = 0;
+            this.trail = [{ x: this.x, y: this.y }];
+        }
+        snapshot() {
+            return {
+                id: this.id, x: this.x, y: this.y, dx: this.dx, dy: this.dy,
+                nextDx: this.nextDx, nextDy: this.nextDy, dead: this.dead,
+                turboFuel: this.turboFuel, isTurbo: this.isTurbo,
+                shieldTicks: this.shieldTicks, slowTicks: this.slowTicks,
+                trail: this.trail.slice(-900)
+            };
+        }
+        restore(data = {}) {
+            this.x = Number(data.x) || this.x;
+            this.y = Number(data.y) || this.y;
+            this.dx = Number(data.dx) || this.dx;
+            this.dy = Number(data.dy) || this.dy;
+            this.nextDx = Number(data.nextDx) || this.dx;
+            this.nextDy = Number(data.nextDy) || this.dy;
+            this.dead = Boolean(data.dead);
+            this.turboFuel = clamp(Number(data.turboFuel) || 100, 0, 100);
+            this.isTurbo = Boolean(data.isTurbo);
+            this.shieldTicks = Math.max(0, Number(data.shieldTicks) || 0);
+            this.slowTicks = Math.max(0, Number(data.slowTicks) || 0);
+            this.trail = Array.isArray(data.trail) ? data.trail.filter(c => Number.isFinite(c.x) && Number.isFinite(c.y)) : [{ x: this.x, y: this.y }];
+        }
+        changeDir(dx, dy) {
+            if (this.dead) return false;
+            if (this.dx === -dx && this.dy === -dy) return false;
+            if (this.nextDx === dx && this.nextDy === dy) return false;
+            this.nextDx = dx;
+            this.nextDy = dy;
+            if (gameState === 'playing') {
+                playSound('turn', this.id === 1 ? 430 : 310, this.id === 1 ? COLORS.p1 : COLORS.p2);
+                hapticFeedback(8);
+            }
+            return true;
+        }
+        getSteps() {
+            if (this.dead) return 0;
+            let steps = 1;
+            if (this.slowTicks > 0 && tickCount % 2 === 0) steps = 0;
+            if (steps > 0 && this.isTurbo && this.turboFuel > 0) {
+                steps = 2;
+                this.turboFuel -= 2.6;
+                if (tickCount % 8 === 0) spawnExhaust(this);
+            } else {
+                this.turboFuel += 0.28;
+            }
+            this.turboFuel = clamp(this.turboFuel, 0, 100);
+            return steps;
+        }
+        endTick() {
+            this.shieldTicks = Math.max(0, this.shieldTicks - 1);
+            this.slowTicks = Math.max(0, this.slowTicks - 1);
+        }
+        die() {
+            if (this.dead) return;
+            this.dead = true;
+            spawnExplosion(this.x, this.y, this.color, 56);
+            shockwaves.push(new Shockwave(this.x, this.y, this.color));
+            playSound('crash', this.id === 1 ? 120 : 95, this.color);
+            hapticFeedback(42);
+        }
+    }
+
+    class Particle {
+        constructor(x, y, color, speed = 1) {
+            this.x = x * CELL_SIZE + CELL_SIZE / 2;
+            this.y = y * CELL_SIZE + CELL_SIZE / 2;
+            const angle = Math.random() * Math.PI * 2;
+            const velocity = (Math.random() * 4.8 + 1.2) * speed;
+            this.dx = Math.cos(angle) * velocity;
+            this.dy = Math.sin(angle) * velocity;
+            this.life = 1;
+            this.size = Math.random() * 4 + 2;
+            this.decay = Math.random() * 0.018 + 0.012;
+            this.color = color;
+        }
+        update() { this.x += this.dx; this.y += this.dy; this.dx *= .985; this.dy *= .985; this.life -= this.decay; }
+        draw() {
+            ctx.globalAlpha = Math.max(0, this.life);
+            ctx.fillStyle = this.color;
+            if (settings.effects) { ctx.shadowBlur = 12; ctx.shadowColor = this.color; }
+            ctx.fillRect(this.x, this.y, this.size, this.size);
+            ctx.globalAlpha = 1;
+            ctx.shadowBlur = 0;
+        }
+    }
+
+    class Shockwave {
+        constructor(x, y, color) {
+            this.x = x * CELL_SIZE + CELL_SIZE / 2;
+            this.y = y * CELL_SIZE + CELL_SIZE / 2;
+            this.r = 6;
+            this.life = 1;
+            this.color = color;
+        }
+        update() { this.r += 7; this.life -= .04; }
+        draw() {
+            ctx.globalAlpha = Math.max(0, this.life);
+            ctx.strokeStyle = this.color;
+            ctx.lineWidth = 3;
+            if (settings.effects) { ctx.shadowBlur = 20; ctx.shadowColor = this.color; }
+            ctx.beginPath();
+            ctx.arc(this.x, this.y, this.r, 0, Math.PI * 2);
+            ctx.stroke();
+            ctx.globalAlpha = 1;
+            ctx.shadowBlur = 0;
+        }
+    }
+
+    class FloatingText {
+        constructor(text, x, y, color) {
+            this.text = text;
+            this.x = x * CELL_SIZE;
+            this.y = y * CELL_SIZE;
+            this.color = color;
+            this.life = 1;
+        }
+        update() { this.y -= .55; this.life -= .018; }
+        draw() {
+            ctx.save();
+            ctx.globalAlpha = Math.max(0, this.life);
+            ctx.fillStyle = this.color;
+            ctx.shadowColor = this.color;
+            ctx.shadowBlur = 10;
+            ctx.font = '900 15px system-ui, sans-serif';
+            ctx.fillText(this.text, this.x, this.y);
+            ctx.restore();
+        }
+    }
+
+    const p1 = new Bike(1, COLORS.p1);
+    const p2 = new Bike(2, COLORS.p2);
+    const players = [p1, p2];
+
+    function safeJSON(raw, fallback) {
+        try { return raw ? JSON.parse(raw) : fallback; } catch { return fallback; }
+    }
+
+    function readSettingsFromForm() {
+        settings.difficulty = document.getElementById('difficulty-select').value;
+        settings.startSpeed = Number(document.getElementById('speed-select').value) || 55;
+        settings.arena = document.getElementById('arena-select').value;
+        settings.winningScore = Number(document.getElementById('score-select').value) || 5;
+        settings.bonuses = document.getElementById('bonus-select').value;
+        settings.effects = document.getElementById('effects-check').checked;
+        settings.highContrast = document.getElementById('contrast-check').checked;
+        applyAccessibility();
+        saveSettings();
+    }
+
+    function syncSettingsToForm() {
+        document.getElementById('difficulty-select').value = settings.difficulty;
+        document.getElementById('speed-select').value = String(settings.startSpeed);
+        document.getElementById('arena-select').value = settings.arena;
+        document.getElementById('score-select').value = String(settings.winningScore);
+        document.getElementById('bonus-select').value = settings.bonuses;
+        document.getElementById('effects-check').checked = settings.effects;
+        document.getElementById('contrast-check').checked = settings.highContrast;
+        document.getElementById('mute-btn').textContent = `Son : ${settings.muted ? 'OFF' : 'ON'}`;
+        applyAccessibility();
+    }
+
+    function saveSettings() {
+        localStorage.setItem(SETTINGS_KEY, JSON.stringify(settings));
+    }
+
+    function applyAccessibility() {
+        document.body.classList.toggle('reduced-effects', !settings.effects || window.matchMedia('(prefers-reduced-motion: reduce)').matches);
+        document.body.classList.toggle('high-contrast', settings.highContrast);
+    }
+
+    function configureArena() {
+        const arena = ARENAS[settings.arena] || ARENAS.normal;
+        logicalWidth = arena.w;
+        logicalHeight = arena.h;
+        CELL_SIZE = arena.cell;
+        gridWidth = Math.floor(logicalWidth / CELL_SIZE);
+        gridHeight = Math.floor(logicalHeight / CELL_SIZE);
+        gameContainer.style.aspectRatio = `${logicalWidth} / ${logicalHeight}`;
+        gameContainer.style.width = `min(96vw, ${logicalWidth}px)`;
+        resizeCanvas();
+    }
+
+    function resizeCanvas() {
+        dpr = Math.min(window.devicePixelRatio || 1, 2.5);
+        canvas.width = Math.round(logicalWidth * dpr);
+        canvas.height = Math.round(logicalHeight * dpr);
+        canvas.style.width = '100%';
+        canvas.style.height = '100%';
+        ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+        draw();
+    }
+
+    function initGrid() {
+        grid = Array.from({ length: gridWidth }, () => new Int8Array(gridHeight).fill(0));
+    }
+
+    function markBikeStart() {
+        players.forEach(p => {
+            if (inBounds(p.x, p.y)) {
+                grid[p.x][p.y] = p.id;
+                p.trail = [{ x: p.x, y: p.y }];
+            }
+        });
+    }
+
+    function inBounds(x, y) { return x >= 0 && x < gridWidth && y >= 0 && y < gridHeight; }
+
+    function startGame(twoPlayers) {
+        initAudio();
+        readSettingsFromForm();
+        isTwoPlayer = twoPlayers;
+        scores = { p1: 0, p2: 0 };
+        matchOver = false;
+        configureArena();
+        resetRound({ resetScores: false });
+    }
+
+    function resetRound({ resetScores = false } = {}) {
+        clearCountdown();
+        if (resetScores) scores = { p1: 0, p2: 0 };
+        matchOver = false;
+        currentInterval = Number(settings.startSpeed) || 55;
+        tickCount = 0;
+        accumulator = 0;
+        initGrid();
+        players.forEach(p => p.reset());
+        markBikeStart();
+        particles = [];
+        shockwaves = [];
+        floatingTexts = [];
+        bonuses = [];
+        gameContainer.classList.remove('shake');
+        hideAllScreens();
+        screens.gameover.classList.add('hidden');
+        hud.classList.remove('hidden');
+        updateHUD();
+        draw();
+        runCountdown(3, 'playing');
+    }
+
+    function hideAllScreens() {
+        Object.values(screens).forEach(el => el.classList.add('hidden'));
+    }
+
+    function showMenu() {
+        clearCountdown();
+        gameState = 'menu';
+        updateMobileMode();
+        stopAllTurbo();
+        hideAllScreens();
+        screens.menu.classList.remove('hidden');
+        hud.classList.add('hidden');
+        countdownEl.classList.add('hidden');
+        initGrid();
+        bonuses = [];
+        particles = [];
+        shockwaves = [];
+        floatingTexts = [];
+        draw();
+    }
+
+    function showControls() {
+        gameState = 'controls';
+        updateMobileMode();
+        hideAllScreens();
+        screens.controls.classList.remove('hidden');
+    }
+
+    function clearCountdown() {
+        countdownToken++;
+        if (countdownTimer) clearTimeout(countdownTimer);
+        countdownTimer = null;
+        countdownEl.classList.add('hidden');
+    }
+
+    function runCountdown(count, nextState = 'playing') {
+        clearCountdown();
+        const token = countdownToken;
+        gameState = 'countdown';
+        updateMobileMode();
+        countdownEl.classList.remove('hidden');
+        const step = (n) => {
+            if (token !== countdownToken) return;
+            countdownEl.classList.remove('hidden');
+            if (n > 0) {
+                countdownEl.textContent = String(n);
+                playSound('count', 260 + n * 80, '#ffffff');
+                countdownTimer = setTimeout(() => step(n - 1), 720);
+            } else {
+                countdownEl.textContent = 'ACTION!';
+                playSound('start', 640, COLORS.p1);
+                countdownTimer = setTimeout(() => {
+                    if (token !== countdownToken) return;
+                    countdownEl.classList.add('hidden');
+                    lastTimestamp = performance.now();
+                    accumulator = 0;
+                    gameState = nextState;
+                    updateMobileMode();
+                    updateHUD();
+                }, 460);
+            }
+        };
+        step(count);
+    }
+
+    function togglePause() {
+        if (gameState === 'playing') {
+            gameState = 'paused';
+            updateMobileMode();
+            stopAllTurbo();
+            screens.pause.classList.remove('hidden');
+            playSound('ui', 220, '#ffffff');
+            updateHUD();
+        } else if (gameState === 'paused') {
+            resumeWithCountdown();
+        }
+    }
+
+    function resumeWithCountdown() {
+        screens.pause.classList.add('hidden');
+        runCountdown(3, 'playing');
+    }
+
+    function gameFrame(timestamp) {
+        const elapsed = Math.min(80, timestamp - lastTimestamp || 0);
+        lastTimestamp = timestamp;
+
+        if (gameState === 'playing') {
+            accumulator += elapsed;
+            let loops = 0;
+            while (accumulator >= currentInterval && gameState === 'playing' && loops < 5) {
+                updateRound();
+                accumulator -= currentInterval;
+                loops++;
+            }
+        } else if (gameState === 'gameover') {
+            updateVisualsOnly();
+        }
+
+        draw();
+        rafId = requestAnimationFrame(gameFrame);
+    }
+
+    function updateRound() {
+        tickCount++;
+        if (tickCount % 220 === 0) currentInterval = Math.max(28, currentInterval - 2);
+        if (!isTwoPlayer) runAI();
+
+        const stepMap = new Map(players.map(p => [p, p.getSteps()]));
+        const maxSteps = Math.max(...players.map(p => stepMap.get(p)));
+
+        for (let step = 0; step < maxSteps; step++) {
+            const movers = players.filter(p => !p.dead && step < stepMap.get(p));
+            if (!movers.length) continue;
+
+            const intents = new Map();
+            movers.forEach(p => {
+                p.dx = p.nextDx;
+                p.dy = p.nextDy;
+                intents.set(p, { x: p.x + p.dx, y: p.y + p.dy });
+            });
+
+            const deaths = new Set();
+            if (movers.length === 2) {
+                const a = intents.get(movers[0]);
+                const b = intents.get(movers[1]);
+                if (a.x === b.x && a.y === b.y) {
+                    deaths.add(movers[0]);
+                    deaths.add(movers[1]);
+                }
+            }
+
+            movers.forEach(p => {
+                if (deaths.has(p)) return;
+                const target = intents.get(p);
+                if (!inBounds(target.x, target.y)) {
+                    deaths.add(p);
+                    return;
+                }
+                const cell = grid[target.x][target.y];
+                if (cell > 0) {
+                    if (p.shieldTicks > 0) {
+                        p.shieldTicks = 0;
+                        grid[target.x][target.y] = 0;
+                        shockwaves.push(new Shockwave(target.x, target.y, COLORS.shield));
+                        floatingTexts.push(new FloatingText('BOUCLIER!', target.x, target.y, COLORS.shield));
+                        playSound('shield', 520, COLORS.shield);
+                    } else {
+                        deaths.add(p);
+                    }
+                }
+            });
+
+            deaths.forEach(p => p.die());
+
+            movers.forEach(p => {
+                if (p.dead) return;
+                const target = intents.get(p);
+                if (!target || !inBounds(target.x, target.y)) return;
+                p.x = target.x;
+                p.y = target.y;
+                collectBonusAt(p);
+                grid[p.x][p.y] = p.id;
+                p.trail.push({ x: p.x, y: p.y });
+            });
+        }
+
+        players.forEach(p => p.endTick());
+        spawnBonus();
+        updateVisualsOnly();
+        updateHUD();
+
+        if (p1.dead || p2.dead) endRound();
+    }
+
+    function updateVisualsOnly() {
+        updateArray(particles);
+        updateArray(shockwaves);
+        updateArray(floatingTexts);
+    }
+
+    function updateArray(arr) {
+        for (let i = arr.length - 1; i >= 0; i--) {
+            arr[i].update();
+            if (arr[i].life <= 0) arr.splice(i, 1);
+        }
+    }
+
+    function endRound() {
+        gameState = 'gameover';
+        updateMobileMode();
+        stopAllTurbo();
+        clearCountdown();
+        gameContainer.classList.add('shake');
+        setTimeout(() => gameContainer.classList.remove('shake'), 500);
+
+        let title = 'ÉGALITÉ';
+        let color = '#ffffff';
+        if (p1.dead && !p2.dead) {
+            scores.p2++;
+            title = 'ROUGE GAGNE LA MANCHE';
+            color = COLORS.p2;
+        } else if (p2.dead && !p1.dead) {
+            scores.p1++;
+            title = 'BLEU GAGNE LA MANCHE';
+            color = COLORS.p1;
+        }
+
+        if (scores.p1 >= settings.winningScore || scores.p2 >= settings.winningScore) {
+            matchOver = true;
+            if (scores.p1 > scores.p2) { title = 'VICTOIRE FINALE BLEUE'; color = COLORS.p1; }
+            else if (scores.p2 > scores.p1) { title = 'VICTOIRE FINALE ROUGE'; color = COLORS.p2; }
+            else { title = 'MATCH NUL'; color = '#fff'; }
+            document.getElementById('revenge-btn').textContent = 'Rejouer une manche';
+        } else {
+            document.getElementById('revenge-btn').textContent = 'Manche suivante';
+        }
+
+        const winner = document.getElementById('winner-text');
+        winner.textContent = title;
+        winner.style.color = color;
+        winner.style.textShadow = `0 0 24px ${color}`;
+        document.getElementById('final-score').textContent = `Score : Bleu ${scores.p1} - ${scores.p2} Rouge`;
+        updateHUD();
+        saveLocalState(false);
+        setTimeout(() => {
+            if (gameState === 'gameover') screens.gameover.classList.remove('hidden');
+        }, 760);
+    }
+
+    function runAI() {
+        const difficulty = settings.difficulty;
+        if (difficulty === 'easy' && Math.random() < 0.55 && isForwardSafe(p2, 2)) return;
+
+        const dangerAhead = !isForwardSafe(p2, difficulty === 'expert' ? 5 : difficulty === 'hard' ? 4 : 2);
+        const randomTurn = Math.random() < (difficulty === 'easy' ? 0.12 : difficulty === 'normal' ? 0.045 : 0.015);
+        const wantsBonus = difficulty !== 'easy' && nearestBonusDistance(p2) < (difficulty === 'expert' ? 13 : 8);
+        if (!dangerAhead && !randomTurn && !wantsBonus) {
+            maybeAITurbo();
+            return;
+        }
+
+        const dirs = validDirections(p2);
+        if (!dirs.length) return;
+        let best = dirs[0];
+        let bestScore = -Infinity;
+        dirs.forEach(dir => {
+            const nx = p2.x + dir.dx;
+            const ny = p2.y + dir.dy;
+            let score = floodScore(nx, ny, difficulty === 'expert' ? 180 : difficulty === 'hard' ? 120 : 45);
+            score += distanceFromWalls(nx, ny) * (difficulty === 'expert' ? 1.8 : 0.8);
+            const bonus = nearestBonusDistance({ x: nx, y: ny });
+            if (bonus < 999) score += Math.max(0, 26 - bonus) * (difficulty === 'expert' ? 2.4 : 1.2);
+            const playerDist = Math.abs(nx - p1.x) + Math.abs(ny - p1.y);
+            if (difficulty === 'expert' && playerDist < 10) score += 8;
+            if (Math.random() < 0.08) score += Math.random() * 8;
+            if (score > bestScore) { bestScore = score; best = dir; }
+        });
+        p2.changeDir(best.dx, best.dy);
+        maybeAITurbo();
+    }
+
+    function maybeAITurbo() {
+        if (isTwoPlayer || p2.turboFuel < 35 || p2.slowTicks > 0) {
+            p2.isTurbo = false;
+            return;
+        }
+        const safeLine = isForwardSafe(p2, settings.difficulty === 'expert' ? 9 : 6);
+        const chance = settings.difficulty === 'expert' ? 0.48 : settings.difficulty === 'hard' ? 0.25 : 0.08;
+        p2.isTurbo = safeLine && Math.random() < chance;
+    }
+
+    function validDirections(bike) {
+        const dirs = [{ dx: 0, dy: -1 }, { dx: 0, dy: 1 }, { dx: -1, dy: 0 }, { dx: 1, dy: 0 }];
+        return dirs.filter(d => {
+            if (bike.dx === -d.dx && bike.dy === -d.dy) return false;
+            const nx = bike.x + d.dx;
+            const ny = bike.y + d.dy;
+            return inBounds(nx, ny) && grid[nx][ny] === 0;
+        });
+    }
+
+    function isForwardSafe(bike, distance) {
+        let x = bike.x;
+        let y = bike.y;
+        for (let i = 0; i < distance; i++) {
+            x += bike.nextDx;
+            y += bike.nextDy;
+            if (!inBounds(x, y) || grid[x][y] !== 0) return false;
+        }
+        return true;
+    }
+
+    function floodScore(startX, startY, limit = 120) {
+        if (!inBounds(startX, startY) || grid[startX][startY] !== 0) return -999;
+        const visited = new Set([`${startX},${startY}`]);
+        const queue = [{ x: startX, y: startY }];
+        let count = 0;
+        while (queue.length && count < limit) {
+            const current = queue.shift();
+            count++;
+            for (const d of [{dx:1,dy:0},{dx:-1,dy:0},{dx:0,dy:1},{dx:0,dy:-1}]) {
+                const nx = current.x + d.dx;
+                const ny = current.y + d.dy;
+                const key = `${nx},${ny}`;
+                if (!visited.has(key) && inBounds(nx, ny) && grid[nx][ny] === 0) {
+                    visited.add(key);
+                    queue.push({ x: nx, y: ny });
+                }
+            }
+        }
+        return count;
+    }
+
+    function distanceFromWalls(x, y) {
+        return Math.min(x, y, gridWidth - 1 - x, gridHeight - 1 - y);
+    }
+
+    function nearestBonusDistance(point) {
+        if (!bonuses.length) return 999;
+        return Math.min(...bonuses.map(b => Math.abs(point.x - b.x) + Math.abs(point.y - b.y)));
+    }
+
+    function spawnBonus() {
+        const cfg = BONUS_CONFIG[settings.bonuses] || BONUS_CONFIG.normal;
+        if (bonuses.length >= cfg.max || Math.random() > cfg.chance) return;
+        for (let tries = 0; tries < 80; tries++) {
+            const bx = randomInt(3, gridWidth - 4);
+            const by = randomInt(3, gridHeight - 4);
+            if (grid[bx]?.[by] !== 0) continue;
+            if (players.some(p => Math.abs(p.x - bx) + Math.abs(p.y - by) < 8)) continue;
+            bonuses.push({ x: bx, y: by, type: randomBonusType(), pulse: Math.random() * Math.PI * 2 });
+            return;
+        }
+    }
+
+    function randomBonusType() {
+        const roll = Math.random();
+        if (roll < .46) return 'turbo';
+        if (roll < .70) return 'shield';
+        if (roll < .88) return 'slow';
+        return 'erase';
+    }
+
+    function collectBonusAt(player) {
+        const idx = bonuses.findIndex(b => b.x === player.x && b.y === player.y);
+        if (idx === -1) return;
+        const bonus = bonuses.splice(idx, 1)[0];
+        applyBonus(player, bonus.type);
+        playSound('bonus', bonus.type === 'slow' ? 180 : 760, bonusColor(bonus.type));
+        hapticFeedback(18);
+        spawnExplosion(player.x, player.y, bonusColor(bonus.type), 14, .65);
+    }
+
+    function applyBonus(player, type) {
+        const opponent = player.id === 1 ? p2 : p1;
+        if (type === 'turbo') {
+            player.turboFuel = 100;
+            floatingTexts.push(new FloatingText('+TURBO', player.x, player.y, COLORS.turbo));
+            toast(`${player.id === 1 ? 'Bleu' : 'Rouge'} : turbo rechargé`);
+        } else if (type === 'shield') {
+            player.shieldTicks = 240;
+            floatingTexts.push(new FloatingText('BOUCLIER', player.x, player.y, COLORS.shield));
+            toast(`${player.id === 1 ? 'Bleu' : 'Rouge'} : bouclier activé`);
+        } else if (type === 'slow') {
+            opponent.slowTicks = 150;
+            floatingTexts.push(new FloatingText('RALENTI', opponent.x, opponent.y, COLORS.slow));
+            toast(`${opponent.id === 1 ? 'Bleu' : 'Rouge'} est ralenti`);
+        } else if (type === 'erase') {
+            clearOwnTrail(player, 34);
+            floatingTexts.push(new FloatingText('TRACE -', player.x, player.y, COLORS.erase));
+            toast(`${player.id === 1 ? 'Bleu' : 'Rouge'} efface sa trace`);
+        }
+    }
+
+    function clearOwnTrail(player, amount) {
+        let cleared = 0;
+        while (player.trail.length > 8 && cleared < amount) {
+            const cell = player.trail.shift();
+            if (cell.x === player.x && cell.y === player.y) continue;
+            if (grid[cell.x]?.[cell.y] === player.id) {
+                grid[cell.x][cell.y] = 0;
+                cleared++;
+                if (cleared % 5 === 0) particles.push(new Particle(cell.x, cell.y, COLORS.erase, .35));
+            }
+        }
+    }
+
+    function bonusColor(type) {
+        return type === 'turbo' ? COLORS.turbo : type === 'shield' ? COLORS.shield : type === 'slow' ? COLORS.slow : COLORS.erase;
+    }
+
+    function bonusLabel(type) {
+        return type === 'turbo' ? 'T' : type === 'shield' ? 'S' : type === 'slow' ? '!' : '×';
+    }
+
+    function spawnExplosion(x, y, color, count = 36, speed = 1) {
+        if (!settings.effects && count > 18) count = 18;
+        for (let i = 0; i < count; i++) particles.push(new Particle(x, y, color, speed));
+    }
+
+    function spawnExhaust(player) {
+        const px = player.x - player.dx;
+        const py = player.y - player.dy;
+        if (inBounds(px, py)) particles.push(new Particle(px, py, player.color, .35));
+    }
+
+    function updateHUD() {
+        updateMobileMode();
+        document.getElementById('score1').textContent = scores.p1;
+        document.getElementById('score2').textContent = scores.p2;
+        document.getElementById('turbo1').style.width = `${clamp(p1.turboFuel, 0, 100)}%`;
+        document.getElementById('turbo2').style.width = `${clamp(p2.turboFuel, 0, 100)}%`;
+        document.getElementById('speed-val').textContent = Math.round(100 * ((Number(settings.startSpeed) || 55) / currentInterval));
+        document.getElementById('status1').textContent = statusText(p1);
+        document.getElementById('status2').textContent = statusText(p2);
+        const msg = gameState === 'playing' ? (isTwoPlayer ? 'Duel local' : `IA ${settings.difficulty}`) : gameState.toUpperCase();
+        document.getElementById('round-message').textContent = msg;
+    }
+
+    function statusText(player) {
+        const parts = [];
+        if (player.shieldTicks > 0) parts.push(`Bouclier ${Math.ceil(player.shieldTicks / 60)}s`);
+        if (player.slowTicks > 0) parts.push(`Ralenti ${Math.ceil(player.slowTicks / 60)}s`);
+        if (player.isTurbo && player.turboFuel > 0) parts.push('Turbo');
+        return parts.join(' • ');
+    }
+
+    function draw() {
+        ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+        ctx.fillStyle = COLORS.bg;
+        ctx.fillRect(0, 0, logicalWidth, logicalHeight);
+        drawBackgroundGrid();
+        drawTrails();
+        drawBonuses();
+        players.forEach(drawBike);
+        particles.forEach(p => p.draw());
+        shockwaves.forEach(s => s.draw());
+        floatingTexts.forEach(t => t.draw());
+        ctx.shadowBlur = 0;
+        ctx.globalAlpha = 1;
+    }
+
+    function drawBackgroundGrid() {
+        ctx.save();
+        ctx.lineWidth = 1;
+        ctx.strokeStyle = settings.highContrast ? 'rgba(255,255,255,.18)' : COLORS.grid;
+        if (settings.effects) { ctx.shadowBlur = 8; ctx.shadowColor = 'rgba(0,243,255,.2)'; }
+        for (let x = 0; x <= logicalWidth; x += CELL_SIZE * 2) {
+            ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, logicalHeight); ctx.stroke();
+        }
+        for (let y = 0; y <= logicalHeight; y += CELL_SIZE * 2) {
+            ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(logicalWidth, y); ctx.stroke();
+        }
+        ctx.restore();
+    }
+
+    function drawTrails() {
+        if (!grid || !grid.length) return;
+        for (let x = 0; x < gridWidth; x++) {
+            if (!grid[x]) continue; // sécurité si l'arène vient de changer de taille avant réinitialisation
+            for (let y = 0; y < gridHeight; y++) {
+                const val = grid[x][y];
+                if (val > 0) {
+                    const color = val === 1 ? COLORS.p1 : COLORS.p2;
+                    ctx.globalAlpha = settings.highContrast ? .94 : .78;
+                    ctx.fillStyle = color;
+                    if (settings.effects) { ctx.shadowBlur = 7; ctx.shadowColor = color; }
+                    ctx.fillRect(x * CELL_SIZE, y * CELL_SIZE, CELL_SIZE - GAP, CELL_SIZE - GAP);
+                    ctx.shadowBlur = 0;
+                }
+            }
+        }
+        ctx.globalAlpha = 1;
+    }
+
+    function drawBonuses() {
+        bonuses.forEach(b => {
+            b.pulse += 0.08;
+            const color = bonusColor(b.type);
+            const cx = b.x * CELL_SIZE + CELL_SIZE / 2;
+            const cy = b.y * CELL_SIZE + CELL_SIZE / 2;
+            const radius = CELL_SIZE * (.42 + Math.sin(b.pulse) * .07);
+            ctx.save();
+            ctx.fillStyle = color;
+            ctx.strokeStyle = '#fff';
+            ctx.lineWidth = 1;
+            if (settings.effects) { ctx.shadowBlur = 18; ctx.shadowColor = color; }
+            ctx.beginPath();
+            ctx.arc(cx, cy, radius, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.globalAlpha = .88;
+            ctx.fillStyle = '#000';
+            ctx.font = '900 8px system-ui, sans-serif';
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            ctx.fillText(bonusLabel(b.type), cx, cy + .4);
+            ctx.restore();
+        });
+    }
+
+    function drawBike(player) {
+        if (player.dead) return;
+        const x = player.x * CELL_SIZE + CELL_SIZE / 2;
+        const y = player.y * CELL_SIZE + CELL_SIZE / 2;
+        const angle = Math.atan2(player.dy, player.dx);
+        ctx.save();
+        ctx.translate(x, y);
+        ctx.rotate(angle);
+        ctx.fillStyle = '#fff';
+        ctx.strokeStyle = player.color;
+        ctx.lineWidth = 2;
+        if (settings.effects) { ctx.shadowBlur = player.isTurbo ? 30 : 20; ctx.shadowColor = player.color; }
+        ctx.beginPath();
+        ctx.moveTo(CELL_SIZE * .62, 0);
+        ctx.lineTo(-CELL_SIZE * .45, -CELL_SIZE * .43);
+        ctx.lineTo(-CELL_SIZE * .25, 0);
+        ctx.lineTo(-CELL_SIZE * .45, CELL_SIZE * .43);
+        ctx.closePath();
+        ctx.fill();
+        ctx.stroke();
+        if (player.shieldTicks > 0) {
+            ctx.globalAlpha = .6;
+            ctx.strokeStyle = COLORS.shield;
+            ctx.lineWidth = 2;
+            ctx.beginPath();
+            ctx.arc(0, 0, CELL_SIZE * .88, 0, Math.PI * 2);
+            ctx.stroke();
+        }
+        ctx.restore();
+    }
+
+    function initAudio() {
+        if (audio.ctx || settings.muted) return;
+        try {
+            const AudioContext = window.AudioContext || window.webkitAudioContext;
+            audio.ctx = new AudioContext();
+            audio.master = audio.ctx.createGain();
+            audio.master.gain.value = settings.volume;
+            audio.master.connect(audio.ctx.destination);
+            audio.enabled = true;
+        } catch {
+            audio.enabled = false;
+        }
+    }
+
+    function playSound(type, freq = 440, color = '#fff') {
+        if (settings.muted || !audio.ctx || !audio.master) return;
+        const now = audio.ctx.currentTime;
+        const osc = audio.ctx.createOscillator();
+        const gain = audio.ctx.createGain();
+        const filter = audio.ctx.createBiquadFilter();
+        osc.type = type === 'crash' ? 'sawtooth' : type === 'bonus' ? 'triangle' : 'square';
+        osc.frequency.setValueAtTime(freq, now);
+        if (type === 'crash') osc.frequency.exponentialRampToValueAtTime(Math.max(40, freq * .45), now + .22);
+        if (type === 'bonus') osc.frequency.exponentialRampToValueAtTime(freq * 1.75, now + .12);
+        filter.type = 'lowpass';
+        filter.frequency.value = type === 'crash' ? 900 : 1800;
+        const dur = type === 'crash' ? .28 : type === 'turn' ? .045 : .13;
+        gain.gain.setValueAtTime(0.0001, now);
+        gain.gain.exponentialRampToValueAtTime(type === 'turn' ? .035 : .095, now + .012);
+        gain.gain.exponentialRampToValueAtTime(0.0001, now + dur);
+        osc.connect(filter); filter.connect(gain); gain.connect(audio.master);
+        osc.start(now); osc.stop(now + dur + .03);
+    }
+
+    function toast(message) {
+        toastEl.textContent = message;
+        toastEl.classList.remove('hidden');
+        clearTimeout(toastTimer);
+        toastTimer = setTimeout(() => toastEl.classList.add('hidden'), 1700);
+    }
+
+    function updateMobileMode() {
+        const active = gameState === 'countdown' || gameState === 'playing' || gameState === 'paused';
+        document.body.classList.toggle('touch-visible', active);
+        document.body.classList.toggle('two-player-touch', active && isTwoPlayer);
+        document.body.classList.toggle('solo-touch', active && !isTwoPlayer);
+    }
+
+    function hapticFeedback(duration = 8) {
+        if (!settings.effects || !navigator.vibrate) return;
+        try { navigator.vibrate(duration); } catch {}
+    }
+
+    function getTouchPlayer(playerId) {
+        return Number(playerId) === 2 ? p2 : p1;
+    }
+
+    function canControlTouchPlayer(playerId) {
+        return Number(playerId) === 1 || isTwoPlayer;
+    }
+
+    function setTouchTurbo(playerId, enabled) {
+        if (!canControlTouchPlayer(playerId)) return;
+        getTouchPlayer(playerId).isTurbo = Boolean(enabled && gameState === 'playing');
+    }
+
+    function stopAllTurbo() {
+        players.forEach(player => { player.isTurbo = false; });
+        document.querySelectorAll('[data-turbo-player]').forEach(btn => btn.classList.remove('active-touch'));
+    }
+
+    function saveLocalState(showToast = true) {
+        const data = window.freevGetSaveData();
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+        if (showToast) toast('Sauvegarde locale enregistrée');
+        return data;
+    }
+
+    function loadLocalState() {
+        const data = safeJSON(localStorage.getItem(STORAGE_KEY), null);
+        if (!data) { toast('Aucune sauvegarde locale'); return; }
+        window.freevApplySaveData(data);
+        toast('Sauvegarde chargée');
+    }
+
+    function serializeGrid() {
+        return grid.map(col => Array.from(col));
+    }
+
+    function applyGrid(dataGrid) {
+        initGrid();
+        if (!Array.isArray(dataGrid)) return false;
+        const w = Math.min(dataGrid.length, gridWidth);
+        for (let x = 0; x < w; x++) {
+            if (!Array.isArray(dataGrid[x]) && !(ArrayBuffer.isView(dataGrid[x]))) continue;
+            const h = Math.min(dataGrid[x].length, gridHeight);
+            for (let y = 0; y < h; y++) grid[x][y] = Number(dataGrid[x][y]) || 0;
+        }
+        return true;
+    }
+
+    function rebuildGridFromTrails() {
+        initGrid();
+        players.forEach(player => {
+            const cells = Array.isArray(player.trail) && player.trail.length ? player.trail : [{ x: player.x, y: player.y }];
+            cells.forEach(cell => {
+                if (inBounds(cell.x, cell.y)) grid[cell.x][cell.y] = player.id;
+            });
+            if (inBounds(player.x, player.y)) grid[player.x][player.y] = player.id;
+        });
+    }
+
+    function showLoadedStateScreen(savedState) {
+        hideAllScreens();
+        countdownEl.classList.add('hidden');
+        hud.classList.toggle('hidden', savedState === 'menu');
+
+        if (savedState === 'menu') {
+            gameState = 'menu';
+            updateMobileMode();
+            screens.menu.classList.remove('hidden');
+            return;
+        }
+
+        if (savedState === 'gameover') {
+            gameState = 'gameover';
+            updateMobileMode();
+            const winner = document.getElementById('winner-text');
+            const blueWins = scores.p1 > scores.p2;
+            const redWins = scores.p2 > scores.p1;
+            winner.textContent = blueWins ? 'SAUVEGARDE : BLEU EN TÊTE' : redWins ? 'SAUVEGARDE : ROUGE EN TÊTE' : 'SAUVEGARDE : ÉGALITÉ';
+            winner.style.color = blueWins ? COLORS.p1 : redWins ? COLORS.p2 : '#fff';
+            winner.style.textShadow = `0 0 24px ${winner.style.color}`;
+            document.getElementById('final-score').textContent = `Score : Bleu ${scores.p1} - ${scores.p2} Rouge`;
+            document.getElementById('revenge-btn').textContent = matchOver ? 'Nouveau match' : 'Manche suivante';
+            screens.gameover.classList.remove('hidden');
+            return;
+        }
+
+        // Une partie sauvegardée en cours reprend toujours en pause pour éviter une mort immédiate.
+        gameState = 'paused';
+        updateMobileMode();
+        stopAllTurbo();
+        screens.pause.classList.remove('hidden');
+    }
+
+    window.freevGetSaveData = function() {
+        readSettingsFromForm();
+        return {
+            app: 'Tron Ultra+',
+            version: 2,
+            savedAt: new Date().toISOString(),
+            scores,
+            isTwoPlayer,
+            settings,
+            currentInterval,
+            tickCount,
+            gameState,
+            matchOver,
+            grid: serializeGrid(),
+            bonuses,
+            bikes: { p1: p1.snapshot(), p2: p2.snapshot() },
+            summary: `Bleu ${scores.p1} - ${scores.p2} Rouge`,
+            savedFrom: 'tron-ultra-plus'
+        };
+    };
+
+    window.freevApplySaveData = function(payload = {}) {
+        clearCountdown();
+        settings = { ...settings, ...(payload.settings || {}) };
+        syncSettingsToForm();
+        configureArena();
+        scores = {
+            p1: Number(payload.scores?.p1) || 0,
+            p2: Number(payload.scores?.p2) || 0
+        };
+        isTwoPlayer = Boolean(payload.isTwoPlayer);
+        currentInterval = Number(payload.currentInterval ?? payload.currentSpeed) || Number(settings.startSpeed) || 55;
+        tickCount = Number(payload.tickCount) || 0;
+        matchOver = Boolean(payload.matchOver);
+        const hasGrid = applyGrid(payload.grid);
+        p1.reset(); p2.reset();
+        if (payload.bikes?.p1) p1.restore(payload.bikes.p1);
+        if (payload.bikes?.p2) p2.restore(payload.bikes.p2);
+        if (!hasGrid) rebuildGridFromTrails();
+        bonuses = Array.isArray(payload.bonuses) ? payload.bonuses.filter(b => inBounds(b.x, b.y)) : [];
+        particles = []; shockwaves = []; floatingTexts = [];
+        showLoadedStateScreen(payload.gameState || 'paused');
+        updateHUD();
+        draw();
+    };
+
+    function requestFullscreen() {
+        const el = gameContainer;
+        if (!document.fullscreenElement) {
+            (el.requestFullscreen || el.webkitRequestFullscreen || el.msRequestFullscreen)?.call(el);
+        } else {
+            (document.exitFullscreen || document.webkitExitFullscreen || document.msExitFullscreen)?.call(document);
+        }
+    }
+
+    function handleKeyDown(e) {
+        const k = e.key.toLowerCase();
+        if ([' ', 'arrowup', 'arrowdown', 'arrowleft', 'arrowright'].includes(k)) e.preventDefault();
+        if (k === 'p' || k === ' ') { togglePause(); return; }
+        if (k === 'f') { requestFullscreen(); return; }
+        if (k === 'n' && gameState === 'gameover') { resetRound({ resetScores: true }); return; }
+        if (gameState !== 'playing') return;
+
+        if (k === 'z' || k === 'w') p1.changeDir(0, -1);
+        else if (k === 's') p1.changeDir(0, 1);
+        else if (k === 'q' || k === 'a') p1.changeDir(-1, 0);
+        else if (k === 'd') p1.changeDir(1, 0);
+        else if (k === 'e') p1.isTurbo = true;
+
+        if (isTwoPlayer) {
+            if (e.key === 'ArrowUp') p2.changeDir(0, -1);
+            else if (e.key === 'ArrowDown') p2.changeDir(0, 1);
+            else if (e.key === 'ArrowLeft') p2.changeDir(-1, 0);
+            else if (e.key === 'ArrowRight') p2.changeDir(1, 0);
+            else if (k === 'm') p2.isTurbo = true;
+        }
+    }
+
+    function handleKeyUp(e) {
+        const k = e.key.toLowerCase();
+        if (k === 'e') p1.isTurbo = false;
+        if (k === 'm') p2.isTurbo = false;
+    }
+
+    function bindUI() {
+        document.getElementById('solo-btn').addEventListener('click', () => startGame(false));
+        document.getElementById('duel-btn').addEventListener('click', () => startGame(true));
+        document.getElementById('controls-btn').addEventListener('click', showControls);
+        document.getElementById('back-menu-from-controls').addEventListener('click', showMenu);
+        document.getElementById('resume-btn').addEventListener('click', resumeWithCountdown);
+        document.getElementById('quit-btn').addEventListener('click', showMenu);
+        document.getElementById('revenge-btn').addEventListener('click', () => resetRound({ resetScores: matchOver }));
+        document.getElementById('new-match-btn').addEventListener('click', () => resetRound({ resetScores: true }));
+        document.getElementById('menu-btn').addEventListener('click', showMenu);
+        document.getElementById('fullscreen-btn').addEventListener('click', requestFullscreen);
+        document.getElementById('quick-save-btn').addEventListener('click', () => saveLocalState(true));
+        document.getElementById('quick-load-btn').addEventListener('click', loadLocalState);
+        document.getElementById('load-menu-btn').addEventListener('click', loadLocalState);
+        document.getElementById('pause-save-btn').addEventListener('click', () => saveLocalState(true));
+        document.getElementById('cloud-save-btn').addEventListener('click', () => saveLocalState(true));
+        document.getElementById('cloud-history-btn').addEventListener('click', loadLocalState);
+        document.getElementById('mute-btn').addEventListener('click', () => {
+            settings.muted = !settings.muted;
+            if (!settings.muted) initAudio();
+            syncSettingsToForm();
+            saveSettings();
+        });
+
+        ['difficulty-select','speed-select','arena-select','score-select','bonus-select','effects-check','contrast-check'].forEach(id => {
+            document.getElementById(id).addEventListener('change', () => {
+                readSettingsFromForm();
+                if (id === 'arena-select' && gameState === 'menu') configureArena();
+            });
+        });
+
+        window.addEventListener('keydown', handleKeyDown, { passive: false });
+        window.addEventListener('keyup', handleKeyUp);
+        window.addEventListener('resize', resizeCanvas);
+        window.visualViewport?.addEventListener('resize', resizeCanvas);
+        window.matchMedia('(prefers-reduced-motion: reduce)').addEventListener?.('change', applyAccessibility);
+
+        document.querySelectorAll('[data-dir][data-player]').forEach(btn => {
+            btn.addEventListener('pointerdown', e => {
+                e.preventDefault();
+                initAudio();
+                const playerId = Number(btn.dataset.player) || 1;
+                if (!canControlTouchPlayer(playerId)) return;
+                const [dx, dy] = btn.dataset.dir.split(',').map(Number);
+                if (gameState === 'playing') getTouchPlayer(playerId).changeDir(dx, dy);
+                btn.classList.add('active-touch');
+                setTimeout(() => btn.classList.remove('active-touch'), 110);
+            }, { passive: false });
+        });
+
+        document.querySelectorAll('[data-turbo-player]').forEach(btn => {
+            const playerId = Number(btn.dataset.turboPlayer) || 1;
+            const turboOn = e => {
+                e.preventDefault();
+                initAudio();
+                setTouchTurbo(playerId, true);
+                btn.classList.add('active-touch');
+                hapticFeedback(10);
+            };
+            const turboOff = e => {
+                e?.preventDefault?.();
+                setTouchTurbo(playerId, false);
+                btn.classList.remove('active-touch');
+            };
+            btn.addEventListener('pointerdown', turboOn, { passive: false });
+            btn.addEventListener('pointerup', turboOff, { passive: false });
+            btn.addEventListener('pointercancel', turboOff, { passive: false });
+            btn.addEventListener('pointerleave', turboOff, { passive: false });
+        });
+
+        document.getElementById('touch-pause-btn').addEventListener('pointerdown', e => {
+            e.preventDefault();
+            initAudio();
+            hapticFeedback(12);
+            if (gameState === 'countdown') toast('Départ en cours...');
+            else togglePause();
+        }, { passive: false });
+        document.getElementById('touch-fullscreen-btn').addEventListener('pointerdown', e => {
+            e.preventDefault();
+            initAudio();
+            hapticFeedback(12);
+            requestFullscreen();
+        }, { passive: false });
+
+        document.getElementById('touch-controls').addEventListener('contextmenu', e => e.preventDefault());
+        canvas.addEventListener('contextmenu', e => e.preventDefault());
+        canvas.addEventListener('pointerdown', e => {
+            e.preventDefault();
+            initAudio();
+            const playerId = isTwoPlayer && e.clientX > window.innerWidth / 2 ? 2 : 1;
+            touchStarts.set(e.pointerId, { x: e.clientX, y: e.clientY, playerId });
+            canvas.setPointerCapture?.(e.pointerId);
+        }, { passive: false });
+        canvas.addEventListener('pointerup', e => {
+            e.preventDefault();
+            const start = touchStarts.get(e.pointerId);
+            touchStarts.delete(e.pointerId);
+            if (!start || gameState !== 'playing' || !canControlTouchPlayer(start.playerId)) return;
+            const dx = e.clientX - start.x;
+            const dy = e.clientY - start.y;
+            if (Math.hypot(dx, dy) < 22) return;
+            const player = getTouchPlayer(start.playerId);
+            if (Math.abs(dx) > Math.abs(dy)) player.changeDir(dx > 0 ? 1 : -1, 0);
+            else player.changeDir(0, dy > 0 ? 1 : -1);
+        }, { passive: false });
+        canvas.addEventListener('pointercancel', e => {
+            touchStarts.delete(e.pointerId);
+        });
+    }
+
+    function boot() {
+        syncSettingsToForm();
+        configureArena();
+        initGrid();
+        bindUI();
+        draw();
+        lastTimestamp = performance.now();
+        rafId = requestAnimationFrame(gameFrame);
+        toast('Tron Ultra+ prêt');
+    }
+
+    boot();
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,773 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ResumeMaster Studio - Builder Pro</title>
+
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Sortable/1.15.0/Sortable.min.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Lato:wght@300;400;700&family=Montserrat:wght@400;500;600;700&family=Playfair+Display:wght@400;700&family=Source+Serif+4:wght@500;700&display=swap" rel="stylesheet">
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'Lato', 'sans-serif'],
+                        title: ['Montserrat', 'Inter', 'sans-serif'],
+                        serif: ['Playfair Display', 'Source Serif 4', 'serif'],
+                    },
+                    colors: {
+                        primary: 'var(--primary)',
+                        secondary: 'var(--secondary)',
+                        accent: 'var(--accent)',
+                        surface: 'var(--surface)',
+                    }
+                }
+            }
+        };
+    </script>
+
+    <style>
+        :root {
+            --primary: #1e293b;
+            --secondary: #0f172a;
+            --accent: #d97706;
+            --surface: #f8fafc;
+            --resume-scale: 1;
+        }
+
+        [data-theme="royal"] { --primary: #1e3a8a; --secondary: #172554; --accent: #2563eb; --surface: #eff6ff; }
+        [data-theme="forest"] { --primary: #14532d; --secondary: #052e16; --accent: #16a34a; --surface: #f0fdf4; }
+        [data-theme="rose"] { --primary: #881337; --secondary: #4c0519; --accent: #e11d48; --surface: #fff1f2; }
+        [data-theme="graphite"] { --primary: #27272a; --secondary: #09090b; --accent: #71717a; --surface: #f4f4f5; }
+
+        [data-font="classic"] { --font-body: "Lato"; --font-heading: "Playfair Display"; }
+        [data-font="modern"] { --font-body: "Inter"; --font-heading: "Montserrat"; }
+        [data-font="editorial"] { --font-body: "Inter"; --font-heading: "Source Serif 4"; }
+
+        body {
+            font-family: var(--font-body, "Inter"), sans-serif;
+        }
+
+        #resume-canvas {
+            display: grid;
+            grid-template-columns: 32% 68%;
+            min-height: 297mm;
+            transform: scale(var(--resume-scale));
+            transform-origin: top center;
+        }
+
+        #resume-canvas.layout-right { grid-template-columns: 68% 32%; }
+        #resume-canvas.layout-right #sidebar-col { order: 2; border-right: 0; border-left: 1px solid #e2e8f0; }
+        #resume-canvas.layout-right #main-col { order: 1; }
+
+        #resume-canvas.layout-minimal {
+            display: flex;
+            flex-direction: column;
+        }
+        #resume-canvas.layout-minimal #sidebar-col {
+            width: 100%;
+            display: grid;
+            grid-template-columns: 110px 1fr 1fr 1fr;
+            align-items: start;
+            border-right: 0;
+            border-bottom: 2px solid var(--primary);
+            padding: 1.6rem 2rem;
+            gap: 1.5rem;
+        }
+        #resume-canvas.layout-minimal #main-col { width: 100%; padding: 2rem 2.5rem; }
+        #resume-canvas.layout-minimal .photo-container { width: 86px; height: 86px; }
+
+        #resume-canvas.layout-executive {
+            display: flex;
+            flex-direction: column;
+        }
+        #resume-canvas.layout-executive #sidebar-col {
+            order: 2;
+            display: grid;
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+            border-top: 1px solid #e2e8f0;
+            border-right: 0;
+            padding: 1.7rem 2.4rem;
+            gap: 1.5rem;
+        }
+        #resume-canvas.layout-executive #main-col { order: 1; padding: 2.6rem 3rem; }
+        #resume-canvas.layout-executive .photo-container { display: none; }
+
+        .a4-sheet {
+            width: 210mm;
+            background: white;
+            box-shadow: 0 24px 80px -22px rgba(0, 0, 0, 0.45);
+            margin: 0 auto 80px;
+            position: relative;
+        }
+
+        .panel-button {
+            border: 1px solid rgb(51 65 85);
+            border-radius: 8px;
+            background: rgb(30 41 59);
+            color: rgb(226 232 240);
+            transition: 160ms ease;
+        }
+        .panel-button:hover { border-color: var(--accent); background: rgb(51 65 85); }
+        .icon {
+            width: 1em;
+            height: 1em;
+            display: inline-block;
+            vertical-align: -0.14em;
+            stroke: currentColor;
+            stroke-width: var(--icon-stroke, 2);
+            stroke-linecap: round;
+            stroke-linejoin: round;
+            fill: none;
+        }
+        .icon-chip {
+            width: 2rem;
+            height: 2rem;
+            border-radius: 8px;
+            background: #fff;
+            color: var(--accent);
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 1px 4px rgba(15, 23, 42, 0.08);
+            flex: 0 0 auto;
+        }
+        [data-icon-style="bold"] { --icon-stroke: 2.8; }
+        [data-icon-style="thin"] { --icon-stroke: 1.45; }
+        [data-icons="hidden"] .resume-icon { display: none !important; }
+
+        .drag-handle { cursor: grab; opacity: 0; transition: opacity 0.2s; }
+        .draggable-item:hover .drag-handle { opacity: 1; }
+        .sortable-ghost { opacity: 0.38; background: #e2e8f0; }
+        [contenteditable]:hover { background: rgba(15, 23, 42, 0.035); outline: 1px dashed #cbd5e1; }
+        [contenteditable]:focus { background: white; outline: 2px solid var(--accent); border-radius: 3px; }
+        [contenteditable][data-placeholder]:empty::before {
+            content: attr(data-placeholder);
+            color: #94a3b8;
+        }
+        .preview-mode aside,
+        .preview-mode .no-print,
+        .preview-mode .drag-handle { display: none !important; }
+        .preview-mode main { padding: 1.5rem; }
+
+        @media (max-width: 1100px) {
+            body { overflow: auto; display: block; }
+            aside { width: 100% !important; min-height: auto; }
+            main { padding: 1rem !important; overflow: visible !important; }
+            #resume-canvas { transform: none; width: 100%; min-height: auto; }
+        }
+
+        @media print {
+            @page { margin: 0; size: A4; }
+            body { background: white; overflow: visible; }
+            aside, .no-print, .drag-handle { display: none !important; }
+            main { padding: 0 !important; overflow: visible !important; background: white !important; }
+            .a4-sheet { width: 210mm; margin: 0; box-shadow: none; transform: none !important; }
+            * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
+            .avoid-break { break-inside: avoid; }
+        }
+    </style>
+</head>
+<body class="bg-slate-900 h-screen flex text-slate-800 antialiased overflow-hidden" data-font="modern">
+    <aside class="w-96 bg-slate-950 border-r border-slate-800 flex flex-col z-50 text-white shadow-2xl no-print">
+        <div class="p-5 border-b border-slate-800 bg-gradient-to-r from-slate-900 to-slate-950">
+            <div class="flex items-center justify-between gap-3 mb-3">
+                <h1 class="text-xl font-title font-extrabold text-white">RESUME<span class="text-accent">MASTER</span></h1>
+                <a href="../index.html" class="text-slate-400 hover:text-white transition-colors text-xs font-semibold px-2 py-1 rounded hover:bg-white/5">Retour</a>
+            </div>
+            <div class="grid grid-cols-3 gap-2 mb-4">
+                <button type="button" data-freev-cloud-action="save" class="py-2 rounded bg-emerald-500/15 hover:bg-emerald-500/25 text-emerald-300 border border-emerald-400/20 text-[10px] font-bold uppercase flex items-center justify-center gap-1"><span data-icon="cloud"></span>Cloud</button>
+                <button type="button" onclick="saveLocal()" class="py-2 rounded bg-cyan-500/15 hover:bg-cyan-500/25 text-cyan-300 border border-cyan-400/20 text-[10px] font-bold uppercase flex items-center justify-center gap-1"><span data-icon="save"></span>Local</button>
+                <button type="button" data-freev-cloud-action="history" class="py-2 rounded bg-violet-500/15 hover:bg-violet-500/25 text-violet-300 border border-violet-400/20 text-[10px] font-bold uppercase flex items-center justify-center gap-1"><span data-icon="history"></span>Historique</button>
+            </div>
+            <div class="flex items-center gap-2">
+                <div class="text-[10px] font-bold uppercase text-slate-500">Score ATS</div>
+                <div class="flex-1 h-2 bg-slate-800 rounded-full overflow-hidden">
+                    <div id="quality-bar" class="h-full bg-green-500 w-[60%] transition-all duration-700"></div>
+                </div>
+                <span id="quality-number" class="text-xs font-bold text-slate-300">60</span>
+            </div>
+            <p id="quality-msg" class="text-[11px] text-slate-400 mt-1">Analyse en cours...</p>
+        </div>
+
+        <div class="flex-1 overflow-y-auto p-5 space-y-7">
+            <section>
+                <label class="text-xs font-bold text-slate-500 uppercase mb-3 block">Mise en page</label>
+                <div class="grid grid-cols-4 gap-2">
+                    <button onclick="changeLayout('default')" class="h-12 panel-button flex p-1 gap-1" title="Classique"><span class="w-1/3 bg-slate-500 rounded-sm"></span><span class="w-2/3 bg-slate-700 rounded-sm"></span></button>
+                    <button onclick="changeLayout('right')" class="h-12 panel-button flex p-1 gap-1" title="Sidebar droite"><span class="w-2/3 bg-slate-700 rounded-sm"></span><span class="w-1/3 bg-slate-500 rounded-sm"></span></button>
+                    <button onclick="changeLayout('minimal')" class="h-12 panel-button flex flex-col p-1 gap-1" title="Minimal"><span class="w-full bg-slate-500 h-1/3 rounded-sm"></span><span class="w-full bg-slate-700 h-2/3 rounded-sm"></span></button>
+                    <button onclick="changeLayout('executive')" class="h-12 panel-button flex flex-col p-1 gap-1" title="Executive"><span class="w-full bg-slate-700 h-2/3 rounded-sm"></span><span class="w-full bg-slate-500 h-1/3 rounded-sm"></span></button>
+                </div>
+            </section>
+
+            <section>
+                <label class="text-xs font-bold text-slate-500 uppercase mb-3 block">Style</label>
+                <div class="grid grid-cols-5 gap-2 mb-3">
+                    <button onclick="setTheme('default')" class="w-full aspect-square rounded-full bg-slate-800 border-2 border-slate-500 hover:border-white"></button>
+                    <button onclick="setTheme('royal')" class="w-full aspect-square rounded-full bg-blue-700 border-2 border-slate-500 hover:border-white"></button>
+                    <button onclick="setTheme('forest')" class="w-full aspect-square rounded-full bg-green-700 border-2 border-slate-500 hover:border-white"></button>
+                    <button onclick="setTheme('rose')" class="w-full aspect-square rounded-full bg-rose-700 border-2 border-slate-500 hover:border-white"></button>
+                    <button onclick="setTheme('graphite')" class="w-full aspect-square rounded-full bg-zinc-700 border-2 border-slate-500 hover:border-white"></button>
+                </div>
+                <div class="grid grid-cols-2 gap-2">
+                    <select id="font-select" onchange="setFont(this.value)" class="bg-slate-900 border border-slate-700 rounded px-3 py-2 text-xs">
+                        <option value="modern">Moderne</option>
+                        <option value="classic">Classique</option>
+                        <option value="editorial">Editorial</option>
+                    </select>
+                    <input id="accent-picker" type="color" value="#d97706" onchange="setAccent(this.value)" class="w-full h-9 bg-slate-900 border border-slate-700 rounded">
+                </div>
+                <div class="grid grid-cols-2 gap-2 mt-2">
+                    <select id="icon-style-select" onchange="setIconStyle(this.value)" class="bg-slate-900 border border-slate-700 rounded px-3 py-2 text-xs">
+                        <option value="regular">Icônes regular</option>
+                        <option value="bold">Icônes bold</option>
+                        <option value="thin">Icônes fines</option>
+                    </select>
+                    <button onclick="toggleResumeIcons()" class="panel-button py-2 text-xs font-bold flex items-center justify-center gap-1"><span data-icon="sparkles"></span>Icônes CV</button>
+                </div>
+            </section>
+
+            <section>
+                <label class="text-xs font-bold text-slate-500 uppercase mb-3 block">Profil rapide</label>
+                <div class="grid grid-cols-2 gap-2">
+                    <button onclick="applyTemplate('sales')" class="panel-button py-2 text-xs font-bold flex items-center justify-center gap-1"><span data-icon="briefcase"></span>Commercial</button>
+                    <button onclick="applyTemplate('tech')" class="panel-button py-2 text-xs font-bold flex items-center justify-center gap-1"><span data-icon="code"></span>Tech</button>
+                    <button onclick="applyTemplate('student')" class="panel-button py-2 text-xs font-bold flex items-center justify-center gap-1"><span data-icon="graduation"></span>Étudiant</button>
+                    <button onclick="applyTemplate('creative')" class="panel-button py-2 text-xs font-bold flex items-center justify-center gap-1"><span data-icon="palette"></span>Créatif</button>
+                </div>
+            </section>
+
+            <section>
+                <label class="text-xs font-bold text-slate-500 uppercase mb-3 block">Ajouter une section</label>
+                <div class="grid grid-cols-2 gap-2">
+                    <button onclick="addItem('experience')" class="panel-button py-2 text-xs font-bold flex items-center justify-center gap-1"><span data-icon="plus"></span>Expérience</button>
+                    <button onclick="addItem('skill')" class="panel-button py-2 text-xs font-bold flex items-center justify-center gap-1"><span data-icon="plus"></span>Compétence</button>
+                    <button onclick="addItem('education')" class="panel-button py-2 text-xs font-bold flex items-center justify-center gap-1"><span data-icon="plus"></span>Formation</button>
+                    <button onclick="addItem('project')" class="panel-button py-2 text-xs font-bold flex items-center justify-center gap-1"><span data-icon="plus"></span>Projet</button>
+                    <button onclick="addItem('language')" class="panel-button py-2 text-xs font-bold flex items-center justify-center gap-1"><span data-icon="plus"></span>Langue</button>
+                    <button onclick="addItem('certification')" class="panel-button py-2 text-xs font-bold flex items-center justify-center gap-1"><span data-icon="plus"></span>Certificat</button>
+                </div>
+            </section>
+
+            <section>
+                <label class="text-xs font-bold text-slate-500 uppercase mb-3 block">Outils</label>
+                <div class="grid grid-cols-2 gap-2">
+                    <button onclick="improveBullets()" class="panel-button py-2 text-xs font-bold flex items-center justify-center gap-1"><span data-icon="wand"></span>Verbes</button>
+                    <button onclick="togglePreview()" class="panel-button py-2 text-xs font-bold flex items-center justify-center gap-1"><span data-icon="eye"></span>Aperçu</button>
+                    <button onclick="exportJson()" class="panel-button py-2 text-xs font-bold flex items-center justify-center gap-1"><span data-icon="download"></span>JSON</button>
+                    <button onclick="document.getElementById('import-json').click()" class="panel-button py-2 text-xs font-bold flex items-center justify-center gap-1"><span data-icon="upload"></span>Importer</button>
+                    <button onclick="downloadHtml()" class="panel-button py-2 text-xs font-bold flex items-center justify-center gap-1"><span data-icon="file"></span>HTML</button>
+                    <button onclick="resetResume()" class="panel-button py-2 text-xs font-bold flex items-center justify-center gap-1"><span data-icon="refresh"></span>Reset</button>
+                </div>
+                <input id="import-json" type="file" accept="application/json" class="hidden" onchange="importJson(event)">
+            </section>
+
+            <section>
+                <label class="text-xs font-bold text-slate-500 uppercase mb-3 block">Zoom document</label>
+                <input id="zoom-range" type="range" min="70" max="115" value="100" oninput="setZoom(this.value)" class="w-full accent-amber-500">
+                <div class="text-xs text-slate-500 mt-1"><span id="zoom-label">100</span>%</div>
+            </section>
+
+            <section class="bg-slate-900 border border-slate-800 rounded-lg p-4">
+                <h2 class="text-xs font-bold text-slate-400 uppercase mb-3">Conseils ATS</h2>
+                <ul id="ats-tips" class="text-xs text-slate-500 space-y-2"></ul>
+            </section>
+        </div>
+
+        <div class="p-5 border-t border-slate-800">
+            <button onclick="window.print()" class="w-full py-3 bg-accent hover:brightness-110 text-white font-bold rounded-lg shadow-lg transform active:scale-95 transition flex items-center justify-center gap-2">
+                <span data-icon="printer"></span>
+                Exporter PDF
+            </button>
+        </div>
+    </aside>
+
+    <main class="flex-1 overflow-y-auto bg-slate-900 p-8 flex justify-center relative">
+        <div id="resume-canvas" class="a4-sheet transition-all duration-500 ease-in-out">
+            <div id="sidebar-col" class="bg-surface p-8 flex flex-col gap-7 border-r border-slate-200">
+                <div class="photo-container w-40 h-40 mx-auto bg-slate-200 rounded-full relative group cursor-pointer overflow-hidden border-4 border-white shadow-xl">
+                    <img id="profile-img" alt="Photo de profil" src="https://images.unsplash.com/photo-1560250097-0b93528c311a?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80" class="w-full h-full object-cover transition transform group-hover:scale-110">
+                    <div class="absolute inset-0 bg-black/35 flex items-center justify-center opacity-0 group-hover:opacity-100 transition text-white text-xs font-bold">Changer</div>
+                    <input type="file" id="photo-input" class="hidden" accept="image/*" onchange="loadPhoto(event)">
+                </div>
+
+                <section class="space-y-4 text-left avoid-break" data-section="contact">
+                    <h3 class="section-title text-xs font-bold text-primary uppercase border-b border-primary/20 pb-2 flex items-center gap-2"><span class="resume-icon" data-icon="contact"></span>Contact</h3>
+                    <div class="flex items-center gap-3 text-sm text-slate-600">
+                        <span class="icon-chip resume-icon" data-icon="mail"></span>
+                        <span contenteditable="true" class="outline-none break-all" oninput="handleEdit()">jean.dupont@email.com</span>
+                    </div>
+                    <div class="flex items-center gap-3 text-sm text-slate-600">
+                        <span class="icon-chip resume-icon" data-icon="phone"></span>
+                        <span contenteditable="true" class="outline-none" oninput="handleEdit()">06 12 34 56 78</span>
+                    </div>
+                    <div class="flex items-center gap-3 text-sm text-slate-600">
+                        <span class="icon-chip resume-icon" data-icon="location"></span>
+                        <span contenteditable="true" class="outline-none" oninput="handleEdit()">Paris, France</span>
+                    </div>
+                    <div class="flex items-center gap-3 text-sm text-slate-600">
+                        <span class="icon-chip resume-icon" data-icon="linkedin"></span>
+                        <span contenteditable="true" class="outline-none break-all" oninput="handleEdit()">linkedin.com/in/jeandupont</span>
+                    </div>
+                </section>
+
+                <section class="avoid-break" data-section="skills">
+                    <h3 class="section-title text-xs font-bold text-primary uppercase border-b border-primary/20 pb-2 mb-4 flex items-center gap-2"><span class="resume-icon" data-icon="skills"></span>Expertise</h3>
+                    <div id="skills-list" class="space-y-4">
+                        <div class="draggable-item group relative">
+                            <span class="drag-handle no-print absolute right-0 -top-2 text-slate-400 p-1">::</span>
+                            <button onclick="removeItem(this)" class="no-print absolute right-7 -top-2 text-red-300 opacity-0 group-hover:opacity-100 px-1">x</button>
+                            <div class="flex justify-between text-sm font-bold text-secondary mb-1"><span contenteditable="true" oninput="handleEdit()">Stratégie Marketing</span></div>
+                            <div class="h-1.5 bg-slate-200 rounded-full overflow-hidden cursor-pointer" onclick="adjustProgress(this)"><div class="h-full bg-primary w-[90%] transition-all duration-500"></div></div>
+                        </div>
+                        <div class="draggable-item group relative">
+                            <span class="drag-handle no-print absolute right-0 -top-2 text-slate-400 p-1">::</span>
+                            <button onclick="removeItem(this)" class="no-print absolute right-7 -top-2 text-red-300 opacity-0 group-hover:opacity-100 px-1">x</button>
+                            <div class="flex justify-between text-sm font-bold text-secondary mb-1"><span contenteditable="true" oninput="handleEdit()">Gestion de Projet</span></div>
+                            <div class="h-1.5 bg-slate-200 rounded-full overflow-hidden cursor-pointer" onclick="adjustProgress(this)"><div class="h-full bg-primary w-[75%] transition-all duration-500"></div></div>
+                        </div>
+                        <div class="draggable-item group relative">
+                            <span class="drag-handle no-print absolute right-0 -top-2 text-slate-400 p-1">::</span>
+                            <button onclick="removeItem(this)" class="no-print absolute right-7 -top-2 text-red-300 opacity-0 group-hover:opacity-100 px-1">x</button>
+                            <div class="flex justify-between text-sm font-bold text-secondary mb-1"><span contenteditable="true" oninput="handleEdit()">Négociation B2B</span></div>
+                            <div class="h-1.5 bg-slate-200 rounded-full overflow-hidden cursor-pointer" onclick="adjustProgress(this)"><div class="h-full bg-primary w-[85%] transition-all duration-500"></div></div>
+                        </div>
+                    </div>
+                </section>
+
+                <section class="avoid-break" data-section="languages">
+                    <h3 class="section-title text-xs font-bold text-primary uppercase border-b border-primary/20 pb-2 mb-3 flex items-center gap-2"><span class="resume-icon" data-icon="languages"></span>Langues</h3>
+                    <div id="languages-list" class="space-y-2">
+                        <div class="draggable-item group flex justify-between text-sm text-slate-600"><span contenteditable="true" oninput="handleEdit()">Français</span><strong contenteditable="true">Natif</strong></div>
+                        <div class="draggable-item group flex justify-between text-sm text-slate-600"><span contenteditable="true" oninput="handleEdit()">Anglais</span><strong contenteditable="true">Courant</strong></div>
+                    </div>
+                </section>
+            </div>
+
+            <div id="main-col" class="p-12 flex flex-col bg-white">
+                <header class="mb-10">
+                    <h1 contenteditable="true" class="text-5xl font-bold text-primary mb-2 leading-tight outline-none" style="font-family: var(--font-heading, 'Montserrat')" data-placeholder="Votre nom" oninput="handleEdit()">Jean Dupont</h1>
+                    <h2 contenteditable="true" class="text-xl font-title font-semibold text-accent uppercase mb-6 outline-none" data-placeholder="Titre du poste" oninput="handleEdit()">Directeur Commercial</h2>
+                    <p contenteditable="true" class="text-slate-600 leading-relaxed max-w-2xl border-l-4 border-accent pl-4 italic" oninput="handleEdit()" data-placeholder="Résumé professionnel">
+                        Professionnel orienté résultats avec 10 ans d'expérience dans le développement commercial et la gestion d'équipe. Expert en négociation B2B et en stratégie de croissance.
+                    </p>
+                </header>
+
+                <section class="mb-8" data-section="experience">
+                    <h3 class="flex items-center gap-4 mb-7">
+                        <span class="w-8 h-8 rounded bg-primary text-white flex items-center justify-center resume-icon" data-icon="briefcase"></span>
+                        <span class="text-xl font-title font-bold text-secondary uppercase">Expérience</span>
+                        <span class="flex-1 h-px bg-slate-200"></span>
+                    </h3>
+                    <div id="experience-list" class="space-y-7">
+                        <article class="draggable-item group relative pl-4 border-l-2 border-slate-100 hover:border-accent transition-colors avoid-break">
+                            <div class="drag-handle no-print absolute -left-6 top-0 text-slate-300 hover:text-accent p-2">::</div>
+                            <button onclick="removeItem(this)" class="no-print absolute right-0 top-0 text-red-200 hover:text-red-500 p-2 opacity-0 group-hover:opacity-100 transition">x</button>
+                            <div class="flex justify-between items-baseline gap-4 mb-1">
+                                <h4 contenteditable="true" class="text-lg font-bold text-primary" oninput="handleEdit()">Directeur des Ventes</h4>
+                                <span contenteditable="true" class="text-xs font-bold text-white bg-primary px-2 py-1 rounded shrink-0" oninput="handleEdit()">2018 - Présent</span>
+                            </div>
+                            <div contenteditable="true" class="text-sm italic text-accent mb-3" oninput="handleEdit()">Global Corp - Paris</div>
+                            <p contenteditable="true" class="text-sm text-slate-600 leading-relaxed text-justify" oninput="handleEdit()">
+                                Pilotage d'une équipe de 20 commerciaux. Augmentation du chiffre d'affaires de 35% en 2 ans. Ouverture de nouveaux marchés en Europe du Sud.
+                            </p>
+                        </article>
+                        <article class="draggable-item group relative pl-4 border-l-2 border-slate-100 hover:border-accent transition-colors avoid-break">
+                            <div class="drag-handle no-print absolute -left-6 top-0 text-slate-300 hover:text-accent p-2">::</div>
+                            <button onclick="removeItem(this)" class="no-print absolute right-0 top-0 text-red-200 hover:text-red-500 p-2 opacity-0 group-hover:opacity-100 transition">x</button>
+                            <div class="flex justify-between items-baseline gap-4 mb-1">
+                                <h4 contenteditable="true" class="text-lg font-bold text-primary" oninput="handleEdit()">Manager Grand Compte</h4>
+                                <span contenteditable="true" class="text-xs font-bold text-slate-500 bg-slate-100 px-2 py-1 rounded shrink-0" oninput="handleEdit()">2014 - 2018</span>
+                            </div>
+                            <div contenteditable="true" class="text-sm italic text-accent mb-3" oninput="handleEdit()">Tech Solutions - Lyon</div>
+                            <p contenteditable="true" class="text-sm text-slate-600 leading-relaxed text-justify" oninput="handleEdit()">
+                                Gestion d'un portefeuille de 5M EUR. Négociation de contrats cadres avec le secteur bancaire. Formation des collaborateurs juniors.
+                            </p>
+                        </article>
+                    </div>
+                </section>
+
+                <section class="mb-8" data-section="projects">
+                    <h3 class="flex items-center gap-4 mb-6">
+                        <span class="w-8 h-8 rounded bg-primary text-white flex items-center justify-center resume-icon" data-icon="rocket"></span>
+                        <span class="text-xl font-title font-bold text-secondary uppercase">Projets clés</span>
+                        <span class="flex-1 h-px bg-slate-200"></span>
+                    </h3>
+                    <div id="projects-list" class="grid grid-cols-2 gap-4">
+                        <article class="draggable-item group relative bg-slate-50 p-4 rounded border border-transparent hover:border-slate-200 avoid-break">
+                            <button onclick="removeItem(this)" class="no-print absolute right-2 top-1 text-red-300 opacity-0 group-hover:opacity-100">x</button>
+                            <h4 contenteditable="true" class="font-bold text-primary" oninput="handleEdit()">Expansion marché Espagne</h4>
+                            <p contenteditable="true" class="text-sm text-slate-600 mt-2" oninput="handleEdit()">Lancement d'une nouvelle offre B2B, 1,2M EUR de pipeline qualifié en 6 mois.</p>
+                        </article>
+                        <article class="draggable-item group relative bg-slate-50 p-4 rounded border border-transparent hover:border-slate-200 avoid-break">
+                            <button onclick="removeItem(this)" class="no-print absolute right-2 top-1 text-red-300 opacity-0 group-hover:opacity-100">x</button>
+                            <h4 contenteditable="true" class="font-bold text-primary" oninput="handleEdit()">Refonte CRM</h4>
+                            <p contenteditable="true" class="text-sm text-slate-600 mt-2" oninput="handleEdit()">Standardisation du pipeline commercial et amélioration du taux de conversion de 18%.</p>
+                        </article>
+                    </div>
+                </section>
+
+                <section class="mb-8" data-section="education">
+                    <h3 class="flex items-center gap-4 mb-6">
+                        <span class="w-8 h-8 rounded bg-primary text-white flex items-center justify-center resume-icon" data-icon="graduation"></span>
+                        <span class="text-xl font-title font-bold text-secondary uppercase">Formation</span>
+                        <span class="flex-1 h-px bg-slate-200"></span>
+                    </h3>
+                    <div id="education-list" class="grid grid-cols-2 gap-4">
+                        <div class="draggable-item group relative bg-slate-50 p-4 rounded border border-transparent hover:border-slate-200">
+                            <button onclick="removeItem(this)" class="no-print absolute right-2 top-1 text-red-300 opacity-0 group-hover:opacity-100">x</button>
+                            <h4 contenteditable="true" class="font-bold text-primary" oninput="handleEdit()">Master Business</h4>
+                            <div contenteditable="true" class="text-sm text-accent italic mb-1" oninput="handleEdit()">HEC Paris</div>
+                            <div contenteditable="true" class="text-xs text-slate-500" oninput="handleEdit()">Promotion 2013</div>
+                        </div>
+                        <div class="draggable-item group relative bg-slate-50 p-4 rounded border border-transparent hover:border-slate-200">
+                            <button onclick="removeItem(this)" class="no-print absolute right-2 top-1 text-red-300 opacity-0 group-hover:opacity-100">x</button>
+                            <h4 contenteditable="true" class="font-bold text-primary" oninput="handleEdit()">Licence Eco</h4>
+                            <div contenteditable="true" class="text-sm text-accent italic mb-1" oninput="handleEdit()">Sorbonne</div>
+                            <div contenteditable="true" class="text-xs text-slate-500" oninput="handleEdit()">Promotion 2011</div>
+                        </div>
+                    </div>
+                </section>
+
+                <section data-section="certifications">
+                    <h3 class="flex items-center gap-4 mb-5">
+                        <span class="w-8 h-8 rounded bg-primary text-white flex items-center justify-center resume-icon" data-icon="award"></span>
+                        <span class="text-xl font-title font-bold text-secondary uppercase">Certifications</span>
+                        <span class="flex-1 h-px bg-slate-200"></span>
+                    </h3>
+                    <div id="certifications-list" class="flex flex-wrap gap-2">
+                        <span class="draggable-item group relative text-xs font-bold bg-surface text-primary px-3 py-2 rounded border border-primary/10" contenteditable="true" oninput="handleEdit()">Salesforce Certified</span>
+                        <span class="draggable-item group relative text-xs font-bold bg-surface text-primary px-3 py-2 rounded border border-primary/10" contenteditable="true" oninput="handleEdit()">Management Agile</span>
+                    </div>
+                </section>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        const STORAGE_KEY = 'resumemaster-studio-v2';
+        let saveTimer;
+        const ICONS = {
+            cloud: '<path d="M17.5 18H7a4 4 0 0 1-.7-7.94A5.5 5.5 0 0 1 17 8.5 4.75 4.75 0 0 1 17.5 18Z"/>',
+            save: '<path d="M5 3h11l3 3v15H5Z"/><path d="M8 3v6h8"/><path d="M8 21v-7h8v7"/>',
+            history: '<path d="M3 12a9 9 0 1 0 3-6.7"/><path d="M3 4v6h6"/><path d="M12 7v5l3 2"/>',
+            sparkles: '<path d="M12 3l1.7 4.3L18 9l-4.3 1.7L12 15l-1.7-4.3L6 9l4.3-1.7Z"/><path d="M19 14l.9 2.1L22 17l-2.1.9L19 20l-.9-2.1L16 17l2.1-.9Z"/><path d="M5 14l.7 1.6L7 16l-1.3.4L5 18l-.7-1.6L3 16l1.3-.4Z"/>',
+            briefcase: '<path d="M10 6V5a2 2 0 0 1 2-2h0a2 2 0 0 1 2 2v1"/><rect x="3" y="6" width="18" height="13" rx="2"/><path d="M3 12h18"/><path d="M10 12v2h4v-2"/>',
+            code: '<path d="m8 9-4 3 4 3"/><path d="m16 9 4 3-4 3"/><path d="m14 5-4 14"/>',
+            graduation: '<path d="M3 8l9-4 9 4-9 4Z"/><path d="M7 10v5c3 2 7 2 10 0v-5"/><path d="M21 8v6"/>',
+            palette: '<path d="M12 3a9 9 0 0 0 0 18h1.5a2 2 0 0 0 1.2-3.6 1 1 0 0 1 .6-1.8H17a4 4 0 0 0 4-4A8.5 8.5 0 0 0 12 3Z"/><circle cx="7.5" cy="10" r=".8"/><circle cx="10" cy="7" r=".8"/><circle cx="14" cy="7" r=".8"/><circle cx="16.5" cy="10" r=".8"/>',
+            plus: '<path d="M12 5v14"/><path d="M5 12h14"/>',
+            wand: '<path d="M15 4l5 5"/><path d="M14 5l-9 9a2 2 0 0 0 0 3l2 2a2 2 0 0 0 3 0l9-9"/><path d="M5 4v2"/><path d="M4 5h2"/><path d="M19 17v2"/><path d="M18 18h2"/>',
+            eye: '<path d="M2 12s3.5-6 10-6 10 6 10 6-3.5 6-10 6S2 12 2 12Z"/><circle cx="12" cy="12" r="3"/>',
+            download: '<path d="M12 3v12"/><path d="m7 10 5 5 5-5"/><path d="M5 21h14"/>',
+            upload: '<path d="M12 21V9"/><path d="m7 14 5-5 5 5"/><path d="M5 3h14"/>',
+            file: '<path d="M6 3h9l3 3v15H6Z"/><path d="M15 3v4h4"/>',
+            refresh: '<path d="M20 12a8 8 0 1 1-2.3-5.7"/><path d="M20 4v6h-6"/>',
+            printer: '<path d="M7 9V3h10v6"/><path d="M7 17H5a2 2 0 0 1-2-2v-4a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2v4a2 2 0 0 1-2 2h-2"/><path d="M7 14h10v7H7Z"/><path d="M17 12h.01"/>',
+            contact: '<path d="M16 21v-2a4 4 0 0 0-8 0v2"/><circle cx="12" cy="7" r="4"/><path d="M20 8v6"/><path d="M17 11h6"/>',
+            mail: '<path d="M4 6h16v12H4Z"/><path d="m4 7 8 6 8-6"/>',
+            phone: '<path d="M22 16.9v3a2 2 0 0 1-2.2 2 19.8 19.8 0 0 1-8.6-3.1 19.4 19.4 0 0 1-6-6A19.8 19.8 0 0 1 2.1 4.2 2 2 0 0 1 4.1 2h3a2 2 0 0 1 2 1.7c.1.9.3 1.7.6 2.5a2 2 0 0 1-.5 2.1L8 9.5a16 16 0 0 0 6.5 6.5l1.2-1.2a2 2 0 0 1 2.1-.5c.8.3 1.6.5 2.5.6A2 2 0 0 1 22 16.9Z"/>',
+            location: '<path d="M20 10c0 5-8 12-8 12S4 15 4 10a8 8 0 1 1 16 0Z"/><circle cx="12" cy="10" r="3"/>',
+            linkedin: '<path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-4 0v7h-4v-13h4v2"/><path d="M2 9h4v12H2Z"/><circle cx="4" cy="4" r="2"/>',
+            skills: '<path d="M12 2l3 7h7l-5.5 4.4L18.5 21 12 16.8 5.5 21l2-7.6L2 9h7Z"/>',
+            languages: '<path d="M4 5h9"/><path d="M9 3v2c0 4-2 7-5 9"/><path d="M5 9c1.5 2.7 3.6 4.6 7 5"/><path d="M13 21l4-9 4 9"/><path d="M15 17h4"/>',
+            rocket: '<path d="M4.5 16.5c-1 1-1.5 3-1.5 4.5 1.5 0 3.5-.5 4.5-1.5"/><path d="M9 15 6 18"/><path d="M10 14 20 4s1 5-2 8-8 6-8 6Z"/><path d="M14 8l2 2"/>',
+            award: '<circle cx="12" cy="8" r="5"/><path d="M8.5 12.5 7 22l5-3 5 3-1.5-9.5"/>'
+        };
+
+        const templates = {
+            sales: {
+                title: 'Directeur Commercial',
+                summary: "Leader commercial orienté résultats, spécialisé dans la croissance B2B, la structuration de pipeline et le management d'équipes performantes.",
+                skills: ['Négociation B2B', 'Stratégie commerciale', 'CRM Salesforce', 'Management équipe']
+            },
+            tech: {
+                title: 'Développeur Full Stack',
+                summary: "Ingénieur logiciel polyvalent, habitué à livrer des applications robustes, maintenables et centrées utilisateur, de l'API au front-end.",
+                skills: ['JavaScript', 'React', 'Node.js', 'Architecture API']
+            },
+            student: {
+                title: 'Étudiant en Master',
+                summary: "Profil junior motivé, combinant bases académiques solides, projets concrets et forte capacité d'apprentissage.",
+                skills: ['Analyse', 'Communication', 'Excel', 'Gestion de projet']
+            },
+            creative: {
+                title: 'Designer Brand & Digital',
+                summary: "Créatif stratégique, expert en identité visuelle, direction artistique et conception d'expériences digitales cohérentes.",
+                skills: ['Direction artistique', 'Figma', 'Branding', 'Design system']
+            }
+        };
+
+        function setupSortableLists() {
+            ['experience-list', 'skills-list', 'education-list', 'projects-list', 'languages-list', 'certifications-list'].forEach(id => {
+                const el = document.getElementById(id);
+                if (!el || el.dataset.sortableReady) return;
+                new Sortable(el, { handle: '.drag-handle', animation: 150, ghostClass: 'sortable-ghost', onEnd: handleEdit });
+                el.dataset.sortableReady = 'true';
+            });
+        }
+
+        function snapshot() {
+            const canvas = document.getElementById('resume-canvas');
+            return {
+                app: 'ResumeMaster Studio',
+                version: 2,
+                resumeHtml: canvas.innerHTML,
+                resumeClass: canvas.className,
+                theme: document.documentElement.getAttribute('data-theme') || 'default',
+                font: document.body.getAttribute('data-font') || 'modern',
+                iconStyle: document.body.getAttribute('data-icon-style') || 'regular',
+                icons: document.body.getAttribute('data-icons') || 'visible',
+                accent: getComputedStyle(document.documentElement).getPropertyValue('--accent').trim(),
+                quality: document.getElementById('quality-bar')?.style.width || '0%',
+                summary: `CV ${document.querySelector('#main-col h1')?.textContent?.trim() || 'sans nom'}`,
+                savedAt: new Date().toISOString()
+            };
+        }
+
+        function applySnapshot(payload = {}) {
+            const canvas = document.getElementById('resume-canvas');
+            if (!payload.resumeHtml) throw new Error('Cette sauvegarde ResumeMaster est vide.');
+            canvas.innerHTML = payload.resumeHtml;
+            canvas.className = payload.resumeClass || 'a4-sheet transition-all duration-500 ease-in-out';
+            document.documentElement.setAttribute('data-theme', payload.theme || 'default');
+            document.body.setAttribute('data-font', payload.font || 'modern');
+            document.body.setAttribute('data-icon-style', payload.iconStyle || 'regular');
+            document.body.setAttribute('data-icons', payload.icons || 'visible');
+            if (payload.accent) setAccent(payload.accent);
+            applyIcons();
+            setupPhotoClick();
+            setupSortableLists();
+            updateQuality();
+        }
+
+        function applyIcons(root = document) {
+            root.querySelectorAll('[data-icon]').forEach(node => {
+                const name = node.dataset.icon;
+                const paths = ICONS[name];
+                if (!paths) return;
+                node.innerHTML = `<svg class="icon" viewBox="0 0 24 24" aria-hidden="true">${paths}</svg>`;
+            });
+        }
+
+        window.freevGetSaveData = snapshot;
+        window.freevApplySaveData = applySnapshot;
+
+        function handleEdit() {
+            updateQuality();
+            clearTimeout(saveTimer);
+            saveTimer = setTimeout(saveLocalSilent, 450);
+        }
+
+        function changeLayout(type) {
+            const canvas = document.getElementById('resume-canvas');
+            canvas.className = 'a4-sheet transition-all duration-500 ease-in-out';
+            if (type !== 'default') canvas.classList.add(`layout-${type}`);
+            handleEdit();
+        }
+
+        function setTheme(theme) {
+            document.documentElement.setAttribute('data-theme', theme);
+            handleEdit();
+        }
+
+        function setFont(font) {
+            document.body.setAttribute('data-font', font);
+            handleEdit();
+        }
+
+        function setIconStyle(style) {
+            document.body.setAttribute('data-icon-style', style);
+            handleEdit();
+        }
+
+        function toggleResumeIcons() {
+            const next = document.body.getAttribute('data-icons') === 'hidden' ? 'visible' : 'hidden';
+            document.body.setAttribute('data-icons', next);
+            handleEdit();
+        }
+
+        function setAccent(color) {
+            document.documentElement.style.setProperty('--accent', color);
+            const picker = document.getElementById('accent-picker');
+            if (picker) picker.value = color;
+            handleEdit();
+        }
+
+        function setZoom(value) {
+            document.documentElement.style.setProperty('--resume-scale', value / 100);
+            document.getElementById('zoom-label').textContent = value;
+        }
+
+        function setupPhotoClick() {
+            const photo = document.querySelector('.photo-container');
+            if (!photo || photo.dataset.ready) return;
+            photo.addEventListener('click', () => document.getElementById('photo-input')?.click());
+            photo.dataset.ready = 'true';
+        }
+
+        function loadPhoto(event) {
+            const file = event.target.files?.[0];
+            if (!file) return;
+            const reader = new FileReader();
+            reader.onload = () => {
+                document.getElementById('profile-img').src = reader.result;
+                handleEdit();
+            };
+            reader.readAsDataURL(file);
+        }
+
+        function adjustProgress(el) {
+            const bar = el.querySelector('div');
+            const w = parseInt(bar.style.width || bar.className.match(/w-\[(\d+)%\]/)?.[1] || 75, 10);
+            const next = w >= 100 ? 25 : (w >= 90 ? 100 : (w >= 75 ? 90 : (w >= 50 ? 75 : 50)));
+            bar.className = 'h-full bg-primary transition-all duration-500';
+            bar.style.width = `${next}%`;
+            handleEdit();
+        }
+
+        function removeItem(button) {
+            button.closest('.draggable-item, article, div')?.remove();
+            handleEdit();
+        }
+
+        function addItem(type) {
+            const fragments = {
+                experience: `<article class="draggable-item group relative pl-4 border-l-2 border-slate-100 hover:border-accent transition-colors avoid-break"><div class="drag-handle no-print absolute -left-6 top-0 text-slate-300 hover:text-accent p-2">::</div><button onclick="removeItem(this)" class="no-print absolute right-0 top-0 text-red-200 hover:text-red-500 p-2 opacity-0 group-hover:opacity-100 transition">x</button><div class="flex justify-between items-baseline gap-4 mb-1"><h4 contenteditable="true" class="text-lg font-bold text-primary" oninput="handleEdit()">Nouveau poste</h4><span contenteditable="true" class="text-xs font-bold text-white bg-primary px-2 py-1 rounded shrink-0" oninput="handleEdit()">20XX - 20XX</span></div><div contenteditable="true" class="text-sm italic text-accent mb-3" oninput="handleEdit()">Entreprise - Ville</div><p contenteditable="true" class="text-sm text-slate-600 leading-relaxed text-justify" oninput="handleEdit()">Décrivez une mission, une action et un résultat mesurable.</p></article>`,
+                skill: `<div class="draggable-item group relative"><span class="drag-handle no-print absolute right-0 -top-2 text-slate-400 p-1">::</span><button onclick="removeItem(this)" class="no-print absolute right-7 -top-2 text-red-300 opacity-0 group-hover:opacity-100 px-1">x</button><div class="flex justify-between text-sm font-bold text-secondary mb-1"><span contenteditable="true" oninput="handleEdit()">Compétence</span></div><div class="h-1.5 bg-slate-200 rounded-full overflow-hidden cursor-pointer" onclick="adjustProgress(this)"><div class="h-full bg-primary w-[75%] transition-all duration-500"></div></div></div>`,
+                education: `<div class="draggable-item group relative bg-slate-50 p-4 rounded border border-transparent hover:border-slate-200"><button onclick="removeItem(this)" class="no-print absolute right-2 top-1 text-red-300 opacity-0 group-hover:opacity-100">x</button><h4 contenteditable="true" class="font-bold text-primary" oninput="handleEdit()">Diplôme</h4><div contenteditable="true" class="text-sm text-accent italic mb-1" oninput="handleEdit()">École</div><div contenteditable="true" class="text-xs text-slate-500" oninput="handleEdit()">Année</div></div>`,
+                project: `<article class="draggable-item group relative bg-slate-50 p-4 rounded border border-transparent hover:border-slate-200 avoid-break"><button onclick="removeItem(this)" class="no-print absolute right-2 top-1 text-red-300 opacity-0 group-hover:opacity-100">x</button><h4 contenteditable="true" class="font-bold text-primary" oninput="handleEdit()">Projet important</h4><p contenteditable="true" class="text-sm text-slate-600 mt-2" oninput="handleEdit()">Impact, contexte et résultat mesurable.</p></article>`,
+                language: `<div class="draggable-item group flex justify-between text-sm text-slate-600"><span contenteditable="true" oninput="handleEdit()">Langue</span><strong contenteditable="true" oninput="handleEdit()">Niveau</strong></div>`,
+                certification: `<span class="draggable-item group relative text-xs font-bold bg-surface text-primary px-3 py-2 rounded border border-primary/10" contenteditable="true" oninput="handleEdit()">Certification</span>`
+            };
+            const targets = { experience: 'experience-list', skill: 'skills-list', education: 'education-list', project: 'projects-list', language: 'languages-list', certification: 'certifications-list' };
+            document.getElementById(targets[type])?.insertAdjacentHTML(type === 'experience' ? 'afterbegin' : 'beforeend', fragments[type]);
+            applyIcons();
+            setupSortableLists();
+            handleEdit();
+        }
+
+        function applyTemplate(kind) {
+            const data = templates[kind];
+            if (!data) return;
+            document.querySelector('#main-col h2').textContent = data.title;
+            document.querySelector('#main-col header p').textContent = data.summary;
+            const list = document.getElementById('skills-list');
+            list.innerHTML = '';
+            data.skills.forEach(skill => {
+                addItem('skill');
+                list.lastElementChild.querySelector('[contenteditable]').textContent = skill;
+            });
+            handleEdit();
+        }
+
+        function improveBullets() {
+            const verbs = ['Pilotage', 'Optimisation', 'Déploiement', 'Structuration', 'Animation', 'Négociation'];
+            document.querySelectorAll('#experience-list p, #projects-list p').forEach((p, index) => {
+                const text = p.textContent.trim();
+                if (!/^(Pilotage|Optimisation|Déploiement|Structuration|Animation|Négociation)/i.test(text)) {
+                    p.textContent = `${verbs[index % verbs.length]} : ${text}`;
+                }
+            });
+            handleEdit();
+        }
+
+        function updateQuality() {
+            const canvasText = document.getElementById('resume-canvas').innerText.replace(/\s+/g, ' ').trim();
+            const tips = [];
+            let score = 20;
+            if (/@/.test(canvasText)) score += 10; else tips.push('Ajoutez une adresse e-mail.');
+            if (/\d/.test(canvasText)) score += 10; else tips.push('Ajoutez des chiffres ou résultats mesurables.');
+            if (canvasText.length > 700) score += 15; else tips.push('Étoffez les descriptions avec contexte, action et résultat.');
+            if (canvasText.length > 1200) score += 15;
+            if (document.querySelectorAll('#experience-list article').length >= 2) score += 10; else tips.push('Ajoutez au moins deux expériences ou projets.');
+            if (document.querySelectorAll('#skills-list .draggable-item').length >= 4) score += 10; else tips.push('Ajoutez 4 compétences clés.');
+            if (document.getElementById('projects-list')?.children.length) score += 10;
+            if (document.getElementById('languages-list')?.children.length) score += 5;
+            if (document.getElementById('certifications-list')?.children.length) score += 5;
+            score = Math.min(score, 100);
+
+            const bar = document.getElementById('quality-bar');
+            bar.style.width = `${score}%`;
+            bar.className = `h-full transition-all duration-700 ${score < 50 ? 'bg-red-500' : (score < 80 ? 'bg-amber-500' : 'bg-green-500')}`;
+            document.getElementById('quality-number').textContent = score;
+            document.getElementById('quality-msg').textContent = score < 50 ? 'CV encore trop léger.' : score < 80 ? 'Solide, mais améliorable.' : 'Excellent niveau de complétude.';
+            document.getElementById('ats-tips').innerHTML = (tips.length ? tips : ['Structure claire, mots-clés présents, bon équilibre entre contenu et lisibilité.']).map(tip => `<li>${tip}</li>`).join('');
+        }
+
+        function saveLocalSilent() {
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(snapshot()));
+        }
+
+        function saveLocal() {
+            saveLocalSilent();
+            document.getElementById('quality-msg').textContent = 'Sauvegarde locale effectuée.';
+        }
+
+        function loadLocal() {
+            const saved = localStorage.getItem(STORAGE_KEY);
+            if (saved) applySnapshot(JSON.parse(saved));
+        }
+
+        function exportJson() {
+            const blob = new Blob([JSON.stringify(snapshot(), null, 2)], { type: 'application/json' });
+            triggerDownload(blob, 'resumemaster-sauvegarde.json');
+        }
+
+        function importJson(event) {
+            const file = event.target.files?.[0];
+            if (!file) return;
+            const reader = new FileReader();
+            reader.onload = () => applySnapshot(JSON.parse(reader.result));
+            reader.readAsText(file);
+        }
+
+        function downloadHtml() {
+            saveLocalSilent();
+            const html = '<!DOCTYPE html>\\n' + document.documentElement.outerHTML;
+            triggerDownload(new Blob([html], { type: 'text/html' }), 'mon-cv-resumemaster.html');
+        }
+
+        function triggerDownload(blob, filename) {
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = filename;
+            a.click();
+            URL.revokeObjectURL(url);
+        }
+
+        function resetResume() {
+            if (!confirm('Réinitialiser le CV et effacer la sauvegarde locale ?')) return;
+            localStorage.removeItem(STORAGE_KEY);
+            location.reload();
+        }
+
+        function togglePreview() {
+            document.body.classList.toggle('preview-mode');
+        }
+
+        document.addEventListener('paste', e => {
+            if (e.target.isContentEditable) {
+                e.preventDefault();
+                const text = (e.originalEvent || e).clipboardData.getData('text/plain');
+                document.execCommand('insertText', false, text);
+                handleEdit();
+            }
+        });
+
+        setupPhotoClick();
+        setupSortableLists();
+        applyIcons();
+        updateQuality();
+        setTimeout(loadLocal, 100);
+    </script>
+    <script type="module" src="../freev-cloud-save.js"></script>
+</body>
+</html>
