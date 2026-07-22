@@ -28,6 +28,11 @@ import {
   buildZipBytes,
   extractGeneratedFiles,
 } from "./nova-code-artifacts.js?v=1.0.0";
+import {
+  buildPipelineMessages,
+  fitProviderMessages,
+  isProviderConversationTooLong,
+} from "./nova-provider-context.js?v=1.0.0";
 
 const FIREBASE_CONFIG = Object.freeze({
   apiKey: "AIzaSyBtcQrFenU9T0C2v1qcBUpF2DfVqC_V5sM",
@@ -894,7 +899,7 @@ function chatEndpoint(baseUrl) {
   return clean.endsWith("/chat/completions") ? clean : `${clean}/chat/completions`;
 }
 
-async function callProfile(profile, messages) {
+async function callProfile(profile, messages, options = {}) {
   const payload = { model: profile.model, messages, temperature: 0.25, max_tokens: 2400 };
   if (profile.source === "local") {
     const response = await fetch(chatEndpoint(profile.baseUrl), {
@@ -909,10 +914,24 @@ async function callProfile(profile, messages) {
     return String(content);
   }
   if (!profile.secretId) throw new Error(`La clé du profil « ${profile.label} » n’est pas configurée.`);
-  const data = await renderRequest("/api/nova/provider/chat", {
-    method: "POST",
-    body: JSON.stringify({ base_url: profile.baseUrl, model: profile.model, secret_id: profile.secretId, messages }),
+  const fixedPayload = { base_url: profile.baseUrl, model: profile.model, secret_id: profile.secretId };
+  const safeMessages = fitProviderMessages(messages, {
+    fixedPayload,
+    maxMessageChars: options.compact ? 1_100 : 1_800,
+    maxPayloadBytes: options.compact ? 7_000 : 14_000,
   });
+  let data;
+  try {
+    data = await renderRequest("/api/nova/provider/chat", {
+      method: "POST",
+      body: JSON.stringify({ ...fixedPayload, messages: safeMessages }),
+    });
+  } catch (error) {
+    if (!options.compact && isProviderConversationTooLong(error)) {
+      return callProfile(profile, messages, { compact: true });
+    }
+    throw error;
+  }
   if (!data.response) throw new Error("Le fournisseur a renvoyé une réponse vide.");
   return String(data.response);
 }
@@ -922,14 +941,17 @@ async function runPipeline(profiles, system, prompt, onStep) {
   for (let index = 0; index < profiles.length; index += 1) {
     const profile = profiles[index];
     onStep?.(profile, index, profiles.length);
-    const previous = result ? result.slice(-14000) : "Aucun résultat précédent.";
     const stageInstruction = profiles.length > 1
       ? `Tu es l’étape ${index + 1}/${profiles.length}. Examine le résultat précédent, corrige-le et fournis une version améliorée exploitable.`
       : "Réponds directement à la mission.";
-    result = await callProfile(profile, [
-      { role: "system", content: `${system}\n${stageInstruction}\n${CODE_EXPORT_INSTRUCTION}\nNe demande et ne révèle jamais de clé, jeton ou secret.` },
-      { role: "user", content: `Mission :\n${prompt}\n\nRésultat précédent :\n${previous}` },
-    ]);
+    const messages = buildPipelineMessages({
+      system,
+      stageInstruction,
+      codeExportInstruction: CODE_EXPORT_INSTRUCTION,
+      prompt,
+      previous: result,
+    });
+    result = await callProfile(profile, messages);
   }
   return result;
 }
