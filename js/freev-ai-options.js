@@ -322,21 +322,48 @@
     if (preset.model) byId('freev-custom-model').value = preset.model;
   }
 
-  async function firebaseSession() {
+  let firebaseTokenRefreshPromise = null;
+
+  async function firebaseSession(forceRefresh = false) {
     const user = window.FreevAuthActions?.getCurrentUser?.();
     if (!user || typeof user.getIdToken !== 'function') {
       throw new Error('Connecte-toi à ton compte Freev pour protéger cette clé dans Firebase');
     }
-    return { user, token: await user.getIdToken() };
+    if (!forceRefresh) return { user, token: await user.getIdToken() };
+
+    // Une seule actualisation est lancée si plusieurs requêtes expirent ensemble.
+    if (!firebaseTokenRefreshPromise) {
+      const refresh = user.getIdToken(true).finally(() => {
+        if (firebaseTokenRefreshPromise === refresh) firebaseTokenRefreshPromise = null;
+      });
+      firebaseTokenRefreshPromise = refresh;
+    }
+    return { user, token: await firebaseTokenRefreshPromise };
+  }
+
+  async function firebaseAuthenticatedFetch(url, options = {}) {
+    const execute = async (forceRefresh) => {
+      const { token } = await firebaseSession(forceRefresh);
+      return fetch(url, {
+        ...options,
+        headers: {
+          ...(options.headers || {}),
+          Authorization: `Bearer ${token}`
+        }
+      });
+    };
+
+    let response = await execute(false);
+    // Firebase peut conserver un jeton expiré en cache : on le renouvelle puis on réessaie une fois.
+    if (response.status === 401) response = await execute(true);
+    return response;
   }
 
   async function secureRenderRequest(path, payload) {
-    const { token } = await firebaseSession();
-    const response = await fetch(`${FREEV_SERVER()}${path}`, {
+    const response = await firebaseAuthenticatedFetch(`${FREEV_SERVER()}${path}`, {
       method: 'POST',
       headers: {
         Accept: 'application/json',
-        Authorization: `Bearer ${token}`,
         'Content-Type': 'application/json'
       },
       body: JSON.stringify(payload)
@@ -494,11 +521,8 @@
     try {
       if (isLocalProvider && transientKey) {
         headers.Authorization = `Bearer ${transientKey}`;
-      } else if (!isLocalProvider) {
-        const { token } = await firebaseSession();
-        headers.Authorization = `Bearer ${token}`;
       }
-      const response = await fetch(endpoint, {
+      const requestOptions = {
         method: 'POST',
         headers,
         body: JSON.stringify(isLocalProvider ? {
@@ -511,7 +535,10 @@
           messages: [{ role: 'user', content: prompt }]
         }),
         signal: controller.signal
-      });
+      };
+      const response = isLocalProvider
+        ? await fetch(endpoint, requestOptions)
+        : await firebaseAuthenticatedFetch(endpoint, requestOptions);
       const data = await response.json().catch(() => ({}));
       if (!response.ok || data?.ok === false) throw new Error(data?.error || `HTTP ${response.status}`);
       const content = isLocalProvider
