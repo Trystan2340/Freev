@@ -167,20 +167,38 @@ function showWorkspace() {
   setStatus("Nova actif", "ok");
 }
 
-async function authHeaders() {
+let firebaseTokenRefreshPromise = null;
+
+async function authHeaders(forceRefresh = false) {
   if (!state.user) throw new Error("Connexion Firebase requise");
+  let token;
+  if (!forceRefresh) {
+    token = await state.user.getIdToken();
+  } else {
+    // Mutualise le renouvellement quand plusieurs panneaux Nova chargent en même temps.
+    if (!firebaseTokenRefreshPromise) {
+      const refresh = state.user.getIdToken(true).finally(() => {
+        if (firebaseTokenRefreshPromise === refresh) firebaseTokenRefreshPromise = null;
+      });
+      firebaseTokenRefreshPromise = refresh;
+    }
+    token = await firebaseTokenRefreshPromise;
+  }
   return {
     Accept: "application/json",
-    Authorization: `Bearer ${await state.user.getIdToken()}`,
+    Authorization: `Bearer ${token}`,
     "Content-Type": "application/json",
   };
 }
 
 async function renderRequest(path, options = {}) {
-  const response = await fetch(`${RENDER_BASE}${path}`, {
+  const execute = async (forceRefresh) => fetch(`${RENDER_BASE}${path}`, {
     ...options,
-    headers: { ...(await authHeaders()), ...(options.headers || {}) },
+    headers: { ...(await authHeaders(forceRefresh)), ...(options.headers || {}) },
   });
+  let response = await execute(false);
+  // Un jeton Firebase refusé est renouvelé une fois sans reconnecter l’utilisateur.
+  if (response.status === 401) response = await execute(true);
   const data = await response.json().catch(() => ({}));
   if (!response.ok || data?.ok === false) throw new Error(data?.error || `HTTP ${response.status}`);
   return data;
@@ -190,6 +208,38 @@ async function loadAccess() {
   const access = await renderRequest("/api/nova/access", { method: "GET" });
   state.entitlement = access;
   return access;
+}
+
+async function ensureOwnerAccess(access) {
+  if (!state.user || access?.owner !== true) return;
+  const uid = state.user.uid;
+  const adminRef = doc(db, "novaAdmins", uid);
+  const entitlementRef = doc(db, "novaEntitlements", uid);
+  const [adminSnap, entitlementSnap] = await Promise.all([
+    getDoc(adminRef),
+    getDoc(entitlementRef),
+  ]);
+  const writes = [];
+  if (!adminSnap.exists() || adminSnap.data()?.active !== true) {
+    writes.push(setDoc(adminRef, {
+      uid,
+      active: true,
+      createdBy: uid,
+      createdAt: serverTimestamp(),
+    }));
+  }
+  if (!entitlementSnap.exists() || entitlementSnap.data()?.active !== true || entitlementSnap.data()?.plan !== "nova") {
+    writes.push(setDoc(entitlementRef, {
+      uid,
+      active: true,
+      plan: "nova",
+      expiresAt: null,
+      grantedBy: uid,
+      grantedAt: serverTimestamp(),
+      updatedAt: serverTimestamp(),
+    }));
+  }
+  await Promise.all(writes);
 }
 
 async function detectAdmin() {
@@ -957,6 +1007,7 @@ async function initializeUser(user) {
   try {
     const access = await loadAccess();
     if (!access.active) throw new Error("Ton accès Nova n’est pas actif.");
+    await ensureOwnerAccess(access);
     await Promise.all([loadNovaData(), detectAdmin()]);
     showWorkspace();
     renderModes();
