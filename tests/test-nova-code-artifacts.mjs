@@ -113,5 +113,5 @@ test("les réponses courantes et l'historique utilisent le même panneau de tél
   assert.match(workspace, /const artifacts = createCodeArtifacts\(String\(entry\.response/);
   assert.match(workspace, /buildZipBytes\(files, \{ rootFolder \}\)/);
   assert.match(html, /projet ZIP/);
-  assert.match(html, /nova-workspace\.js\?v=1\.3\.0/);
+  assert.match(html, /nova-workspace\.js\?v=1\.4\.0/);
 });
