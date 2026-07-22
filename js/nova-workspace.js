@@ -24,6 +24,10 @@ import {
   isCreatureTarget,
   normalizeAssignmentIds,
 } from "./nova-configuration.js";
+import {
+  buildZipBytes,
+  extractGeneratedFiles,
+} from "./nova-code-artifacts.js?v=1.0.0";
 
 const FIREBASE_CONFIG = Object.freeze({
   apiKey: "AIzaSyBtcQrFenU9T0C2v1qcBUpF2DfVqC_V5sM",
@@ -36,6 +40,12 @@ const FIREBASE_CONFIG = Object.freeze({
 
 const RENDER_BASE = "https://freev-iies.onrender.com";
 const HISTORY_LIMIT = 40;
+const CODE_EXPORT_INSTRUCTION = [
+  "Lorsque tu produis du code, fournis chaque fichier complet séparément.",
+  "Avant chaque bloc de code, écris une ligne `Fichier : chemin/nom.ext` avec le vrai nom, la bonne extension et le sous-dossier éventuel.",
+  "Pour plusieurs fichiers, conserve une arborescence cohérente et n'omets aucun fichier indispensable au projet.",
+  "N'insère jamais de clé API, jeton, mot de passe ou secret réel dans un fichier généré.",
+].join("\n");
 
 const CAPABILITIES = Object.freeze([
   ["general", "Généraliste"],
@@ -413,6 +423,106 @@ function renderCouncil() {
   renderPipeline();
 }
 
+function safeProjectSlug(value) {
+  return String(value || "nova")
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-+|-+$/g, "")
+    .slice(0, 48) || "nova";
+}
+
+function triggerDownload(blob, filename) {
+  const url = URL.createObjectURL(blob);
+  const link = document.createElement("a");
+  link.href = url;
+  link.download = filename;
+  link.hidden = true;
+  document.body.append(link);
+  link.click();
+  link.remove();
+  window.setTimeout(() => URL.revokeObjectURL(url), 1500);
+}
+
+function downloadGeneratedFile(file) {
+  const filename = file.path.split("/").filter(Boolean).pop() || "fichier.txt";
+  triggerDownload(new Blob([file.content], { type: file.mimeType }), filename);
+}
+
+function downloadGeneratedProject(files, label) {
+  const slug = safeProjectSlug(label);
+  const rootFolder = `${slug}-projet`;
+  const bytes = buildZipBytes(files, { rootFolder });
+  triggerDownload(new Blob([bytes], { type: "application/zip" }), `${rootFolder}.zip`);
+}
+
+function createCodeArtifacts(response, label = "freev-nova") {
+  const files = extractGeneratedFiles(response);
+  if (!files.length) return null;
+
+  const section = document.createElement("section");
+  section.className = "code-artifacts";
+  section.dataset.generatedFiles = String(files.length);
+  const header = document.createElement("header");
+  const heading = document.createElement("div");
+  const kicker = document.createElement("span");
+  kicker.className = "artifact-kicker";
+  kicker.textContent = files.length === 1 ? "FICHIER GÉNÉRÉ" : "PROJET GÉNÉRÉ";
+  const title = document.createElement("strong");
+  title.textContent = files.length === 1 ? files[0].path : `${files.length} fichiers prêts`;
+  heading.append(kicker, title);
+  const format = document.createElement("span");
+  format.className = "artifact-format";
+  format.textContent = files.length === 1 ? (files[0].path.split(".").pop()?.toUpperCase() || "FICHIER") : "ZIP";
+  header.append(heading, format);
+
+  const list = document.createElement("div");
+  list.className = "artifact-files";
+  list.replaceChildren(...files.map((file) => {
+    const button = document.createElement("button");
+    button.type = "button";
+    button.className = "artifact-file";
+    button.title = `Télécharger ${file.path}`;
+    button.setAttribute("aria-label", `Télécharger le fichier ${file.path}`);
+    const icon = document.createElement("span");
+    icon.className = "artifact-file-icon";
+    icon.textContent = "↓";
+    const path = document.createElement("span");
+    path.className = "artifact-file-path";
+    path.textContent = file.path;
+    const size = document.createElement("span");
+    size.className = "artifact-file-size";
+    size.textContent = `${new Blob([file.content]).size.toLocaleString("fr-FR")} o`;
+    button.append(icon, path, size);
+    button.addEventListener("click", () => downloadGeneratedFile(file));
+    return button;
+  }));
+
+  const download = document.createElement("button");
+  download.type = "button";
+  download.className = "artifact-download";
+  if (files.length === 1) {
+    download.textContent = `Télécharger ${files[0].path.split("/").pop()}`;
+    download.addEventListener("click", () => downloadGeneratedFile(files[0]));
+  } else {
+    download.textContent = "Télécharger le projet ZIP";
+    download.addEventListener("click", () => downloadGeneratedProject(files, label));
+  }
+  const note = document.createElement("p");
+  note.textContent = "Vérifie toujours le code avant de l’exécuter.";
+  section.append(header, list, download, note);
+  return section;
+}
+
+function attachCodeArtifacts(container, response, label) {
+  const existing = container.querySelector(".code-artifacts");
+  existing?.remove();
+  const artifacts = createCodeArtifacts(response, label);
+  if (artifacts) container.append(artifacts);
+  return artifacts;
+}
+
 function message(role, name, text, options = {}) {
   const root = byId("nova-messages");
   if (!root) return null;
@@ -438,16 +548,24 @@ function message(role, name, text, options = {}) {
   content.className = "message-text";
   content.textContent = text;
   body.append(meta, content);
+  const artifacts = role === "assistant" && !options.thinking ? createCodeArtifacts(text, name) : null;
+  if (artifacts) body.append(artifacts);
   item.append(avatar, body);
   root.append(item);
   root.scrollTop = root.scrollHeight;
-  return { item, content };
+  return { item, body, content, artifacts, name };
 }
 
 function updateMessage(handle, text, thinking = false) {
   if (!handle) return;
   handle.content.textContent = text;
   handle.item.classList.toggle("thinking", thinking);
+  if (thinking) {
+    handle.artifacts?.remove();
+    handle.artifacts = null;
+  } else {
+    handle.artifacts = attachCodeArtifacts(handle.body, text, handle.name);
+  }
   const root = byId("nova-messages");
   if (root) root.scrollTop = root.scrollHeight;
 }
@@ -809,7 +927,7 @@ async function runPipeline(profiles, system, prompt, onStep) {
       ? `Tu es l’étape ${index + 1}/${profiles.length}. Examine le résultat précédent, corrige-le et fournis une version améliorée exploitable.`
       : "Réponds directement à la mission.";
     result = await callProfile(profile, [
-      { role: "system", content: `${system}\n${stageInstruction}\nNe demande et ne révèle jamais de clé, jeton ou secret.` },
+      { role: "system", content: `${system}\n${stageInstruction}\n${CODE_EXPORT_INSTRUCTION}\nNe demande et ne révèle jamais de clé, jeton ou secret.` },
       { role: "user", content: `Mission :\n${prompt}\n\nRésultat précédent :\n${previous}` },
     ]);
   }
@@ -913,6 +1031,9 @@ function renderHistory() {
     response.className = "history-response";
     response.textContent = String(entry.response || "");
     card.append(header, response);
+    const artifactLabel = entry.kind === "council" ? "conseil-freev" : (targetById(entry.target)?.name || "freev-nova");
+    const artifacts = createCodeArtifacts(String(entry.response || ""), artifactLabel);
+    if (artifacts) card.append(artifacts);
     return card;
   }));
 }

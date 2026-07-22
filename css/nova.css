@@ -311,6 +311,22 @@ input:focus, select:focus, textarea:focus { border-color: var(--green); box-shad
 .message.thinking .message-body { position: relative; overflow: hidden; border-color: rgba(0, 229, 255, 0.24); }
 .message.thinking .message-body::after { content: ""; position: absolute; inset: 0; background: linear-gradient(90deg, transparent, rgba(0, 229, 255, 0.09), transparent); animation: thinkingSweep 1.6s ease-in-out infinite; }
 
+.code-artifacts { display: grid; gap: 0.65rem; margin-top: 0.85rem; padding: 0.8rem; border: 1px solid rgba(0, 229, 255, 0.24); border-radius: 11px; background: linear-gradient(145deg, rgba(0, 229, 255, 0.045), rgba(0, 255, 65, 0.025)); }
+.code-artifacts header { display: flex; align-items: center; justify-content: space-between; gap: 0.7rem; }
+.code-artifacts header > div { display: grid; gap: 0.18rem; min-width: 0; }
+.code-artifacts header strong { overflow: hidden; color: #dffff0; font-size: 0.7rem; text-overflow: ellipsis; white-space: nowrap; }
+.artifact-kicker { color: var(--cyan); font-size: 0.48rem; font-weight: 800; letter-spacing: 0.14em; }
+.artifact-format { flex: 0 0 auto; padding: 0.25rem 0.42rem; border: 1px solid rgba(0, 255, 65, 0.25); border-radius: 999px; color: var(--green); font-size: 0.5rem; font-weight: 800; }
+.artifact-files { display: grid; gap: 0.3rem; max-height: 210px; overflow-y: auto; }
+.artifact-file { display: grid; min-width: 0; grid-template-columns: 22px minmax(0, 1fr) auto; gap: 0.45rem; align-items: center; width: 100%; padding: 0.45rem 0.5rem; border: 1px solid rgba(126, 166, 135, 0.16); border-radius: 7px; background: rgba(0, 0, 0, 0.18); color: var(--muted); cursor: pointer; text-align: left; }
+.artifact-file:hover, .artifact-file:focus-visible { border-color: rgba(0, 229, 255, 0.46); color: #dffff0; }
+.artifact-file-icon { display: grid; width: 20px; height: 20px; place-items: center; border-radius: 5px; background: rgba(0, 229, 255, 0.09); color: var(--cyan); font-weight: 900; }
+.artifact-file-path { overflow: hidden; font-size: 0.58rem; text-overflow: ellipsis; white-space: nowrap; }
+.artifact-file-size { color: #63816a; font-size: 0.5rem; white-space: nowrap; }
+.artifact-download { width: 100%; min-height: 39px; border: 1px solid var(--green); border-radius: 8px; background: rgba(0, 255, 65, 0.1); color: var(--green-soft); cursor: pointer; font: 700 0.62rem/1.2 "JetBrains Mono", monospace; }
+.artifact-download:hover, .artifact-download:focus-visible { background: var(--green); color: #021004; box-shadow: 0 0 18px rgba(0, 255, 65, 0.18); }
+.code-artifacts > p { margin: 0; color: #5f7664; font-size: 0.5rem; line-height: 1.45; }
+
 .composer { display: flex; align-items: flex-end; gap: 0.65rem; padding: 0.85rem 1.3rem 0; border-top: 1px solid var(--line); }
 .composer textarea { min-height: 52px; max-height: 180px; }
 .send-button { flex: 0 0 52px; height: 52px; border-color: var(--green); background: var(--green); color: #021004; font-size: 1.1rem; font-weight: 900; }
@@ -440,6 +456,7 @@ input:focus, select:focus, textarea:focus { border-color: var(--green); box-shad
 .history-entry h3, .admin-user h3 { margin: 0; font-size: 0.73rem; }
 .history-entry p, .admin-user p { margin: 0.35rem 0 0; color: var(--muted); font-size: 0.62rem; line-height: 1.5; }
 .history-response { max-height: 150px; margin-top: 0.7rem; overflow: auto; white-space: pre-wrap; color: #cfead2; font-size: 0.65rem; line-height: 1.55; }
+.history-entry > .code-artifacts { margin-top: 0.75rem; }
 .admin-toolbar { display: flex; align-items: end; gap: 0.65rem; padding: 1rem 1.2rem 0; }
 .admin-toolbar label { flex: 1; }
 .admin-user-actions { display: grid; grid-template-columns: minmax(135px, 1fr) auto; gap: 0.45rem; }
@@ -491,6 +508,8 @@ input:focus, select:focus, textarea:focus { border-color: var(--green); box-shad
   .team-toggle { white-space: normal; }
   .composer { padding-inline: 0.7rem; }
   .composer-note { padding-inline: 0.7rem; }
+  .artifact-file { grid-template-columns: 22px minmax(0, 1fr); }
+  .artifact-file-size { display: none; }
   .admin-toolbar { align-items: stretch; flex-direction: column; }
   .admin-user, .history-entry header { grid-template-columns: 1fr; }
 }
