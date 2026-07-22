@@ -141,7 +141,10 @@ service cloud.firestore {
           && request.resource.data.keys().hasAll(['targetId', 'modelIds', 'updatedAt'])
           && request.resource.data.targetId == targetId
           && request.resource.data.modelIds is list
-          && request.resource.data.modelIds.size() <= 5
+          // Les trois modes acceptent tous les profils choisis. Une créature
+          // du Conseil ne peut jamais recevoir plus d'un modèle.
+          && (targetId.matches('^(spark|archon|codex)$')
+            || request.resource.data.modelIds.size() <= 1)
           && request.resource.data.updatedAt is timestamp
           && request.resource.data.updatedAt <= request.time + duration.value(1, 'm');
       }
