@@ -10,7 +10,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="css/nova.css?v=1.0.0">
+  <link rel="stylesheet" href="css/nova.css?v=1.2.0">
 </head>
 <body>
   <div class="nova-grid" aria-hidden="true"></div>
@@ -81,7 +81,10 @@
             <h2 id="nova-active-title">NOVA-SPARK</h2>
             <p id="nova-active-description">Pipeline rapide pour une tâche ciblée.</p>
           </div>
-          <button class="team-toggle" id="nova-team-toggle" type="button" aria-pressed="false">Conseil Freev</button>
+          <div class="chat-head-actions">
+            <button class="ghost-button active-config-button" id="nova-configure-active" type="button">Configurer NOVA-SPARK</button>
+            <button class="team-toggle" id="nova-team-toggle" type="button" aria-pressed="false">Conseil Freev</button>
+          </div>
         </header>
 
         <div class="pipeline-strip" id="nova-pipeline" aria-label="Modèles attribués"></div>
@@ -103,8 +106,27 @@
           </div>
           <span class="count-badge" id="nova-council-count">0</span>
         </div>
-        <p class="panel-copy">Sélectionne les créatures qui doivent participer. Chaque rôle peut recevoir ses propres modèles.</p>
-        <div class="creature-list" id="nova-creature-list"></div>
+        <p class="panel-copy">Choisis une créature sur le bureau de Buddy, puis attribue-lui exactement un modèle local ou API.</p>
+        <div class="buddy-office">
+          <div class="office-label"><span>BUREAU DE BUDDY</span><span class="office-live">EN LIGNE</span></div>
+          <div class="creature-desktop" id="nova-creature-desktop" aria-label="Bureau des créatures Freev"></div>
+        </div>
+        <section class="creature-inspector" aria-live="polite">
+          <div class="inspector-head">
+            <div><h3 id="nova-selected-creature-name">Buddy</h3><p id="nova-selected-creature-role">Coordination</p></div>
+            <span class="single-model-badge">1 MODÈLE</span>
+          </div>
+          <p class="creature-help missing" id="nova-selected-creature-help">Configure-moi un modèle pour pouvoir participer au Conseil.</p>
+          <label>
+            <span>Modèle de cette créature</span>
+            <select id="nova-creature-model-select" aria-label="Modèle attribué à la créature"></select>
+          </label>
+          <button class="primary-button creature-save" id="nova-save-creature-model" type="button">Enregistrer ce modèle</button>
+          <label class="participation-toggle">
+            <input id="nova-creature-participates" type="checkbox">
+            <span>Participer à la prochaine mission du Conseil</span>
+          </label>
+        </section>
       </aside>
     </section>
   </main>
@@ -182,10 +204,10 @@
 
     <section class="config-section hidden" data-config-panel="assignments">
       <div class="section-intro">
-        <h3>Attribuer un ou plusieurs modèles</h3>
-        <p>L’ordre choisi devient l’ordre du pipeline. Enregistre chaque carte après modification.</p>
+        <h3>Composer les modes et le Conseil</h3>
+        <p>Les trois modes acceptent plusieurs modèles. Chaque créature du Conseil accepte un seul modèle.</p>
       </div>
-      <div class="assignment-grid" id="nova-assignments"></div>
+      <div class="assignment-groups" id="nova-assignments"></div>
     </section>
   </dialog>
 
@@ -211,6 +233,6 @@
   </dialog>
 
   <div class="toast" id="nova-toast" role="status" aria-live="polite"></div>
-  <script type="module" src="js/nova-workspace.js?v=1.1.0"></script>
+  <script type="module" src="js/nova-workspace.js?v=1.2.0"></script>
 </body>
 </html>

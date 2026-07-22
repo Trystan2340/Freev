@@ -19,6 +19,11 @@ import {
   serverTimestamp,
   setDoc,
 } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+import {
+  assignmentInputType,
+  isCreatureTarget,
+  normalizeAssignmentIds,
+} from "./nova-configuration.js";
 
 const FIREBASE_CONFIG = Object.freeze({
   apiKey: "AIzaSyBtcQrFenU9T0C2v1qcBUpF2DfVqC_V5sM",
@@ -30,7 +35,6 @@ const FIREBASE_CONFIG = Object.freeze({
 });
 
 const RENDER_BASE = "https://freev-iies.onrender.com";
-const MAX_PIPELINE_MODELS = 5;
 const HISTORY_LIMIT = 40;
 
 const CAPABILITIES = Object.freeze([
@@ -106,6 +110,7 @@ const state = {
   mode: "spark",
   councilEnabled: false,
   councilTargets: new Set(["buddy", "axiom", "forge", "auditor", "sentinel"]),
+  selectedCreature: "buddy",
   sending: false,
   adminUsers: [],
   adminEntitlements: new Map(),
@@ -116,6 +121,11 @@ const currentMode = () => CODE_MODES.find((item) => item.id === state.mode) || C
 const targetById = (id) => ALL_TARGETS.find((item) => item.id === id);
 const modelById = (id) => state.models.find((item) => item.id === id);
 const assignmentFor = (id) => (state.assignments.get(id) || []).map(modelById).filter(Boolean);
+
+const DESK_POSITIONS = Object.freeze([
+  [50, 48], [18, 20], [50, 16], [82, 20], [13, 48],
+  [87, 48], [18, 79], [42, 84], [66, 84], [87, 77],
+]);
 
 function setStatus(message, kind = "wait") {
   const pill = byId("nova-access-pill");
@@ -279,11 +289,13 @@ async function loadNovaData() {
     getDocs(query(collection(db, "users", uid, "novaHistory"), orderBy("createdAt", "desc"), limit(HISTORY_LIMIT))).catch(() => null),
   ]);
   state.models = modelSnap.docs.map((item) => cleanProfile(item.data(), item.id));
+  const availableModelIds = state.models.map((item) => item.id);
   state.assignments = new Map(assignmentSnap.docs.map((item) => {
     const data = item.data();
-    const ids = Array.isArray(data.modelIds) ? data.modelIds.map(String).filter(Boolean).slice(0, MAX_PIPELINE_MODELS) : [];
+    const ids = normalizeAssignmentIds(item.id, data.modelIds, availableModelIds);
     return [item.id, ids];
   }));
+  state.councilTargets = new Set(COUNCIL.filter((creature) => (state.assignments.get(creature.id) || []).length === 1).map((creature) => creature.id));
   state.history = historySnap ? historySnap.docs.map((item) => ({ id: item.id, ...item.data() })) : [];
 }
 
@@ -311,8 +323,10 @@ function renderHeader() {
   byId("nova-active-kicker").textContent = state.councilEnabled ? "SALLE DE COORDINATION" : "MODE DE CODAGE";
   byId("nova-active-title").textContent = state.councilEnabled ? "CONSEIL FREEV" : mode.name;
   byId("nova-active-description").textContent = state.councilEnabled
-    ? "Chaque créature utilise uniquement les modèles que tu lui as attribués."
+    ? "Chaque créature utilise exactement le modèle que tu lui as attribué."
     : mode.description;
+  const configure = byId("nova-configure-active");
+  if (configure) configure.textContent = state.councilEnabled ? "Configurer le Conseil" : `Configurer ${mode.name}`;
   renderModes();
   renderPipeline();
 }
@@ -339,32 +353,62 @@ function renderPipeline() {
 }
 
 function renderCouncil() {
-  const root = byId("nova-creature-list");
+  const root = byId("nova-creature-desktop");
   if (!root) return;
-  root.replaceChildren(...COUNCIL.map((creature) => {
-    const active = state.councilTargets.has(creature.id);
+  if (!COUNCIL.some((creature) => creature.id === state.selectedCreature)) state.selectedCreature = "buddy";
+  root.replaceChildren(...COUNCIL.map((creature, index) => {
+    const participates = state.councilTargets.has(creature.id);
+    const configured = assignmentFor(creature.id).length === 1;
     const button = document.createElement("button");
     button.type = "button";
-    button.className = `creature-card ${active ? "active" : ""}`;
+    button.className = `desk-creature ${state.selectedCreature === creature.id ? "selected" : ""} ${participates ? "participates" : ""} ${configured ? "configured" : "missing-model"}`;
     button.dataset.creature = creature.id;
     button.style.setProperty("--creature-color", creature.color);
-    button.setAttribute("aria-pressed", String(active));
-    const avatar = document.createElement("span");
-    avatar.className = "creature-avatar";
-    avatar.textContent = creature.short;
-    const copy = document.createElement("span");
-    copy.className = "creature-copy";
-    const name = document.createElement("strong");
-    name.textContent = creature.name;
-    const role = document.createElement("small");
-    role.textContent = creature.role;
-    copy.append(name, role);
-    const count = document.createElement("span");
-    count.className = "creature-model-count";
-    count.textContent = String(assignmentFor(creature.id).length);
-    button.append(avatar, copy, count);
+    button.style.setProperty("--desk-x", `${DESK_POSITIONS[index]?.[0] || 50}%`);
+    button.style.setProperty("--desk-y", `${DESK_POSITIONS[index]?.[1] || 50}%`);
+    button.setAttribute("aria-pressed", String(state.selectedCreature === creature.id));
+    button.setAttribute("aria-label", `${creature.name}, ${creature.role}, ${configured ? "modèle configuré" : "modèle à configurer"}`);
+    const robot = document.createElement("span");
+    robot.className = "desk-robot";
+    robot.innerHTML = '<span class="robot-head"><span class="robot-eye"></span></span><span class="robot-body"></span>';
+    const short = document.createElement("span");
+    short.className = "desk-creature-short";
+    short.textContent = creature.short;
+    const status = document.createElement("span");
+    status.className = "desk-creature-status";
+    status.title = configured ? "Modèle configuré" : "Modèle à configurer";
+    button.append(robot, short, status);
     return button;
   }));
+
+  const creature = COUNCIL.find((item) => item.id === state.selectedCreature) || COUNCIL[0];
+  const assigned = assignmentFor(creature.id)[0] || null;
+  byId("nova-selected-creature-name").textContent = creature.name;
+  byId("nova-selected-creature-role").textContent = creature.role;
+  byId("nova-selected-creature-name").style.color = creature.color;
+  const help = byId("nova-selected-creature-help");
+  help.textContent = assigned
+    ? `${assigned.label} · ${assigned.source === "local" ? "local" : "API chiffrée"}`
+    : "Configure-moi un modèle pour pouvoir participer au Conseil.";
+  help.classList.toggle("missing", !assigned);
+  const select = byId("nova-creature-model-select");
+  select.replaceChildren();
+  const empty = document.createElement("option");
+  empty.value = "";
+  empty.textContent = state.models.length ? "Aucun modèle" : "Ajoute d’abord un profil de modèle";
+  select.append(empty, ...state.models.map((profile) => {
+    const option = document.createElement("option");
+    option.value = profile.id;
+    option.textContent = `${profile.label} · ${profile.source === "local" ? "local" : "API"}`;
+    return option;
+  }));
+  select.value = assigned?.id || "";
+  select.disabled = !state.models.length;
+  const save = byId("nova-save-creature-model");
+  save.textContent = state.models.length ? "Enregistrer ce modèle" : "Ajouter un modèle";
+  const participates = byId("nova-creature-participates");
+  participates.checked = state.councilTargets.has(creature.id);
+  participates.disabled = !assigned;
   byId("nova-council-count").textContent = String(state.councilTargets.size);
   renderPipeline();
 }
@@ -500,26 +544,43 @@ function renderAssignments() {
     root.innerHTML = '<div class="empty-state">Ajoute au moins un profil dans l’étape « Mes modèles » avant de créer les équipes.</div>';
     return;
   }
-  root.replaceChildren(...ALL_TARGETS.map((target) => {
+  const makeSection = (titleText, copyText, targets) => {
+    const section = document.createElement("section");
+    section.className = "assignment-section";
+    const header = document.createElement("div");
+    header.className = "assignment-section-head";
+    const title = document.createElement("h3");
+    title.textContent = titleText;
+    const copy = document.createElement("p");
+    copy.textContent = copyText;
+    header.append(title, copy);
+    const grid = document.createElement("div");
+    grid.className = "assignment-grid";
+    grid.replaceChildren(...targets.map((target) => {
     const selected = new Set(state.assignments.get(target.id) || []);
     const card = document.createElement("article");
-    card.className = "assignment-card";
+    card.className = `assignment-card ${target.kind}`;
     card.dataset.assignment = target.id;
+    card.dataset.assignmentKind = target.kind;
     const title = document.createElement("h4");
     title.textContent = target.name;
     const copy = document.createElement("p");
-    copy.textContent = target.recommendation;
+    copy.textContent = target.kind === "mode"
+      ? `${target.recommendation} Tu peux sélectionner autant de profils que tu as configurés.`
+      : `${target.recommendation} Une créature utilise un seul modèle.`;
     const options = document.createElement("div");
     options.className = "assignment-models";
-    options.replaceChildren(...state.models.map((profile) => {
+    const profiles = target.kind === "creature" ? [{ id: "", label: "Aucun modèle", source: "none" }, ...state.models] : state.models;
+    options.replaceChildren(...profiles.map((profile) => {
       const label = document.createElement("label");
       label.className = "assignment-option";
       const input = document.createElement("input");
-      input.type = "checkbox";
+      input.type = assignmentInputType(target.id);
+      input.name = target.kind === "creature" ? `creature-model-${target.id}` : `mode-model-${target.id}`;
       input.value = profile.id;
-      input.checked = selected.has(profile.id);
+      input.checked = profile.id ? selected.has(profile.id) : selected.size === 0;
       const text = document.createElement("span");
-      text.textContent = `${profile.label} · ${profile.source === "local" ? "local" : "API"}`;
+      text.textContent = profile.source === "none" ? profile.label : `${profile.label} · ${profile.source === "local" ? "local" : "API"}`;
       label.append(input, text);
       return label;
     }));
@@ -527,10 +588,17 @@ function renderAssignments() {
     save.type = "button";
     save.className = "ghost-button assignment-save";
     save.dataset.saveAssignment = target.id;
-    save.textContent = "Enregistrer cette affectation";
+    save.textContent = target.kind === "creature" ? "Enregistrer ce modèle" : "Enregistrer ce pipeline";
     card.append(title, copy, options, save);
     return card;
-  }));
+    }));
+    section.append(header, grid);
+    return section;
+  };
+  root.replaceChildren(
+    makeSection("Les trois modes", "Chaque mode peut utiliser autant de modèles locaux ou API que tu veux, dans l’ordre du pipeline.", ALL_TARGETS.filter((target) => target.kind === "mode")),
+    makeSection("Le Conseil Freev", "Choisis un seul modèle par créature. Les profils restent partagés, mais chaque rôle garde sa propre affectation.", ALL_TARGETS.filter((target) => target.kind === "creature")),
+  );
 }
 
 function resetModelForm() {
@@ -669,13 +737,35 @@ async function removeModel(id) {
 }
 
 async function saveAssignment(targetId, card) {
-  const modelIds = [...card.querySelectorAll('input[type="checkbox"]:checked')].map((input) => input.value).slice(0, MAX_PIPELINE_MODELS);
+  const selectedIds = [...card.querySelectorAll('input:checked')].map((input) => input.value).filter(Boolean);
+  const modelIds = normalizeAssignmentIds(targetId, selectedIds, state.models.map((item) => item.id));
   try {
     await setDoc(doc(db, "users", state.user.uid, "novaAssignments", targetId), { targetId, modelIds, updatedAt: serverTimestamp() });
     state.assignments.set(targetId, modelIds);
+    renderAssignments();
     renderCouncil();
     renderPipeline();
     toast(`Affectation ${targetById(targetId)?.name || targetId} enregistrée.`);
+  } catch (error) {
+    toast(errorMessage(error), "error");
+  }
+}
+
+async function saveSelectedCreatureModel() {
+  const creatureId = state.selectedCreature;
+  if (!state.models.length) {
+    openConfigTab("models");
+    return;
+  }
+  const modelIds = normalizeAssignmentIds(creatureId, [byId("nova-creature-model-select").value], state.models.map((item) => item.id));
+  try {
+    await setDoc(doc(db, "users", state.user.uid, "novaAssignments", creatureId), { targetId: creatureId, modelIds, updatedAt: serverTimestamp() });
+    state.assignments.set(creatureId, modelIds);
+    if (modelIds.length) state.councilTargets.add(creatureId);
+    else state.councilTargets.delete(creatureId);
+    renderAssignments();
+    renderCouncil();
+    toast(modelIds.length ? `${targetById(creatureId)?.name || creatureId} utilise maintenant un seul modèle.` : "Modèle retiré de cette créature.");
   } catch (error) {
     toast(errorMessage(error), "error");
   }
@@ -752,19 +842,19 @@ async function runCouncil(prompt) {
   const results = [];
   const usedModels = [];
   for (const creature of selected) {
-    const profiles = assignmentFor(creature.id);
-    if (!profiles.length) {
-      message("assistant", creature.name, "Aucun modèle ne m’est encore attribué. Configure mon équipe avant de me confier cette mission.", { short: creature.short, color: creature.color });
+    const profile = assignmentFor(creature.id)[0];
+    if (!profile) {
+      message("assistant", creature.name, "Configure-moi un modèle avant de me confier cette mission.", { short: creature.short, color: creature.color });
       continue;
     }
-    const thinking = message("assistant", creature.name, "Connexion à mon équipe de modèles…", { short: creature.short, color: creature.color, thinking: true });
+    const thinking = message("assistant", creature.name, `Connexion à ${profile.label}…`, { short: creature.short, color: creature.color, thinking: true });
     try {
-      const result = await runPipeline(profiles, creature.system, prompt, (profile, index, total) => {
-        updateMessage(thinking, `${creature.name} · étape ${index + 1}/${total} avec ${profile.label}…`, true);
+      const result = await runPipeline([profile], creature.system, prompt, (activeProfile) => {
+        updateMessage(thinking, `${creature.name} travaille avec ${activeProfile.label}…`, true);
       });
       updateMessage(thinking, result, false);
       results.push(`${creature.name}: ${result}`);
-      usedModels.push(...profiles.map((item) => `${creature.name}/${item.label}`));
+      usedModels.push(`${creature.name}/${profile.label}`);
     } catch (error) {
       updateMessage(thinking, `Connexion impossible : ${errorMessage(error)}`, false);
     }
@@ -928,6 +1018,17 @@ function openConfigTab(name = "recommendations") {
   document.querySelectorAll("[data-config-panel]").forEach((panel) => panel.classList.toggle("hidden", panel.dataset.configPanel !== name));
 }
 
+function openAssignmentFor(targetId) {
+  openConfigTab("assignments");
+  window.requestAnimationFrame(() => {
+    const card = document.querySelector(`[data-assignment="${CSS.escape(targetId)}"]`);
+    if (!card) return;
+    card.classList.add("attention");
+    card.scrollIntoView({ behavior: "smooth", block: "center" });
+    window.setTimeout(() => card.classList.remove("attention"), 1800);
+  });
+}
+
 function bindEvents() {
   byId("nova-login-form")?.addEventListener("submit", async (event) => {
     event.preventDefault();
@@ -952,6 +1053,14 @@ function bindEvents() {
   byId("nova-admin-search")?.addEventListener("input", renderAdminUsers);
   byId("nova-clear-chat")?.addEventListener("click", () => { byId("nova-messages").replaceChildren(); welcomeMessage(); });
   byId("nova-team-toggle")?.addEventListener("click", () => { state.councilEnabled = !state.councilEnabled; renderHeader(); });
+  byId("nova-configure-active")?.addEventListener("click", () => openAssignmentFor(state.councilEnabled ? state.selectedCreature : state.mode));
+  byId("nova-save-creature-model")?.addEventListener("click", saveSelectedCreatureModel);
+  byId("nova-creature-participates")?.addEventListener("change", (event) => {
+    const id = state.selectedCreature;
+    if (event.target.checked && assignmentFor(id).length) state.councilTargets.add(id);
+    else state.councilTargets.delete(id);
+    renderCouncil();
+  });
   byId("nova-model-source")?.addEventListener("change", updateSourceForm);
   byId("nova-model-form")?.addEventListener("submit", saveModel);
   byId("nova-model-cancel")?.addEventListener("click", resetModelForm);
@@ -963,12 +1072,12 @@ function bindEvents() {
     state.councilEnabled = false;
     renderHeader();
   });
-  byId("nova-creature-list")?.addEventListener("click", (event) => {
+  byId("nova-creature-desktop")?.addEventListener("click", (event) => {
     const button = event.target.closest("[data-creature]");
     if (!button) return;
-    const id = button.dataset.creature;
-    if (state.councilTargets.has(id)) state.councilTargets.delete(id);
-    else state.councilTargets.add(id);
+    state.selectedCreature = button.dataset.creature;
+    state.councilEnabled = true;
+    renderHeader();
     renderCouncil();
   });
   byId("nova-saved-models")?.addEventListener("click", (event) => {

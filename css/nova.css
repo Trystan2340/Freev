@@ -289,6 +289,8 @@ input:focus, select:focus, textarea:focus { border-color: var(--green); box-shad
 .chat-head { display: flex; align-items: center; justify-content: space-between; gap: 1rem; padding: 1.2rem 1.3rem; border-bottom: 1px solid var(--line); }
 .chat-head h2 { margin-top: 0.25rem; color: var(--green); font-size: 1.35rem; }
 .chat-head p:last-child { margin: 0.35rem 0 0; color: var(--muted); font-size: 0.7rem; }
+.chat-head-actions { display: flex; align-items: center; justify-content: flex-end; gap: 0.5rem; }
+.active-config-button { min-height: 38px; padding: 0.5rem 0.7rem; color: var(--cyan); font-size: 0.64rem; white-space: nowrap; }
 .team-toggle { min-height: 38px; padding: 0.5rem 0.8rem; font-size: 0.7rem; white-space: nowrap; }
 .team-toggle[aria-pressed="true"] { border-color: var(--purple); background: rgba(191, 90, 255, 0.09); color: #dfadff; }
 
@@ -329,6 +331,39 @@ input:focus, select:focus, textarea:focus { border-color: var(--green); box-shad
 .creature-copy strong { font-size: 0.72rem; }
 .creature-copy small { margin-top: 0.2rem; color: var(--muted); font-size: 0.58rem; line-height: 1.35; }
 .creature-model-count { min-width: 24px; padding: 0.2rem 0.38rem; border: 1px solid var(--line); border-radius: 999px; color: var(--muted); font-size: 0.58rem; text-align: center; }
+
+.buddy-office { margin-top: 0.9rem; overflow: hidden; border: 1px solid rgba(0, 229, 255, 0.22); border-radius: 13px; background: #06110a; box-shadow: inset 0 0 24px rgba(0, 229, 255, 0.035); }
+.office-label { position: relative; z-index: 4; display: flex; align-items: center; justify-content: space-between; padding: 0.5rem 0.65rem; border-bottom: 1px solid rgba(0, 229, 255, 0.15); color: #80a88a; font-size: 0.52rem; font-weight: 800; letter-spacing: 0.13em; }
+.office-live { color: var(--green); }
+.office-live::before { display: inline-block; width: 5px; height: 5px; margin-right: 0.35rem; border-radius: 50%; background: var(--green); box-shadow: 0 0 7px var(--green); content: ""; }
+.creature-desktop { position: relative; min-height: 330px; overflow: hidden; isolation: isolate; background: radial-gradient(circle at 50% 45%, rgba(0, 229, 255, 0.12), transparent 30%), linear-gradient(180deg, #06130c 0%, #07100b 100%); }
+.creature-desktop::before { position: absolute; z-index: -2; width: 360px; height: 360px; left: 50%; top: 51%; border: 2px solid rgba(0, 229, 255, 0.18); background: linear-gradient(rgba(0, 229, 255, 0.08) 1px, transparent 1px), linear-gradient(90deg, rgba(0, 229, 255, 0.08) 1px, transparent 1px), radial-gradient(circle, rgba(0, 255, 65, 0.1), transparent 60%); background-size: 24px 24px, 24px 24px, auto; box-shadow: 0 0 28px rgba(0, 229, 255, 0.08), inset 0 0 32px rgba(0, 255, 65, 0.045); content: ""; transform: translate(-50%, -50%) rotateX(56deg) rotateZ(-42deg); }
+.creature-desktop::after { position: absolute; z-index: -1; left: 50%; top: 48%; display: grid; width: 66px; height: 66px; place-items: center; border: 2px solid rgba(0, 255, 65, 0.55); background: radial-gradient(circle, rgba(0, 255, 65, 0.26), rgba(0, 229, 255, 0.06) 55%, transparent 58%); box-shadow: 0 0 24px rgba(0, 255, 65, 0.22); color: var(--green); content: "F"; font-size: 1rem; font-weight: 900; transform: translate(-50%, -50%) rotate(45deg); animation: deskCore 3s steps(8) infinite; }
+.desk-creature { position: absolute; z-index: 2; left: var(--desk-x); top: var(--desk-y); display: grid; width: 48px; min-height: 58px; place-items: center; padding: 0; border: 0; outline: none; background: transparent; color: #b9d8c0; cursor: pointer; transform: translate(-50%, -50%); transition: filter 160ms ease, transform 160ms ease; }
+.desk-creature:hover, .desk-creature:focus-visible, .desk-creature.selected { z-index: 5; transform: translate(-50%, -50%) translateY(-5px) scale(1.1); }
+.desk-creature:focus-visible { border-radius: 8px; box-shadow: 0 0 0 2px var(--green); }
+.desk-robot { position: relative; display: block; width: 38px; height: 38px; filter: drop-shadow(0 6px 0 rgba(0, 0, 0, 0.28)) drop-shadow(0 0 8px color-mix(in srgb, var(--creature-color) 52%, transparent)); animation: creatureIdle 2.4s steps(4) infinite; }
+.robot-head, .robot-body, .robot-eye { position: absolute; display: block; }
+.robot-head { left: 5px; top: 1px; width: 28px; height: 22px; border: 3px solid #041009; background: var(--creature-color); box-shadow: inset -3px -3px 0 rgba(0, 0, 0, 0.22), inset 3px 3px 0 rgba(255, 255, 255, 0.16); }
+.robot-body { left: 9px; top: 24px; width: 20px; height: 12px; border: 3px solid #041009; background: color-mix(in srgb, var(--creature-color) 72%, #dfffe8); }
+.robot-eye { left: 5px; top: 7px; width: 5px; height: 5px; background: #f1fff4; box-shadow: 10px 0 0 #f1fff4, 0 0 7px var(--creature-color); }
+.desk-creature.selected .desk-robot { filter: brightness(1.15) drop-shadow(0 8px 0 rgba(0, 0, 0, 0.3)) drop-shadow(0 0 16px var(--creature-color)); }
+.desk-creature.participates .desk-robot::after { position: absolute; inset: -5px; border: 1px solid color-mix(in srgb, var(--creature-color) 72%, white); border-radius: 50%; content: ""; animation: participantOrbit 2.2s linear infinite; }
+.desk-creature-short { max-width: 58px; overflow: hidden; color: color-mix(in srgb, var(--creature-color) 70%, white); font-size: 0.45rem; font-weight: 800; letter-spacing: 0.04em; text-overflow: ellipsis; white-space: nowrap; }
+.desk-creature-status { position: absolute; right: 1px; top: 0; width: 7px; height: 7px; border: 1px solid #041009; border-radius: 50%; }
+.desk-creature.configured .desk-creature-status { background: var(--green); box-shadow: 0 0 7px var(--green); }
+.desk-creature.missing-model .desk-creature-status { background: #ffb84d; box-shadow: 0 0 7px rgba(255, 184, 77, 0.75); }
+
+.creature-inspector { display: grid; gap: 0.65rem; margin-top: 0.75rem; padding: 0.8rem; border: 1px solid var(--line); border-radius: 12px; background: rgba(255, 255, 255, 0.018); }
+.inspector-head { display: flex; align-items: flex-start; justify-content: space-between; gap: 0.6rem; }
+.inspector-head h3 { margin: 0; font-size: 0.85rem; }
+.inspector-head p { margin: 0.25rem 0 0; color: var(--muted); font-size: 0.58rem; }
+.single-model-badge { flex: 0 0 auto; padding: 0.25rem 0.4rem; border: 1px solid rgba(191, 90, 255, 0.38); border-radius: 999px; color: #dfadff; font-size: 0.48rem; font-weight: 800; letter-spacing: 0.08em; }
+.creature-help { margin: 0; color: var(--green-soft); font-size: 0.6rem; line-height: 1.5; }
+.creature-help.missing { color: #ffc76e; }
+.creature-save { width: 100%; min-height: 38px; font-size: 0.62rem; }
+.participation-toggle { display: flex; grid-template-columns: none; align-items: center; gap: 0.45rem; padding: 0.45rem; border-radius: 8px; background: rgba(0, 255, 65, 0.035); font-size: 0.58rem; line-height: 1.4; }
+.participation-toggle input { width: 15px; min-height: 15px; accent-color: var(--green); }
 
 .nova-dialog {
   width: min(1120px, calc(100% - 2rem));
@@ -385,6 +420,12 @@ input:focus, select:focus, textarea:focus { border-color: var(--green); box-shad
 .mini-button.danger:hover { border-color: rgba(255, 73, 108, 0.5); color: #ff8ba2; }
 
 .assignment-card { padding: 0.85rem; }
+.assignment-groups, .assignment-section { display: grid; gap: 1rem; }
+.assignment-section + .assignment-section { padding-top: 1rem; border-top: 1px solid var(--line); }
+.assignment-section-head h3 { margin: 0; color: var(--green-soft); font-size: 0.85rem; }
+.assignment-section-head p { margin: 0.4rem 0 0; color: var(--muted); font-size: 0.64rem; line-height: 1.5; }
+.assignment-card.creature { border-color: rgba(191, 90, 255, 0.16); }
+.assignment-card.attention { animation: assignmentAttention 1.6s ease; }
 .assignment-card h4 { margin: 0; font-size: 0.75rem; }
 .assignment-card p { margin: 0.35rem 0 0.65rem; color: var(--muted); font-size: 0.6rem; line-height: 1.45; }
 .assignment-models { display: grid; gap: 0.35rem; }
@@ -414,6 +455,10 @@ input:focus, select:focus, textarea:focus { border-color: var(--green); box-shad
 @keyframes orbitSpin { to { transform: rotate(360deg); } }
 @keyframes orbitPulse { 0% { opacity: 0; transform: scale(0.65); } 35% { opacity: 0.7; } 100% { opacity: 0; transform: scale(1.25); } }
 @keyframes thinkingSweep { from { transform: translateX(-110%); } to { transform: translateX(110%); } }
+@keyframes deskCore { 50% { filter: brightness(1.35); box-shadow: 0 0 34px rgba(0, 255, 65, 0.34); } }
+@keyframes creatureIdle { 50% { transform: translateY(-3px); } }
+@keyframes participantOrbit { to { transform: rotate(360deg); } }
+@keyframes assignmentAttention { 0%, 100% { box-shadow: none; } 30%, 70% { border-color: var(--green); box-shadow: 0 0 22px rgba(0, 255, 65, 0.18); } }
 
 @media (max-width: 1180px) {
   .workspace { grid-template-columns: 210px minmax(0, 1fr); }
@@ -441,6 +486,8 @@ input:focus, select:focus, textarea:focus { border-color: var(--green); box-shad
   .gate-card { min-height: 490px; margin-top: 0.5rem; padding: 1.4rem; border-radius: 16px; }
   .mode-list, .creature-list { grid-template-columns: 1fr; }
   .chat-head { align-items: flex-start; }
+  .chat-head-actions { align-items: stretch; flex-direction: column; }
+  .active-config-button { white-space: normal; }
   .team-toggle { white-space: normal; }
   .composer { padding-inline: 0.7rem; }
   .composer-note { padding-inline: 0.7rem; }
