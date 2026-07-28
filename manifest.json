@@ -1,21 +1,55 @@
 {
+  "id": "./",
   "name": "Freev",
   "short_name": "Freev",
   "description": "L'Univers Digital Sans Limites par Trystan2340",
-  "start_url": "https://trystan2340.github.io/Freev/",
-  "scope": "https://trystan2340.github.io/Freev/",
+  "lang": "fr-FR",
+  "dir": "ltr",
+  "start_url": "./?source=pwa",
+  "scope": "./",
   "display": "standalone",
+  "display_override": ["window-controls-overlay", "standalone", "minimal-ui"],
+  "orientation": "any",
   "background_color": "#0f172a",
   "theme_color": "#0ea5e9",
+  "categories": ["entertainment", "games", "productivity", "utilities"],
+  "shortcuts": [
+    {
+      "name": "Freev ID",
+      "short_name": "Profil",
+      "description": "Ouvrir mon profil Freev",
+      "url": "./#login",
+      "icons": [
+        {
+          "src": "./icons/icon-192x192.png",
+          "sizes": "192x192",
+          "type": "image/png"
+        }
+      ]
+    },
+    {
+      "name": "Nova",
+      "short_name": "Nova",
+      "description": "Ouvrir l'espace Nova",
+      "url": "./nova.html",
+      "icons": [
+        {
+          "src": "./icons/icon-192x192.png",
+          "sizes": "192x192",
+          "type": "image/png"
+        }
+      ]
+    }
+  ],
   "icons": [
     {
-      "src": "https://trystan2340.github.io/Freev/icons/icon-192x192.png",
+      "src": "./icons/icon-192x192.png",
       "sizes": "192x192",
       "type": "image/png",
       "purpose": "any maskable"
     },
     {
-      "src": "https://trystan2340.github.io/Freev/icons/icon-512x512.png",
+      "src": "./icons/icon-512x512.png",
       "sizes": "512x512",
       "type": "image/png",
       "purpose": "any maskable"

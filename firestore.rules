@@ -65,6 +65,50 @@ service cloud.firestore {
           && request.resource.data.response.size() <= 20000;
       }
 
+      // Mémoires choisies explicitement par l'utilisateur pour Nova.
+      match /memories/{memoryId} {
+        allow read, delete: if signedInAs(userId);
+        allow create, update: if signedInAs(userId)
+          && memoryId.matches('^[a-zA-Z0-9_-]{3,100}$')
+          && request.resource.data.keys().hasOnly([
+            'id', 'title', 'content', 'enabled', 'createdAt', 'updatedAt'
+          ])
+          && request.resource.data.id == memoryId
+          && request.resource.data.title is string
+          && request.resource.data.title.size() <= 80
+          && request.resource.data.content is string
+          && request.resource.data.content.size() <= 4000
+          && request.resource.data.enabled is bool
+          && request.resource.data.createdAt is timestamp
+          && request.resource.data.updatedAt is timestamp
+          && request.resource.data.updatedAt <= request.time + duration.value(1, 'm');
+      }
+
+      // Inventaire de sessions utile à la sécurité du compte.
+      match /devices/{deviceId} {
+        allow read, delete: if signedInAs(userId);
+        allow create, update: if signedInAs(userId)
+          && deviceId.matches('^[a-zA-Z0-9_-]{8,100}$')
+          && request.resource.data.keys().hasOnly([
+            'id', 'label', 'platform', 'createdAt', 'lastSeenAt'
+          ])
+          && request.resource.data.id == deviceId
+          && request.resource.data.label is string
+          && request.resource.data.label.size() <= 80
+          && request.resource.data.platform is string
+          && request.resource.data.platform.size() <= 80
+          && request.resource.data.createdAt is timestamp
+          && request.resource.data.lastSeenAt is timestamp
+          && request.resource.data.lastSeenAt <= request.time + duration.value(1, 'm');
+      }
+
+      // Les badges et l'XP sont lisibles par le propriétaire mais ne pourront
+      // être attribués que par un environnement serveur privilégié.
+      match /achievements/{achievementId} {
+        allow read: if signedInAs(userId);
+        allow write: if false;
+      }
+
       // Le navigateur peut lire uniquement le ciphertext de son propre compte.
       // Le déchiffrement est impossible sans la clé principale conservée sur Render.
       match /privateApiKeys/{secretId} {
@@ -217,6 +261,48 @@ service cloud.firestore {
         && request.resource.data.nicknameLower == nicknameLower;
       allow delete: if request.auth != null
         && resource.data.uid == request.auth.uid;
+    }
+
+    // Projection publique séparée : aucun email, UID privé, secret ou mémoire.
+    match /publicProfiles/{nicknameLower} {
+      allow read: if true;
+      allow create: if request.auth != null
+        && request.resource.data.ownerUid == request.auth.uid
+        && request.resource.data.nicknameLower == nicknameLower
+        && request.resource.data.keys().hasOnly([
+          'ownerUid', 'nickname', 'nicknameLower', 'displayName', 'bio',
+          'avatar', 'theme', 'publishedAt', 'updatedAt'
+        ])
+        && request.resource.data.nickname is string
+        && request.resource.data.nickname.size() >= 3
+        && request.resource.data.nickname.size() <= 24
+        && request.resource.data.displayName is string
+        && request.resource.data.displayName.size() <= 40
+        && request.resource.data.bio is string
+        && request.resource.data.bio.size() <= 160
+        && request.resource.data.avatar is map
+        && request.resource.data.theme is map
+        && request.resource.data.publishedAt is timestamp
+        && request.resource.data.updatedAt is timestamp;
+      allow update: if request.auth != null
+        && resource.data.ownerUid == request.auth.uid
+        && request.resource.data.ownerUid == request.auth.uid
+        && request.resource.data.nicknameLower == nicknameLower
+        && request.resource.data.diff(resource.data).affectedKeys().hasOnly([
+          'nickname', 'displayName', 'bio', 'avatar', 'theme', 'updatedAt'
+        ])
+        && request.resource.data.nickname is string
+        && request.resource.data.nickname.size() >= 3
+        && request.resource.data.nickname.size() <= 24
+        && request.resource.data.displayName is string
+        && request.resource.data.displayName.size() <= 40
+        && request.resource.data.bio is string
+        && request.resource.data.bio.size() <= 160
+        && request.resource.data.avatar is map
+        && request.resource.data.theme is map
+        && request.resource.data.updatedAt is timestamp;
+      allow delete: if request.auth != null
+        && resource.data.ownerUid == request.auth.uid;
     }
   }
 }

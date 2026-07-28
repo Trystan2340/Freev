@@ -1,0 +1,29 @@
+rules_version = '2';
+
+service firebase.storage {
+  match /b/{bucket}/o {
+    function signedInAs(userId) {
+      return request.auth != null && request.auth.uid == userId;
+    }
+
+    function isSafeAvatarUpload() {
+      return request.resource != null
+        && request.resource.size < 2 * 1024 * 1024
+        && request.resource.contentType.matches('image/(png|jpeg|webp)');
+    }
+
+    // Les éventuelles photos importées restent privées. Les avatars SVG
+    // procéduraux Freev sont enregistrés comme configuration dans Firestore.
+    match /users/{userId}/avatars/{fileName} {
+      allow read: if signedInAs(userId);
+      allow create, update: if signedInAs(userId)
+        && fileName.matches('^[a-zA-Z0-9_-]{1,80}\\.(png|jpg|jpeg|webp)$')
+        && isSafeAvatarUpload();
+      allow delete: if signedInAs(userId);
+    }
+
+    match /{allPaths=**} {
+      allow read, write: if false;
+    }
+  }
+}

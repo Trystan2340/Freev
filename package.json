@@ -1,0 +1,15 @@
+{
+  "name": "freev",
+  "version": "2.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "test": "node --test",
+    "test:freev-id": "node --test tests/freev-id-*.test.mjs",
+    "verify": "npm test && node tools/verify-static.mjs",
+    "serve": "node tools/serve.mjs"
+  },
+  "engines": {
+    "node": ">=20"
+  }
+}
