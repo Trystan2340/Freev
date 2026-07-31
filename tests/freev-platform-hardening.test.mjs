@@ -37,8 +37,11 @@ test("les trois interfaces sensibles appliquent la CSP et le suivi anonymisé", 
     assert.match(html, /object-src 'none'/);
     assert.doesNotMatch(html, /script-src[^;]*'unsafe-inline'/);
     assert.match(html, /js\/error-monitor\.js/);
-    assert.match(html, /freev-app-check-site-key/);
+    assert.match(html, /<meta[^>]+freev-app-check-site-key[^>]+content="[A-Za-z0-9_-]{30,}"|<meta[^>]+content="[A-Za-z0-9_-]{30,}"[^>]+freev-app-check-site-key/);
   }
+  const bootstrap = await read("js/firebase-bootstrap.js");
+  assert.match(bootstrap, /ReCaptchaV3Provider/);
+  assert.doesNotMatch(bootstrap, /ReCaptchaEnterpriseProvider/);
 });
 
 test("l’authentification gratuite garde Google et désactive Apple ainsi que le SMS payant", async () => {
