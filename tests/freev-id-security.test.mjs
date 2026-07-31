@@ -30,8 +30,12 @@ test("Storage refuse SVG et limite les images raster à deux Mio", () => {
   assert.doesNotMatch(storageRules, /image\/svg/);
 });
 
-test("le service worker ne met en cache que les requêtes locales GET", () => {
-  assert.match(serviceWorker, /url\.origin !== self\.location\.origin/);
+test("le service worker limite le cache aux GET locales et aux CDN approuvés", () => {
   assert.match(serviceWorker, /request\.method !== "GET"/);
   assert.match(serviceWorker, /!url\.pathname\.includes\("\/api\/"\)/);
+  assert.match(serviceWorker, /CACHEABLE_EXTERNAL_ORIGINS\.has\(url\.origin\)/);
+  assert.match(serviceWorker, /https:\/\/cdnjs\.cloudflare\.com/);
+  assert.match(serviceWorker, /https:\/\/cdn\.jsdelivr\.net/);
+  assert.doesNotMatch(serviceWorker, /freev-iies\.onrender\.com/);
+  assert.doesNotMatch(serviceWorker, /https:\/\/(?:firestore|identitytoolkit|securetoken)\.googleapis\.com/);
 });

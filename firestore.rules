@@ -31,9 +31,24 @@ service cloud.firestore {
     }
 
     match /users/{userId} {
+      function clientUserFields() {
+        return [
+          'uid', 'email', 'createdAt', 'lastLoginAt', 'updatedAt',
+          'profileCompleted', 'nickname', 'nicknameLower', 'displayName',
+          'avatarColor', 'bio', 'favoriteType', 'bannerTheme',
+          'schemaVersion', 'avatar', 'theme', 'photo', 'publicProfile',
+          'aiConfig', 'aiConfigsList', 'stats'
+        ];
+      }
+
       allow read: if signedInAs(userId) || isNovaAdmin();
-      allow create, update: if signedInAs(userId)
-        && request.resource.data.uid == userId;
+      allow create: if signedInAs(userId)
+        && request.resource.data.uid == userId
+        && request.resource.data.keys().hasOnly(clientUserFields());
+      allow update: if signedInAs(userId)
+        && resource.data.uid == userId
+        && request.resource.data.uid == userId
+        && request.resource.data.diff(resource.data).affectedKeys().hasOnly(clientUserFields());
       allow delete: if false;
 
       match /saves/{saveId} {

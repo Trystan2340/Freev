@@ -117,6 +117,25 @@ emulatorTest("un autre compte ne peut ni modifier ni remplacer le profil public"
   }));
 });
 
+emulatorTest("un profil public refuse UID, email, photo privée, mémoire et secret", async () => {
+  await seedNicknameOwner();
+  const ownerDb = testEnvironment.authenticatedContext(OWNER_UID).firestore();
+  const forbiddenFields = [
+    { ownerUid: OWNER_UID },
+    { email: "prive@example.com" },
+    { photo: { path: `users/${OWNER_UID}/avatars/profile.webp` } },
+    { memories: [{ content: "secret" }] },
+    { secretId: "a".repeat(40) },
+  ];
+
+  for (const fields of forbiddenFields) {
+    await assertFails(setDoc(
+      doc(ownerDb, "publicProfiles", NICKNAME),
+      publicProfile(fields),
+    ));
+  }
+});
+
 emulatorTest("le propriétaire peut mettre à jour les champs publics autorisés", async () => {
   await seedNicknameOwner();
   await testEnvironment.withSecurityRulesDisabled(async (context) => {
@@ -169,6 +188,72 @@ emulatorTest("le registre des surnoms ne divulgue pas les UID aux visiteurs", as
   await assertFails(getDoc(doc(anonymousDb, "usernames", NICKNAME)));
   await assertFails(getDocs(collection(anonymousDb, "usernames")));
   await assertSucceeds(getDoc(doc(signedInDb, "usernames", NICKNAME)));
+});
+
+emulatorTest("les mémoires Nova restent privées et bornées", async () => {
+  const ownerDb = testEnvironment.authenticatedContext(OWNER_UID).firestore();
+  const otherDb = testEnvironment.authenticatedContext(OTHER_UID).firestore();
+  const anonymousDb = testEnvironment.unauthenticatedContext().firestore();
+  const memory = {
+    id: "memory_12345678",
+    title: "Préférence explicite",
+    content: "Toujours répondre en français.",
+    enabled: true,
+    createdAt: Timestamp.fromMillis(1_700_000_000_000),
+    updatedAt: Timestamp.fromMillis(1_700_000_000_000),
+  };
+
+  await assertSucceeds(setDoc(doc(ownerDb, "users", OWNER_UID, "memories", memory.id), memory));
+  await assertFails(getDoc(doc(otherDb, "users", OWNER_UID, "memories", memory.id)));
+  await assertFails(getDoc(doc(anonymousDb, "users", OWNER_UID, "memories", memory.id)));
+  await assertFails(setDoc(doc(ownerDb, "users", OWNER_UID, "memories", "memory_too_big"), {
+    ...memory,
+    id: "memory_too_big",
+    content: "x".repeat(4001),
+  }));
+});
+
+emulatorTest("l’inventaire des appareils ne peut être lu ou modifié que par son propriétaire", async () => {
+  const ownerDb = testEnvironment.authenticatedContext(OWNER_UID).firestore();
+  const otherDb = testEnvironment.authenticatedContext(OTHER_UID).firestore();
+  const device = {
+    id: "web_12345678",
+    label: "Chrome · ordinateur",
+    platform: "Windows",
+    createdAt: Timestamp.fromMillis(1_700_000_000_000),
+    lastSeenAt: Timestamp.fromMillis(1_700_000_000_000),
+  };
+
+  await assertSucceeds(setDoc(doc(ownerDb, "users", OWNER_UID, "devices", device.id), device));
+  await assertFails(getDoc(doc(otherDb, "users", OWNER_UID, "devices", device.id)));
+  await assertFails(setDoc(doc(otherDb, "users", OWNER_UID, "devices", device.id), device));
+});
+
+emulatorTest("le navigateur ne peut pas attribuer d’XP ou de succès", async () => {
+  const ownerDb = testEnvironment.authenticatedContext(OWNER_UID).firestore();
+  await assertFails(setDoc(doc(ownerDb, "users", OWNER_UID, "achievements", "level-1"), {
+    id: "level-1",
+    xp: 100,
+  }));
+
+  await assertFails(setDoc(doc(ownerDb, "users", OWNER_UID), {
+    uid: OWNER_UID,
+    progression: { xp: 100_000, level: 99 },
+  }));
+
+  await testEnvironment.withSecurityRulesDisabled(async (context) => {
+    await setDoc(doc(context.firestore(), "users", OWNER_UID), {
+      uid: OWNER_UID,
+      progression: { xp: 25, level: 1 },
+    });
+  });
+  await assertFails(updateDoc(doc(ownerDb, "users", OWNER_UID), {
+    "progression.xp": 100_000,
+  }));
+  await assertSucceeds(updateDoc(doc(ownerDb, "users", OWNER_UID), {
+    displayName: "Profil autorisé",
+    updatedAt: Timestamp.fromMillis(1_700_000_100_000),
+  }));
 });
 
 emulatorTest("un avatar raster valide reste privé au propriétaire", async () => {

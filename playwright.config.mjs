@@ -31,5 +31,21 @@ export default defineConfig({
         viewport: { width: 390, height: 844 },
       },
     },
+    {
+      name: "safari-ordinateur",
+      use: {
+        browserName: "webkit",
+        viewport: { width: 1440, height: 900 },
+      },
+    },
+    {
+      name: "safari-mobile",
+      use: {
+        browserName: "webkit",
+        hasTouch: true,
+        isMobile: true,
+        viewport: { width: 390, height: 844 },
+      },
+    },
   ],
 });

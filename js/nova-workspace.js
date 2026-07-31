@@ -29,9 +29,11 @@ import {
   extractGeneratedFiles,
 } from "./nova-code-artifacts.js?v=1.0.0";
 import {
+  buildMemoryContext,
   buildPipelineMessages,
   fitProviderMessages,
   isProviderConversationTooLong,
+  isProviderTransientError,
 } from "./nova-provider-context.js?v=1.0.0";
 
 const FIREBASE_CONFIG = Object.freeze({
@@ -122,6 +124,7 @@ const state = {
   models: [],
   assignments: new Map(),
   history: [],
+  memories: [],
   mode: "spark",
   councilEnabled: false,
   councilTargets: new Set(["buddy", "axiom", "forge", "auditor", "sentinel"]),
@@ -168,6 +171,7 @@ function errorMessage(error) {
     "auth/network-request-failed": "Connexion Firebase impossible.",
     "permission-denied": "Firebase refuse cette opération.",
   };
+  if (error?.name === "AbortError") return "Le service a dépassé le délai autorisé. Réessaie.";
   return known[code] || String(error?.message || "Erreur inconnue");
 }
 
@@ -209,18 +213,31 @@ async function authHeaders(forceRefresh = false) {
     }
     token = await firebaseTokenRefreshPromise;
   }
-  return {
+  const headers = {
     Accept: "application/json",
     Authorization: `Bearer ${token}`,
     "Content-Type": "application/json",
   };
+  const appCheckToken = await window.FreevFirebase?.getAppCheckToken?.(forceRefresh).catch(() => "");
+  if (appCheckToken) headers["X-Firebase-AppCheck"] = appCheckToken;
+  return headers;
 }
 
 async function renderRequest(path, options = {}) {
-  const execute = async (forceRefresh) => fetch(`${RENDER_BASE}${path}`, {
-    ...options,
-    headers: { ...(await authHeaders(forceRefresh)), ...(options.headers || {}) },
-  });
+  const timeoutMs = path.includes("/provider/chat") ? 65_000 : 15_000;
+  const execute = async (forceRefresh) => {
+    const controller = new AbortController();
+    const timeout = window.setTimeout(() => controller.abort(), timeoutMs);
+    try {
+      return await fetch(`${RENDER_BASE}${path}`, {
+        ...options,
+        signal: controller.signal,
+        headers: { ...(await authHeaders(forceRefresh)), ...(options.headers || {}) },
+      });
+    } finally {
+      window.clearTimeout(timeout);
+    }
+  };
   let response = await execute(false);
   // Un jeton Firebase refusé est renouvelé une fois sans reconnecter l’utilisateur.
   if (response.status === 401) response = await execute(true);
@@ -298,10 +315,11 @@ function cleanProfile(raw, id = "") {
 
 async function loadNovaData() {
   const uid = state.user.uid;
-  const [modelSnap, assignmentSnap, historySnap] = await Promise.all([
+  const [modelSnap, assignmentSnap, historySnap, memorySnap] = await Promise.all([
     getDocs(collection(db, "users", uid, "novaModels")),
     getDocs(collection(db, "users", uid, "novaAssignments")),
     getDocs(query(collection(db, "users", uid, "novaHistory"), orderBy("createdAt", "desc"), limit(HISTORY_LIMIT))).catch(() => null),
+    getDocs(collection(db, "users", uid, "memories")),
   ]);
   state.models = modelSnap.docs.map((item) => cleanProfile(item.data(), item.id));
   const availableModelIds = state.models.map((item) => item.id);
@@ -312,6 +330,7 @@ async function loadNovaData() {
   }));
   state.councilTargets = new Set(COUNCIL.filter((creature) => (state.assignments.get(creature.id) || []).length === 1).map((creature) => creature.id));
   state.history = historySnap ? historySnap.docs.map((item) => ({ id: item.id, ...item.data() })) : [];
+  state.memories = memorySnap.docs.map((item) => ({ id: item.id, ...item.data() }));
 }
 
 function renderModes() {
@@ -928,7 +947,11 @@ async function callProfile(profile, messages, options = {}) {
     });
   } catch (error) {
     if (!options.compact && isProviderConversationTooLong(error)) {
-      return callProfile(profile, messages, { compact: true });
+      return callProfile(profile, messages, { ...options, compact: true });
+    }
+    if (!options.transientRetry && isProviderTransientError(error)) {
+      await new Promise((resolve) => window.setTimeout(resolve, 650));
+      return callProfile(profile, messages, { ...options, transientRetry: true });
     }
     throw error;
   }
@@ -938,6 +961,7 @@ async function callProfile(profile, messages, options = {}) {
 
 async function runPipeline(profiles, system, prompt, onStep) {
   let result = "";
+  const failures = [];
   for (let index = 0; index < profiles.length; index += 1) {
     const profile = profiles[index];
     onStep?.(profile, index, profiles.length);
@@ -951,8 +975,15 @@ async function runPipeline(profiles, system, prompt, onStep) {
       prompt,
       previous: result,
     });
-    result = await callProfile(profile, messages);
+    try {
+      result = await callProfile(profile, messages);
+    } catch (error) {
+      failures.push(`${profile.label} : ${errorMessage(error)}`);
+      onStep?.(profile, index, profiles.length, error);
+      if (profiles.length === 1) throw error;
+    }
   }
+  if (!result) throw new Error(`Aucun modèle n’a répondu. ${failures.join(" · ")}`);
   return result;
 }
 
@@ -969,8 +1000,11 @@ async function runCodeMode(prompt) {
   const profiles = assignmentFor(mode.id);
   if (!profiles.length) throw new Error(`Attribue au moins un modèle à ${mode.name}.`);
   const thinking = message("assistant", mode.name, "Préparation du pipeline…", { short: mode.name.split("-")[1]?.slice(0, 2) || "NV", thinking: true });
-  const result = await runPipeline(profiles, mode.system, prompt, (profile, index, total) => {
-    updateMessage(thinking, `Étape ${index + 1}/${total} · ${profile.label} analyse et prépare sa contribution…`, true);
+  const memoryContext = buildMemoryContext(state.memories);
+  const result = await runPipeline(profiles, [mode.system, memoryContext].filter(Boolean).join("\n\n"), prompt, (profile, index, total, error) => {
+    updateMessage(thinking, error
+      ? `Étape ${index + 1}/${total} · ${profile.label} indisponible, passage au modèle suivant…`
+      : `Étape ${index + 1}/${total} · ${profile.label} analyse et prépare sa contribution…`, true);
   });
   updateMessage(thinking, result || "Le pipeline n’a produit aucun contenu.", false);
   await storeHistory("mode", mode.id, prompt, result, profiles.map((item) => item.label));
@@ -989,7 +1023,8 @@ async function runCouncil(prompt) {
     }
     const thinking = message("assistant", creature.name, `Connexion à ${profile.label}…`, { short: creature.short, color: creature.color, thinking: true });
     try {
-      const result = await runPipeline([profile], creature.system, prompt, (activeProfile) => {
+      const memoryContext = buildMemoryContext(state.memories);
+      const result = await runPipeline([profile], [creature.system, memoryContext].filter(Boolean).join("\n\n"), prompt, (activeProfile) => {
         updateMessage(thinking, `${creature.name} travaille avec ${activeProfile.label}…`, true);
       });
       updateMessage(thinking, result, false);
@@ -1001,6 +1036,91 @@ async function runCouncil(prompt) {
   }
   if (!results.length) throw new Error("Aucune créature configurée n’a pu répondre.");
   await storeHistory("council", selected.map((item) => item.id).join(","), prompt, results.join("\n\n"), usedModels);
+}
+
+function renderMemories() {
+  const root = byId("nova-memory-list");
+  if (!root) return;
+  if (!state.memories.length) {
+    root.innerHTML = '<div class="empty-state">Aucune mémoire explicite. Nova travaille sans souvenir personnel.</div>';
+    return;
+  }
+  root.replaceChildren(...state.memories.map((memory) => {
+    const card = document.createElement("article");
+    card.className = "memory-entry";
+    const copy = document.createElement("div");
+    const title = document.createElement("strong");
+    title.textContent = String(memory.title || "Mémoire");
+    const content = document.createElement("p");
+    content.textContent = String(memory.content || "");
+    copy.append(title, content);
+    const actions = document.createElement("div");
+    actions.className = "memory-actions";
+    const toggle = document.createElement("button");
+    toggle.type = "button";
+    toggle.className = "mini-button";
+    toggle.dataset.toggleMemory = memory.id;
+    toggle.textContent = memory.enabled ? "Désactiver" : "Activer";
+    const remove = document.createElement("button");
+    remove.type = "button";
+    remove.className = "mini-button danger";
+    remove.dataset.deleteMemory = memory.id;
+    remove.textContent = "Supprimer";
+    actions.append(toggle, remove);
+    card.append(copy, actions);
+    return card;
+  }));
+}
+
+async function saveMemory(event) {
+  event.preventDefault();
+  const title = byId("nova-memory-title").value.trim();
+  const content = byId("nova-memory-content").value.trim();
+  if (!title || !content) return;
+  const id = `memory_${crypto.randomUUID().replaceAll("-", "")}`;
+  const memory = {
+    id,
+    title: title.slice(0, 80),
+    content: content.slice(0, 4000),
+    enabled: true,
+    createdAt: serverTimestamp(),
+    updatedAt: serverTimestamp(),
+  };
+  try {
+    await setDoc(doc(db, "users", state.user.uid, "memories", id), memory);
+    state.memories.unshift({ ...memory, createdAt: Timestamp.now(), updatedAt: Timestamp.now() });
+    byId("nova-memory-title").value = "";
+    byId("nova-memory-content").value = "";
+    renderMemories();
+    toast("Mémoire ajoutée et activée.");
+  } catch (error) {
+    toast(errorMessage(error), "error");
+  }
+}
+
+async function toggleMemory(id) {
+  const memory = state.memories.find((item) => item.id === id);
+  if (!memory) return;
+  try {
+    const updated = { ...memory, enabled: !memory.enabled, updatedAt: serverTimestamp() };
+    await setDoc(doc(db, "users", state.user.uid, "memories", id), updated);
+    memory.enabled = updated.enabled;
+    renderMemories();
+  } catch (error) {
+    toast(errorMessage(error), "error");
+  }
+}
+
+async function removeMemory(id) {
+  if (!window.confirm("Supprimer définitivement cette mémoire Nova ?")) return;
+  try {
+    await deleteDoc(doc(db, "users", state.user.uid, "memories", id));
+    state.memories = state.memories.filter((item) => item.id !== id);
+    renderMemories();
+    toast("Mémoire supprimée.");
+  } catch (error) {
+    toast(errorMessage(error), "error");
+  }
 }
 
 async function submitMission(event) {
@@ -1191,6 +1311,8 @@ function bindEvents() {
   byId("nova-chat-form")?.addEventListener("submit", submitMission);
   byId("nova-open-config")?.addEventListener("click", () => openConfigTab("recommendations"));
   byId("nova-open-history")?.addEventListener("click", () => { renderHistory(); openDialog("nova-history-dialog"); });
+  byId("nova-open-memories")?.addEventListener("click", () => { renderMemories(); openDialog("nova-memory-dialog"); });
+  byId("nova-memory-form")?.addEventListener("submit", saveMemory);
   byId("nova-admin-button")?.addEventListener("click", () => { openDialog("nova-admin-dialog"); loadAdminUsers(); });
   byId("nova-admin-refresh")?.addEventListener("click", loadAdminUsers);
   byId("nova-admin-search")?.addEventListener("input", renderAdminUsers);
@@ -1239,6 +1361,12 @@ function bindEvents() {
     const button = event.target.closest("[data-delete-history]");
     if (button) removeHistory(button.dataset.deleteHistory);
   });
+  byId("nova-memory-list")?.addEventListener("click", (event) => {
+    const toggle = event.target.closest("[data-toggle-memory]");
+    const remove = event.target.closest("[data-delete-memory]");
+    if (toggle) toggleMemory(toggle.dataset.toggleMemory);
+    if (remove) removeMemory(remove.dataset.deleteMemory);
+  });
   byId("nova-admin-users")?.addEventListener("click", (event) => {
     const button = event.target.closest("[data-toggle-access]");
     if (!button) return;
@@ -1267,6 +1395,7 @@ async function initializeUser(user) {
     renderCouncil();
     renderSavedModels();
     renderAssignments();
+    renderMemories();
     welcomeMessage();
   } catch (error) {
     await detectAdmin().catch(() => false);

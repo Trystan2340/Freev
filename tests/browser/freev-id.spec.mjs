@@ -16,7 +16,7 @@ test("le socle Freev ID V2 charge sans débordement horizontal", async ({ page }
 });
 
 test("la connexion reste utilisable et cadrée", async ({ page }, testInfo) => {
-  const isMobile = testInfo.project.name === "mobile";
+  const isMobile = testInfo.project.name.includes("mobile");
 
   if (isMobile) {
     const menuButton = page.getByRole("button", { name: "Ouvrir le menu" });
@@ -43,4 +43,20 @@ test("la connexion reste utilisable et cadrée", async ({ page }, testInfo) => {
   expect(box.y).toBeGreaterThanOrEqual(0);
   expect(box.x + box.width).toBeLessThanOrEqual(viewport.width);
   expect(box.y + box.height).toBeLessThanOrEqual(viewport.height);
+});
+
+test("le centre de compte complet est présent sans exposer de données", async ({ page }) => {
+  await expect(page.locator("#freev-account-center")).toHaveCount(1);
+  const tabs = page.locator("#freev-account-center [role='tab']");
+  await expect(tabs).toHaveCount(5);
+  await expect(tabs).toHaveText(["Public", "Photo", "Mémoires", "Appareils", "Données"]);
+  await expect(page.locator("#profile-section")).toHaveClass(/hidden/);
+});
+
+test("une URL de profil public invalide échoue proprement", async ({ page }) => {
+  await page.goto("/profil.html?id=%3Cscript%3E", { waitUntil: "domcontentloaded" });
+  await expect(page.getByRole("heading", { name: "Profil indisponible" })).toBeVisible();
+  await expect(page.locator("body")).not.toContainText("<script>");
+  const overflow = await page.evaluate(() => Math.max(0, document.documentElement.scrollWidth - window.innerWidth));
+  expect(overflow).toBeLessThanOrEqual(1);
 });
