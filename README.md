@@ -19,6 +19,9 @@ Prérequis : Node.js 20 ou plus récent.
 ```bash
 npm ci
 npm test
+npm run test:rules
+npx playwright install chromium
+npm run test:browser
 npm run verify
 npm run serve
 ```
@@ -47,11 +50,15 @@ firebase deploy --only firestore:rules,storage
 
 Avant une mise en production complète :
 
-1. activer App Check pour Firestore, Storage et les futures Cloud Functions ;
-2. tester les règles avec Firebase Emulator Suite ;
-3. activer les fournisseurs de connexion voulus dans Firebase Authentication ;
-4. garder les badges/XP en écriture serveur uniquement ;
-5. publier un profil dans `publicProfiles` seulement après consentement explicite.
+1. exécuter `npm run test:rules` pour Firestore et Storage dans Firebase Emulator Suite ;
+2. créer une clé de site reCAPTCHA Enterprise limitée aux domaines publics de Freev ;
+3. enregistrer l’application Web dans App Check et initialiser App Check avant Auth, Firestore et Storage ;
+4. déployer d’abord le client avec App Check, puis observer les métriques avant d’appliquer le blocage strict ;
+5. activer les fournisseurs de connexion voulus dans Firebase Authentication ;
+6. garder les badges/XP en écriture serveur uniquement ;
+7. publier un profil dans `publicProfiles` seulement après consentement explicite.
+
+Un jeton App Check de débogage peut servir aux tests locaux, mais il doit rester dans le stockage sécurisé de la CI ou du navigateur. Il ne doit jamais être ajouté au dépôt public.
 
 Les clés de configuration Firebase visibles côté navigateur identifient le projet mais ne remplacent jamais les règles de sécurité, App Check et les restrictions de domaine.
 

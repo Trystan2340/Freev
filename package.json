@@ -6,10 +6,17 @@
   "scripts": {
     "test": "node --test",
     "test:freev-id": "node --test tests/freev-id-*.test.mjs",
+    "test:rules": "node tools/run-firebase-rules-tests.mjs",
+    "test:browser": "playwright test",
     "verify": "npm test && node tools/verify-static.mjs",
     "serve": "node tools/serve.mjs"
   },
   "engines": {
     "node": ">=20"
+  },
+  "devDependencies": {
+    "@firebase/rules-unit-testing": "^5.0.1",
+    "@playwright/test": "^1.62.1",
+    "firebase": "^12.17.0"
   }
 }

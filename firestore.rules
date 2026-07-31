@@ -251,7 +251,10 @@ service cloud.firestore {
     }
 
     match /usernames/{nicknameLower} {
-      allow read: if true;
+      // La disponibilité d'un surnom est vérifiée uniquement après connexion.
+      // Une liste publique exposerait les UID associés à tous les surnoms.
+      allow get: if request.auth != null;
+      allow list: if false;
       allow create: if request.auth != null
         && request.resource.data.uid == request.auth.uid
         && request.resource.data.nicknameLower == nicknameLower;
@@ -265,44 +268,50 @@ service cloud.firestore {
 
     // Projection publique séparée : aucun email, UID privé, secret ou mémoire.
     match /publicProfiles/{nicknameLower} {
-      allow read: if true;
-      allow create: if request.auth != null
-        && request.resource.data.ownerUid == request.auth.uid
-        && request.resource.data.nicknameLower == nicknameLower
-        && request.resource.data.keys().hasOnly([
-          'ownerUid', 'nickname', 'nicknameLower', 'displayName', 'bio',
-          'avatar', 'theme', 'publishedAt', 'updatedAt'
-        ])
-        && request.resource.data.nickname is string
-        && request.resource.data.nickname.size() >= 3
-        && request.resource.data.nickname.size() <= 24
-        && request.resource.data.displayName is string
-        && request.resource.data.displayName.size() <= 40
-        && request.resource.data.bio is string
-        && request.resource.data.bio.size() <= 160
-        && request.resource.data.avatar is map
-        && request.resource.data.theme is map
-        && request.resource.data.publishedAt is timestamp
-        && request.resource.data.updatedAt is timestamp;
-      allow update: if request.auth != null
-        && resource.data.ownerUid == request.auth.uid
-        && request.resource.data.ownerUid == request.auth.uid
-        && request.resource.data.nicknameLower == nicknameLower
+      function ownsRegisteredNickname() {
+        return request.auth != null
+          && exists(/databases/$(database)/documents/usernames/$(nicknameLower))
+          && get(/databases/$(database)/documents/usernames/$(nicknameLower)).data.uid == request.auth.uid;
+      }
+
+      function ownsLegacyProfile() {
+        return request.auth != null
+          && resource.data.keys().hasAny(['ownerUid'])
+          && resource.data.ownerUid == request.auth.uid;
+      }
+
+      function hasSafePublicFields() {
+        return request.resource.data.nicknameLower == nicknameLower
+          && request.resource.data.keys().hasOnly([
+            'nickname', 'nicknameLower', 'displayName', 'bio',
+            'avatar', 'theme', 'publishedAt', 'updatedAt'
+          ])
+          && request.resource.data.nickname is string
+          && request.resource.data.nickname.size() >= 3
+          && request.resource.data.nickname.size() <= 24
+          && request.resource.data.displayName is string
+          && request.resource.data.displayName.size() <= 40
+          && request.resource.data.bio is string
+          && request.resource.data.bio.size() <= 160
+          && request.resource.data.avatar is map
+          && request.resource.data.theme is map
+          && request.resource.data.publishedAt is timestamp
+          && request.resource.data.updatedAt is timestamp;
+      }
+
+      // Firestore ne masque pas les champs : un ancien document contenant
+      // ownerUid reste donc privé jusqu'à sa migration par son propriétaire.
+      allow get: if !resource.data.keys().hasAny(['ownerUid'])
+        || ownsLegacyProfile();
+      allow list: if false;
+      allow create: if ownsRegisteredNickname()
+        && hasSafePublicFields();
+      allow update: if (ownsRegisteredNickname() || ownsLegacyProfile())
+        && hasSafePublicFields()
         && request.resource.data.diff(resource.data).affectedKeys().hasOnly([
-          'nickname', 'displayName', 'bio', 'avatar', 'theme', 'updatedAt'
-        ])
-        && request.resource.data.nickname is string
-        && request.resource.data.nickname.size() >= 3
-        && request.resource.data.nickname.size() <= 24
-        && request.resource.data.displayName is string
-        && request.resource.data.displayName.size() <= 40
-        && request.resource.data.bio is string
-        && request.resource.data.bio.size() <= 160
-        && request.resource.data.avatar is map
-        && request.resource.data.theme is map
-        && request.resource.data.updatedAt is timestamp;
-      allow delete: if request.auth != null
-        && resource.data.ownerUid == request.auth.uid;
+          'ownerUid', 'nickname', 'displayName', 'bio', 'avatar', 'theme', 'updatedAt'
+        ]);
+      allow delete: if ownsRegisteredNickname() || ownsLegacyProfile();
     }
   }
 }

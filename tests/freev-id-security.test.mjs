@@ -15,6 +15,15 @@ test("les profils publics sont séparés des comptes privés", () => {
   assert.match(firestoreRules, /keys\(\)\.hasOnly\(\[[\s\S]*?'avatar', 'theme'/);
 });
 
+test("la projection publique n'enregistre jamais ownerUid et refuse l'énumération", () => {
+  const publicRules = firestoreRules.slice(
+    firestoreRules.indexOf("match /publicProfiles/{nicknameLower}"),
+  );
+
+  assert.doesNotMatch(publicRules, /request\.resource\.data\.ownerUid/);
+  assert.match(publicRules, /allow list: if false;/);
+});
+
 test("Storage refuse SVG et limite les images raster à deux Mio", () => {
   assert.match(storageRules, /request\.resource\.size < 2 \* 1024 \* 1024/);
   assert.match(storageRules, /image\/\(png\|jpeg\|webp\)/);

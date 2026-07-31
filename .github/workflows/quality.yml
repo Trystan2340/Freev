@@ -11,7 +11,7 @@ permissions:
 jobs:
   verify:
     runs-on: ubuntu-latest
-    timeout-minutes: 10
+    timeout-minutes: 20
     steps:
       - name: Récupérer le dépôt
         uses: actions/checkout@v4
@@ -22,11 +22,26 @@ jobs:
           node-version: 22
           cache: npm
 
+      - name: Installer Java pour Firebase Emulator
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "21"
+
       - name: Installer les dépendances
         run: npm ci
 
       - name: Tests et contrôles statiques
         run: npm run verify
+
+      - name: Tester les règles Firebase
+        run: npm run test:rules
+
+      - name: Installer Chromium pour Playwright
+        run: npx playwright install --with-deps chromium
+
+      - name: Tester l'interface ordinateur et mobile
+        run: npm run test:browser
 
       - name: Audit des dépendances
         run: npm audit --audit-level=high
