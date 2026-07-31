@@ -1,13 +1,8 @@
 import { initializeApp, getApp, getApps } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
   import {
     GoogleAuthProvider,
-    OAuthProvider,
-    PhoneAuthProvider,
-    PhoneMultiFactorGenerator,
-    RecaptchaVerifier,
     createUserWithEmailAndPassword,
     getAuth,
-    getMultiFactorResolver,
     onAuthStateChanged,
     sendPasswordResetEmail,
     signInWithEmailAndPassword,
@@ -64,7 +59,6 @@ import { initializeApp, getApp, getApps } from "https://www.gstatic.com/firebase
   let lastSyncedUid = null;
   let profileSavesCache = new Map();
   let currentProfileData = null;
-  let signInRecaptcha = null;
 
   // Ce secours garde le centre de compte ouvrable même si une ancienne copie
   // du script d'interface est encore contrôlée par le service worker.
@@ -171,35 +165,9 @@ import { initializeApp, getApp, getApps } from "https://www.gstatic.com/firebase
     });
   };
 
-  const getSignInRecaptcha = () => {
-    signInRecaptcha?.clear();
-    signInRecaptcha = new RecaptchaVerifier(auth, "freev-auth-recaptcha", { size: "invisible" });
-    return signInRecaptcha;
-  };
-
-  const resolveMfaSignIn = async (error) => {
-    const resolver = getMultiFactorResolver(auth, error);
-    const phoneHint = resolver.hints.find((hint) => hint.factorId === PhoneMultiFactorGenerator.FACTOR_ID);
-    if (!phoneHint) throw new Error("Aucun second facteur SMS compatible n’est configuré.");
-    const verificationId = await new PhoneAuthProvider(auth).verifyPhoneNumber({
-      multiFactorHint: phoneHint,
-      session: resolver.session,
-    }, getSignInRecaptcha());
-    const code = window.prompt(`Code de sécurité envoyé au ${phoneHint.phoneNumber || "téléphone enregistré"} :`);
-    if (!code) throw new Error("Code de sécurité requis pour terminer la connexion.");
-    const credential = PhoneAuthProvider.credential(verificationId, code.trim());
-    return resolver.resolveSignIn(PhoneMultiFactorGenerator.assertion(credential));
-  };
-
-  const finishSignIn = async (operation) => {
-    try {
-      return await operation();
-    } catch (error) {
-      if (error?.code !== "auth/multi-factor-auth-required") throw error;
-      setAuthStatus("Vérification du second facteur…", "info");
-      return resolveMfaSignIn(error);
-    }
-  };
+  // Le mode gratuit n’envoie jamais de SMS. Un compte déjà protégé par SMS
+  // doit d’abord retirer ce facteur depuis la console Firebase.
+  const finishSignIn = async (operation) => operation();
 
   const normalizeNickname = (value = "") => value.trim().replace(/\s+/g, "_");
 
@@ -887,31 +855,21 @@ import { initializeApp, getApp, getApps } from "https://www.gstatic.com/firebase
       return;
     }
     const normalizedProvider = String(providerName || "").toLowerCase();
-    const provider = normalizedProvider === "google"
-      ? new GoogleAuthProvider()
-      : normalizedProvider === "apple"
-        ? new OAuthProvider("apple.com")
-        : null;
+    const provider = normalizedProvider === "google" ? new GoogleAuthProvider() : null;
     if (!provider) return;
-    if (normalizedProvider === "google") provider.setCustomParameters({ prompt: "select_account" });
-    if (normalizedProvider === "apple") {
-      provider.addScope("email");
-      provider.addScope("name");
-    }
+    provider.setCustomParameters({ prompt: "select_account" });
 
     authActionInProgress = true;
     manualAuthInProgress = true;
     setAuthBusy(true, normalizedProvider);
     try {
-      setAuthStatus(`Connexion ${normalizedProvider === "google" ? "Google" : "Apple"}…`, "info");
+      setAuthStatus("Connexion Google…", "info");
       const { user } = await finishSignIn(() => signInWithPopup(auth, provider));
       await syncUserDataSafely(user, false);
     } catch (error) {
       setAuthStatus(`Connexion fournisseur impossible : ${formatFirebaseError(error)}`, "error");
       console.error("Erreur fournisseur Firebase", error);
     } finally {
-      signInRecaptcha?.clear();
-      signInRecaptcha = null;
       manualAuthInProgress = false;
       authActionInProgress = false;
       setAuthBusy(false);

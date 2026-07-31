@@ -41,19 +41,20 @@ test("les trois interfaces sensibles appliquent la CSP et le suivi anonymisé", 
   }
 });
 
-test("Google, Apple et le second facteur SMS sont raccordés sans secret client", async () => {
+test("l’authentification gratuite garde Google et désactive Apple ainsi que le SMS payant", async () => {
   const [html, auth, account] = await Promise.all([
     read("index.html"),
     read("js/freev-auth.js"),
     read("js/freev-id/account-center.js"),
   ]);
   assert.match(html, /data-auth-provider="google"/);
-  assert.match(html, /data-auth-provider="apple"/);
+  assert.doesNotMatch(html, /data-auth-provider="apple"/);
+  assert.match(html, /disabled[^>]*id="apple-login-button"/);
   assert.match(auth, /GoogleAuthProvider/);
-  assert.match(auth, /OAuthProvider\("apple\.com"\)/);
-  assert.match(auth, /getMultiFactorResolver/);
-  assert.match(account, /PhoneMultiFactorGenerator/);
-  assert.match(account, /multiFactor\(state\.user\)\.enroll/);
+  assert.match(account, /double authentification SMS reste désactivée/i);
+  assert.doesNotMatch(account, /firebase-storage\.js/);
+  assert.match(account, /indexedDB\.open\(LOCAL_PHOTO_DATABASE/);
+  assert.doesNotMatch(`${auth}\n${account}`, /PhoneAuthProvider|PhoneMultiFactorGenerator|verifyPhoneNumber/);
   assert.doesNotMatch(`${html}\n${auth}\n${account}`, /-----BEGIN PRIVATE KEY-----/);
 });
 

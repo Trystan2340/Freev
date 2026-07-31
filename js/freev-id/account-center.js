@@ -1,10 +1,6 @@
 import { getApp, getApps, initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
 import {
-  PhoneAuthProvider,
-  PhoneMultiFactorGenerator,
-  RecaptchaVerifier,
   getAuth,
-  multiFactor,
   onAuthStateChanged,
   signOut,
 } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
@@ -19,14 +15,6 @@ import {
   setDoc,
 } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 import {
-  deleteObject,
-  getBlob,
-  getStorage,
-  ref as storageRef,
-  uploadBytes,
-} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-storage.js";
-
-import {
   buildAccountExport,
   buildPublicProfile,
   calculateSquareCrop,
@@ -38,7 +26,6 @@ const FIREBASE_CONFIG = Object.freeze({
   apiKey: "AIzaSyBtcQrFenU9T0C2v1qcBUpF2DfVqC_V5sM",
   authDomain: "freev-52df2.firebaseapp.com",
   projectId: "freev-52df2",
-  storageBucket: "freev-52df2.firebasestorage.app",
   messagingSenderId: "588481455818",
   appId: "1:588481455818:web:fb61c5d4003d670e71f633",
 });
@@ -58,16 +45,14 @@ const KNOWN_COLLECTIONS = Object.freeze([
 const app = getApps().length ? getApp() : initializeApp(FIREBASE_CONFIG);
 const auth = getAuth(app);
 const db = getFirestore(app);
-const storage = getStorage(app);
+const LOCAL_PHOTO_DATABASE = "freev-private-media-v1";
+const LOCAL_PHOTO_STORE = "photos";
 
 const state = {
   user: null,
   profile: null,
   currentPhoto: null,
-  currentPhotoUrl: "",
   currentDeviceId: "",
-  mfaVerificationId: "",
-  mfaRecaptcha: null,
   busy: false,
 };
 
@@ -120,6 +105,66 @@ function getDeviceId() {
   } catch {
     return `web_${crypto.randomUUID().replaceAll("-", "")}`;
   }
+}
+
+function openLocalPhotoDatabase() {
+  return new Promise((resolve, reject) => {
+    const request = indexedDB.open(LOCAL_PHOTO_DATABASE, 1);
+    request.onupgradeneeded = () => {
+      if (!request.result.objectStoreNames.contains(LOCAL_PHOTO_STORE)) {
+        request.result.createObjectStore(LOCAL_PHOTO_STORE, { keyPath: "id" });
+      }
+    };
+    request.onsuccess = () => resolve(request.result);
+    request.onerror = () => reject(request.error || new Error("Stockage local de la photo indisponible."));
+  });
+}
+
+async function withLocalPhotoStore(mode, callback) {
+  const database = await openLocalPhotoDatabase();
+  try {
+    return await new Promise((resolve, reject) => {
+      const transaction = database.transaction(LOCAL_PHOTO_STORE, mode);
+      const store = transaction.objectStore(LOCAL_PHOTO_STORE);
+      let result;
+      try {
+        result = callback(store);
+      } catch (error) {
+        reject(error);
+        return;
+      }
+      transaction.oncomplete = () => resolve(result);
+      transaction.onerror = () => reject(transaction.error || new Error("Écriture locale impossible."));
+      transaction.onabort = () => reject(transaction.error || new Error("Écriture locale annulée."));
+    });
+  } finally {
+    database.close();
+  }
+}
+
+function localPhotoId() {
+  return state.user ? `profile:${state.user.uid}` : "";
+}
+
+async function getLocalPhotoBlob() {
+  const id = localPhotoId();
+  if (!id) return null;
+  return withLocalPhotoStore("readonly", (store) => new Promise((resolve, reject) => {
+    const request = store.get(id);
+    request.onsuccess = () => resolve(request.result?.blob instanceof Blob ? request.result.blob : null);
+    request.onerror = () => reject(request.error || new Error("Lecture locale impossible."));
+  }));
+}
+
+async function putLocalPhotoBlob(blob) {
+  const id = localPhotoId();
+  if (!id) throw new Error("Connexion Firebase requise.");
+  await withLocalPhotoStore("readwrite", (store) => store.put({ id, blob, updatedAt: Date.now() }));
+}
+
+async function removeLocalPhotoBlob() {
+  const id = localPhotoId();
+  if (id) await withLocalPhotoStore("readwrite", (store) => store.delete(id));
 }
 
 function deviceDescription() {
@@ -178,10 +223,10 @@ function buildPhotoPanel() {
   zoomLabel.append(zoom);
   const actions = element("div", { className: "freev-account-actions" });
   actions.append(
-    element("button", { id: "freev-photo-save", className: "freev-account-button freev-account-button--primary", type: "button", dataset: { freevAccountAction: "photo-save" }, disabled: true }, "Enregistrer la photo privée"),
-    element("button", { id: "freev-photo-delete", className: "freev-account-button freev-account-button--danger", type: "button", dataset: { freevAccountAction: "photo-delete" } }, "Supprimer la photo"),
+    element("button", { id: "freev-photo-save", className: "freev-account-button freev-account-button--primary", type: "button", dataset: { freevAccountAction: "photo-save" }, disabled: true }, "Enregistrer sur cet appareil"),
+    element("button", { id: "freev-photo-delete", className: "freev-account-button freev-account-button--danger", type: "button", dataset: { freevAccountAction: "photo-delete" }, disabled: true }, "Supprimer la photo locale"),
   );
-  panel.append(stage, fileLabel, zoomLabel, actions, element("p", { className: "freev-account-note" }, "La photo est recadrée à 512 × 512 et conservée dans l’espace Storage privé du compte. Elle n’est jamais copiée dans le profil public."));
+  panel.append(stage, fileLabel, zoomLabel, actions, element("p", { className: "freev-account-note" }, "Mode gratuit : la photo recadrée reste uniquement dans ce navigateur. Elle n’est ni envoyée à Firebase Storage, ni copiée dans le profil public. L’avatar procédural reste synchronisé avec le compte."));
   return panel;
 }
 
@@ -217,22 +262,10 @@ function buildDataPanel() {
   const deletionPhrase = element("input", { id: "freev-delete-phrase", autocomplete: "off", placeholder: "Écrire SUPPRIMER" });
   const deletionLabel = element("label", { className: "freev-account-field" }, "Suppression définitive");
   deletionLabel.append(deletionPhrase);
-  const phone = element("input", { id: "freev-mfa-phone", type: "tel", autocomplete: "tel", placeholder: "+33 6 12 34 56 78" });
-  const code = element("input", { id: "freev-mfa-code", inputMode: "numeric", autocomplete: "one-time-code", maxLength: 8, placeholder: "Code SMS", disabled: true });
-  const phoneLabel = element("label", { className: "freev-account-field" }, "Téléphone pour la double authentification");
-  const codeLabel = element("label", { className: "freev-account-field" }, "Code reçu");
-  phoneLabel.append(phone);
-  codeLabel.append(code);
   const mfaCard = element("section", { className: "freev-account-security-card", "aria-labelledby": "freev-mfa-title" });
   mfaCard.append(
-    element("h4", { id: "freev-mfa-title", className: "text-sm font-bold text-white" }, "Double authentification SMS"),
-    element("p", { id: "freev-mfa-status", className: "freev-account-note", role: "status" }, "Vérification de la configuration…"),
-    phoneLabel,
-    element("button", { id: "freev-mfa-send", className: "freev-account-button", type: "button", dataset: { freevAccountAction: "mfa-send" } }, "Envoyer le code"),
-    codeLabel,
-    element("button", { id: "freev-mfa-confirm", className: "freev-account-button freev-account-button--primary", type: "button", dataset: { freevAccountAction: "mfa-confirm" }, disabled: true }, "Activer la double authentification"),
-    element("div", { id: "freev-mfa-factors", className: "freev-account-list" }),
-    element("div", { id: "freev-mfa-recaptcha", "aria-hidden": "true" }),
+    element("h4", { id: "freev-mfa-title", className: "text-sm font-bold text-white" }, "Sécurité sans facturation"),
+    element("p", { className: "freev-account-note" }, "La double authentification SMS reste désactivée afin d’éviter tout coût. Utilisez un mot de passe unique, un email vérifié et la déconnexion globale des appareils."),
   );
   panel.append(
     mfaCard,
@@ -403,32 +436,59 @@ function canvasBlob(canvas) {
   });
 }
 
+async function loadPhotoBlob(blob) {
+  if (!(blob instanceof Blob)) return false;
+  const url = URL.createObjectURL(blob);
+  try {
+    const image = new Image();
+    image.decoding = "async";
+    image.src = url;
+    await image.decode();
+    state.currentPhoto = image;
+    const zoom = byId("freev-photo-zoom");
+    if (zoom) {
+      zoom.value = "1";
+      zoom.disabled = false;
+    }
+    if (byId("freev-photo-save")) byId("freev-photo-save").disabled = false;
+    if (byId("freev-photo-delete")) byId("freev-photo-delete").disabled = false;
+    drawPhotoPreview();
+    return true;
+  } finally {
+    URL.revokeObjectURL(url);
+  }
+}
+
+async function loadLocalPhoto() {
+  const blob = await getLocalPhotoBlob();
+  if (blob) await loadPhotoBlob(blob);
+}
+
 async function savePhoto() {
   const canvas = byId("freev-photo-canvas");
   if (!state.user || !state.currentPhoto || !canvas) return;
   const blob = await canvasBlob(canvas);
-  const path = `users/${state.user.uid}/avatars/profile.webp`;
-  await uploadBytes(storageRef(storage, path), blob, { contentType: "image/webp", cacheControl: "private,max-age=3600" });
-  await setDoc(doc(db, "users", state.user.uid), {
-    uid: state.user.uid,
-    photo: { path, contentType: "image/webp", updatedAt: serverTimestamp() },
-  }, { merge: true });
-  await loadProfile();
-  setStatus("Photo privée recadrée et enregistrée.", "success");
+  await putLocalPhotoBlob(blob);
+  await loadPhotoBlob(blob);
+  setStatus("Photo privée enregistrée uniquement sur cet appareil, sans coût Firebase.", "success");
 }
 
 async function deletePhoto() {
-  if (!state.user || !state.profile?.photo?.path) return;
-  if (!confirm("Supprimer définitivement la photo privée de ce compte ?")) return;
-  await deleteObject(storageRef(storage, state.profile.photo.path));
-  await setDoc(doc(db, "users", state.user.uid), {
-    uid: state.user.uid,
-    photo: null,
-  }, { merge: true });
-  state.profile.photo = null;
+  if (!state.user || !await getLocalPhotoBlob()) return;
+  if (!confirm("Supprimer la photo privée enregistrée sur cet appareil ?")) return;
+  await removeLocalPhotoBlob();
   state.currentPhoto = null;
+  const file = byId("freev-photo-file");
+  const zoom = byId("freev-photo-zoom");
+  if (file) file.value = "";
+  if (zoom) {
+    zoom.value = "1";
+    zoom.disabled = true;
+  }
+  if (byId("freev-photo-save")) byId("freev-photo-save").disabled = true;
+  if (byId("freev-photo-delete")) byId("freev-photo-delete").disabled = true;
   drawPhotoPreview();
-  setStatus("Photo privée supprimée.", "success");
+  setStatus("Photo privée supprimée de cet appareil.", "success");
 }
 
 async function addMemory() {
@@ -529,90 +589,6 @@ async function removeDevice(id) {
   await renderDevices();
 }
 
-function enrolledPhoneFactors() {
-  if (!state.user) return [];
-  return multiFactor(state.user).enrolledFactors.filter(
-    (factor) => factor.factorId === PhoneMultiFactorGenerator.FACTOR_ID,
-  );
-}
-
-function renderMfaStatus() {
-  const status = byId("freev-mfa-status");
-  const list = byId("freev-mfa-factors");
-  if (!status || !list) return;
-  const factors = enrolledPhoneFactors();
-  status.textContent = factors.length
-    ? `${factors.length} second facteur SMS actif${factors.length > 1 ? "s" : ""}.`
-    : "Aucun second facteur actif. Un email vérifié et Firebase Identity Platform sont requis.";
-  list.replaceChildren();
-  for (const factor of factors) {
-    const row = element("article", { className: "freev-account-row" });
-    row.append(
-      element("span", { className: "freev-account-note" }, factor.displayName || factor.phoneNumber || "Téléphone sécurisé"),
-      element("button", {
-        className: "freev-account-button freev-account-button--danger",
-        type: "button",
-        dataset: { mfaRemove: factor.uid },
-      }, "Désactiver"),
-    );
-    list.append(row);
-  }
-}
-
-function newMfaRecaptcha() {
-  state.mfaRecaptcha?.clear();
-  state.mfaRecaptcha = new RecaptchaVerifier(auth, "freev-mfa-recaptcha", { size: "invisible" });
-  return state.mfaRecaptcha;
-}
-
-async function sendMfaCode() {
-  if (!state.user) throw new Error("Connexion Firebase requise.");
-  if (!state.user.emailVerified) throw new Error("Vérifiez d’abord votre adresse email Firebase.");
-  const phoneNumber = byId("freev-mfa-phone")?.value.trim() || "";
-  if (!/^\+[1-9]\d{7,14}$/.test(phoneNumber.replace(/[\s.-]/g, ""))) {
-    throw new TypeError("Utilisez le format international, par exemple +33612345678.");
-  }
-  const normalizedPhone = phoneNumber.replace(/[\s.-]/g, "");
-  const session = await multiFactor(state.user).getSession();
-  state.mfaVerificationId = await new PhoneAuthProvider(auth).verifyPhoneNumber({
-    phoneNumber: normalizedPhone,
-    session,
-  }, newMfaRecaptcha());
-  byId("freev-mfa-code").disabled = false;
-  byId("freev-mfa-confirm").disabled = false;
-  byId("freev-mfa-code").focus();
-  setStatus("Code SMS envoyé. Saisissez-le pour activer le second facteur.", "success");
-}
-
-async function confirmMfaEnrollment() {
-  const code = byId("freev-mfa-code")?.value.trim() || "";
-  if (!state.user || !state.mfaVerificationId || !/^\d{4,8}$/.test(code)) {
-    throw new TypeError("Saisissez le code SMS reçu.");
-  }
-  const credential = PhoneAuthProvider.credential(state.mfaVerificationId, code);
-  await multiFactor(state.user).enroll(
-    PhoneMultiFactorGenerator.assertion(credential),
-    "Téléphone Freev",
-  );
-  state.mfaVerificationId = "";
-  state.mfaRecaptcha?.clear();
-  state.mfaRecaptcha = null;
-  byId("freev-mfa-code").value = "";
-  byId("freev-mfa-code").disabled = true;
-  byId("freev-mfa-confirm").disabled = true;
-  renderMfaStatus();
-  setStatus("Double authentification activée.", "success");
-}
-
-async function removeMfaFactor(uid) {
-  if (!state.user || !confirm("Désactiver ce second facteur de sécurité ?")) return;
-  const factor = enrolledPhoneFactors().find((item) => item.uid === uid);
-  if (!factor) return;
-  await multiFactor(state.user).unenroll(factor);
-  renderMfaStatus();
-  setStatus("Second facteur désactivé.", "success");
-}
-
 async function readCollection(name) {
   try {
     const snapshot = await getDocs(collection(db, "users", state.user.uid, name));
@@ -639,13 +615,13 @@ async function exportAccount() {
   }
   const collections = Object.fromEntries(entries);
   collections.saves = saves;
-  if (profileSnapshot.data()?.photo?.path) {
+  const localPhoto = await getLocalPhotoBlob();
+  if (localPhoto) {
     try {
-      const blob = await getBlob(storageRef(storage, profileSnapshot.data().photo.path));
-      const bytes = new Uint8Array(await blob.arrayBuffer());
+      const bytes = new Uint8Array(await localPhoto.arrayBuffer());
       let binary = "";
       for (const byte of bytes) binary += String.fromCharCode(byte);
-      collections.privatePhoto = { contentType: blob.type, base64: btoa(binary) };
+      collections.privatePhoto = { contentType: localPhoto.type, base64: btoa(binary), deviceScoped: true };
     } catch (error) {
       collections.privatePhoto = { exportError: error?.code || error?.message || "unavailable" };
     }
@@ -731,8 +707,6 @@ function bindEvents() {
     if (memoryDelete) runAction(() => removeMemory(memoryDelete.dataset.memoryDelete));
     const deviceDelete = target?.closest("[data-device-delete]");
     if (deviceDelete) runAction(() => removeDevice(deviceDelete.dataset.deviceDelete));
-    const mfaRemove = target?.closest("[data-mfa-remove]");
-    if (mfaRemove) runAction(() => removeMfaFactor(mfaRemove.dataset.mfaRemove));
   });
   byId("freev-publish-profile")?.addEventListener("click", () => runAction(publishProfile));
   byId("freev-unpublish-profile")?.addEventListener("click", () => runAction(unpublishProfile));
@@ -744,8 +718,6 @@ function bindEvents() {
   byId("freev-devices-refresh")?.addEventListener("click", () => runAction(renderDevices));
   byId("freev-export-account")?.addEventListener("click", () => runAction(exportAccount));
   byId("freev-revoke-sessions")?.addEventListener("click", () => runAction(revokeSessions));
-  byId("freev-mfa-send")?.addEventListener("click", () => runAction(sendMfaCode));
-  byId("freev-mfa-confirm")?.addEventListener("click", () => runAction(confirmMfaEnrollment));
   byId("freev-delete-account")?.addEventListener("click", () => runAction(requestAccountDeletion));
 }
 
@@ -756,9 +728,9 @@ async function initializeForUser(user) {
     return;
   }
   await loadProfile();
+  await loadLocalPhoto();
   await registerCurrentDevice();
   await Promise.all([refreshPublicState(), renderMemories(), renderDevices()]);
-  renderMfaStatus();
   setStatus("Centre de compte synchronisé.", "success");
 }
 

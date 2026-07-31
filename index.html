@@ -4,7 +4,7 @@
 <head>
 <meta charset="utf-8"/>
 <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' https://www.gstatic.com https://cdn.jsdelivr.net https://www.google.com https://www.recaptcha.net; style-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com https://fonts.googleapis.com; font-src 'self' data: https://cdnjs.cloudflare.com https://fonts.gstatic.com; img-src 'self' data: blob:; connect-src 'self' https://freev-iies.onrender.com https://*.googleapis.com https://*.firebaseio.com wss://*.firebaseio.com https://*.firebasestorage.app https://securetoken.googleapis.com https://identitytoolkit.googleapis.com https://www.gstatic.com https://www.google.com https://www.recaptcha.net http://127.0.0.1:* http://localhost:*; frame-src https://*.firebaseapp.com https://accounts.google.com https://appleid.apple.com https://www.google.com https://www.recaptcha.net; worker-src 'self' blob:; manifest-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self' https://appleid.apple.com"/>
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' https://www.gstatic.com https://cdn.jsdelivr.net https://www.google.com https://www.recaptcha.net; style-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com https://fonts.googleapis.com; font-src 'self' data: https://cdnjs.cloudflare.com https://fonts.gstatic.com; img-src 'self' data: blob:; connect-src 'self' https://freev-iies.onrender.com https://*.googleapis.com https://*.firebaseio.com wss://*.firebaseio.com https://securetoken.googleapis.com https://identitytoolkit.googleapis.com https://www.gstatic.com https://www.google.com https://www.recaptcha.net http://127.0.0.1:* http://localhost:*; frame-src https://*.firebaseapp.com https://accounts.google.com https://www.google.com https://www.recaptcha.net; worker-src 'self' blob:; manifest-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self'"/>
 <meta name="referrer" content="strict-origin-when-cross-origin"/>
 <meta http-equiv="Permissions-Policy" content="camera=(), geolocation=(), payment=(), usb=(), microphone=(self)"/>
 <meta content="" name="freev-app-check-site-key"/>
@@ -120,9 +120,9 @@
 <button class="w-full py-2 border border-brand-accent/50 text-brand-accent rounded-lg font-semibold hover:bg-brand-accent/10 transition-colors" id="register-button" type="button">S'inscrire</button>
 </div>
 <div class="flex items-center gap-3 text-[10px] uppercase tracking-[0.2em] text-gray-500" role="separator"><span class="h-px flex-1 bg-white/10"></span>ou<span class="h-px flex-1 bg-white/10"></span></div>
-<div class="grid grid-cols-1 sm:grid-cols-2 gap-3" role="group" aria-label="Connexion avec un fournisseur">
+<div class="grid grid-cols-1 gap-3" role="group" aria-label="Connexion avec un fournisseur gratuit">
 <button class="w-full py-2 border border-white/15 rounded-lg font-semibold hover:bg-white/5 transition-colors" data-auth-provider="google" id="google-login-button" type="button"><i class="fa-brands fa-google mr-2" aria-hidden="true"></i>Google</button>
-<button class="w-full py-2 border border-white/15 rounded-lg font-semibold hover:bg-white/5 transition-colors" data-auth-provider="apple" id="apple-login-button" type="button"><i class="fa-brands fa-apple mr-2" aria-hidden="true"></i>Apple</button>
+<button aria-hidden="true" class="hidden" disabled id="apple-login-button" type="button" title="Connexion Apple désactivée dans la configuration gratuite"><i class="fa-brands fa-apple mr-2" aria-hidden="true"></i>Apple</button>
 </div>
 <div id="freev-auth-recaptcha" aria-hidden="true"></div>
 <button class="w-full text-xs text-gray-400 hover:text-brand-accent transition-colors" id="reset-password-button" type="button">Mot de passe oublié ?</button>
@@ -251,7 +251,7 @@
                 Explorez un hub tout-en-un combinant logiciels exclusifs, jeux immersifs et puissance de l'IA.
             </p>
 <div class="flex flex-col sm:flex-row gap-4 justify-center reveal" style="transition-delay: 300ms;">
-<a class="group px-6 sm:px-8 py-3 bg-white text-brand-dark font-bold rounded-full hover:bg-gray-100 transition-all flex items-center justify-center gap-2" href="#logiciels">
+<a class="group px-6 sm:px-8 py-3 bg-white text-slate-950 font-bold rounded-full hover:bg-white transition-all flex items-center justify-center gap-2" href="#logiciels">
                     Voir les projets
                     <i class="fa-solid fa-arrow-right group-hover:translate-x-1 transition-transform"></i>
 </a>

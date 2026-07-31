@@ -1,5 +1,5 @@
 self.FREEV_OFFLINE_MANIFEST = {
-  "version": "461938933c8ae391",
+  "version": "ce9b18e911863553",
   "assets": [
     "./css/freev-account-center.css",
     "./css/freev-id-v2.css",
