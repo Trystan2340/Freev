@@ -1,6 +1,6 @@
 import { getApp, getApps, initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
 import {
-  ReCaptchaEnterpriseProvider,
+  ReCaptchaV3Provider,
   getToken,
   initializeAppCheck,
 } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app-check.js";
@@ -21,7 +21,7 @@ let appCheck = null;
 if (siteKey) {
   try {
     appCheck = initializeAppCheck(app, {
-      provider: new ReCaptchaEnterpriseProvider(siteKey),
+      provider: new ReCaptchaV3Provider(siteKey),
       isTokenAutoRefreshEnabled: true,
     });
   } catch (error) {
