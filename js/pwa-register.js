@@ -15,6 +15,7 @@
           }
         });
       });
+      await registration.update();
     } catch (error) {
       console.info("Freev reste utilisable sans mode hors-ligne.", error);
     }

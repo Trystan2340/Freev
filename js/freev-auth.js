@@ -42,6 +42,8 @@ import { initializeApp, getApp, getApps } from "https://www.gstatic.com/firebase
   const firebaseUserData = document.getElementById("firebase-user-data");
   const navLoginButton = document.getElementById("open-login-modal");
   const navLoginMobileButton = document.getElementById("open-login-modal-mobile");
+  const loginModal = document.getElementById("login-modal");
+  const closeLoginModalButton = document.getElementById("close-login-modal");
   const profileSection = document.getElementById("profile-section");
   const profileAvatarPreview = document.getElementById("profile-avatar-preview");
   const profileAvatarColor = document.getElementById("profile-avatar-color");
@@ -63,6 +65,37 @@ import { initializeApp, getApp, getApps } from "https://www.gstatic.com/firebase
   let profileSavesCache = new Map();
   let currentProfileData = null;
   let signInRecaptcha = null;
+
+  // Ce secours garde le centre de compte ouvrable même si une ancienne copie
+  // du script d'interface est encore contrôlée par le service worker.
+  const openAccountModal = () => {
+    if (!loginModal) return;
+    loginModal.classList.remove("hidden");
+    document.body.classList.add("overflow-hidden");
+    document.getElementById("mobile-menu")?.classList.add("hidden");
+    document.getElementById("mobile-menu-btn")?.setAttribute("aria-expanded", "false");
+  };
+
+  const closeAccountModal = () => {
+    if (!loginModal) return;
+    loginModal.classList.add("hidden");
+    document.body.classList.remove("overflow-hidden");
+  };
+
+  [navLoginButton, navLoginMobileButton].forEach((button) => {
+    button?.addEventListener("click", openAccountModal);
+  });
+  document.addEventListener("click", (event) => {
+    const target = event.target instanceof Element ? event.target : null;
+    if (target?.closest("[data-freev-open-login]")) openAccountModal();
+  }, true);
+  closeLoginModalButton?.addEventListener("click", closeAccountModal);
+  loginModal?.addEventListener("click", (event) => {
+    if (event.target === loginModal) closeAccountModal();
+  });
+  document.addEventListener("keydown", (event) => {
+    if (event.key === "Escape") closeAccountModal();
+  });
 
   const bannerThemeLabels = {
     aurora: "Aurore",
