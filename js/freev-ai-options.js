@@ -344,11 +344,13 @@
   async function firebaseAuthenticatedFetch(url, options = {}) {
     const execute = async (forceRefresh) => {
       const { token } = await firebaseSession(forceRefresh);
+      const appCheckToken = await window.FreevFirebase?.getAppCheckToken?.(forceRefresh).catch(() => '');
       return fetch(url, {
         ...options,
         headers: {
           ...(options.headers || {}),
-          Authorization: `Bearer ${token}`
+          Authorization: `Bearer ${token}`,
+          ...(appCheckToken ? { 'X-Firebase-AppCheck': appCheckToken } : {})
         }
       });
     };

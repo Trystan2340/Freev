@@ -114,3 +114,27 @@ export function isProviderConversationTooLong(error) {
   const message = String(error?.message || error || "").toLowerCase();
   return /conversation fournisseur trop longue|maximum context length|context length exceeded|prompt (?:is )?too long|too many (?:input )?tokens/.test(message);
 }
+
+export function isProviderTransientError(error) {
+  const message = String(error?.message || error || "").toLowerCase();
+  return /fournisseur (?:injoignable|occupé)|délai dépassé|timeout|timed out|temporarily unavailable|service unavailable|http 429|http 502|http 503|http 504/.test(message);
+}
+
+export function buildMemoryContext(memories, maximumChars = 2_400) {
+  const budget = Math.min(4_000, Math.max(200, Number(maximumChars) || 2_400));
+  const enabled = (Array.isArray(memories) ? memories : [])
+    .filter((memory) => memory?.enabled === true)
+    .slice(0, 20)
+    .map((memory) => {
+      const title = String(memory?.title || "Mémoire").trim().slice(0, 80);
+      const content = String(memory?.content || "").trim().slice(0, 800);
+      return content ? `- ${title} : ${content}` : "";
+    })
+    .filter(Boolean);
+  if (!enabled.length) return "";
+  return compactText(
+    `Mémoires explicitement activées par l’utilisateur :\n${enabled.join("\n")}`,
+    budget,
+    "mémoires",
+  );
+}

@@ -1,0 +1,38 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' https://www.gstatic.com https://cdn.jsdelivr.net https://www.google.com https://www.recaptcha.net; style-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com https://fonts.googleapis.com; font-src 'self' data: https://cdnjs.cloudflare.com https://fonts.gstatic.com; img-src 'self' data: blob:; connect-src 'self' https://freev-iies.onrender.com https://*.googleapis.com https://*.firebaseio.com wss://*.firebaseio.com https://securetoken.googleapis.com https://identitytoolkit.googleapis.com https://www.gstatic.com https://www.google.com https://www.recaptcha.net http://127.0.0.1:* http://localhost:*; frame-src https://*.firebaseapp.com https://accounts.google.com https://www.google.com https://www.recaptcha.net; worker-src 'self' blob:; manifest-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self'">
+  <meta name="referrer" content="strict-origin-when-cross-origin">
+  <meta http-equiv="Permissions-Policy" content="camera=(), geolocation=(), payment=(), usb=(), microphone=()">
+  <meta name="theme-color" content="#070b18">
+  <meta name="description" content="Profil public Freev ID partagé volontairement.">
+  <meta name="freev-app-check-site-key" content="">
+  <title>Profil Freev ID</title>
+  <link rel="icon" href="icons/favicon.ico">
+  <link rel="stylesheet" href="css/freev-public-profile.css?v=1.0.0">
+  <script defer src="js/error-monitor.js?v=1.0.0"></script>
+</head>
+<body>
+  <div class="profile-aura" aria-hidden="true"></div>
+  <header class="profile-topbar">
+    <a class="profile-brand" href="index.html"><span>F</span> FREEV ID</a>
+    <a class="profile-back" href="index.html">Retour au site</a>
+  </header>
+  <main class="public-profile-shell">
+    <article class="public-profile-card" id="public-profile-card" aria-live="polite">
+      <div class="public-profile-avatar" id="public-profile-avatar" aria-hidden="true">F</div>
+      <p class="public-profile-kicker">PROFIL PUBLIC FREEV ID</p>
+      <h1 id="public-profile-name">Chargement…</h1>
+      <p class="public-profile-nickname" id="public-profile-nickname"></p>
+      <p class="public-profile-bio" id="public-profile-bio">Vérification du profil partagé.</p>
+      <div class="public-profile-theme" id="public-profile-theme" hidden></div>
+      <p class="public-profile-status" id="public-profile-status" role="status"></p>
+    </article>
+  </main>
+  <script type="module" src="js/firebase-bootstrap.js?v=1.0.0"></script>
+  <script type="module" src="js/freev-id/public-profile.js?v=1.0.0"></script>
+<script defer src="js/pwa-register.js?v=3.1.0"></script>
+</body>
+</html>

@@ -3,9 +3,11 @@ import { readFile } from "node:fs/promises";
 import test from "node:test";
 
 import {
+  buildMemoryContext,
   buildPipelineMessages,
   fitProviderMessages,
   isProviderConversationTooLong,
+  isProviderTransientError,
 } from "../js/nova-provider-context.js";
 
 const encoder = new TextEncoder();
@@ -58,6 +60,23 @@ test("reconnaît uniquement les erreurs qui justifient un nouvel essai compact",
   assert.equal(isProviderConversationTooLong(new Error("clé API refusée par le fournisseur")), false);
 });
 
+test("reconnaît les indisponibilités temporaires sans masquer une clé refusée", () => {
+  assert.equal(isProviderTransientError(new Error("fournisseur injoignable ou délai dépassé")), true);
+  assert.equal(isProviderTransientError(new Error("HTTP 503")), true);
+  assert.equal(isProviderTransientError(new Error("clé API refusée par le fournisseur")), false);
+});
+
+test("les mémoires Nova sont explicites, activées et bornées", () => {
+  const context = buildMemoryContext([
+    { title: "Langue", content: "Répondre en français", enabled: true },
+    { title: "Secret désactivé", content: "Ne doit pas partir", enabled: false },
+    { title: "Long", content: "x".repeat(2_000), enabled: true },
+  ], 500);
+  assert.match(context, /Répondre en français/);
+  assert.doesNotMatch(context, /Ne doit pas partir/);
+  assert.ok(context.length <= 500);
+});
+
 test("Nova utilise le contexte borné et un seul nouvel essai compact", async () => {
   const workspace = await readFile(new URL("../js/nova-workspace.js", import.meta.url), "utf8");
   const html = await readFile(new URL("../nova.html", import.meta.url), "utf8");
@@ -65,7 +84,9 @@ test("Nova utilise le contexte borné et un seul nouvel essai compact", async ()
   assert.match(workspace, /buildPipelineMessages\(\{/);
   assert.match(workspace, /fitProviderMessages\(messages,/);
   assert.match(workspace, /isProviderConversationTooLong\(error\)/);
-  assert.match(workspace, /callProfile\(profile, messages, \{ compact: true \}\)/);
+  assert.match(workspace, /isProviderTransientError\(error\)/);
+  assert.match(workspace, /callProfile\(profile, messages, \{ \.\.\.options, compact: true \}\)/);
+  assert.match(workspace, /callProfile\(profile, messages, \{ \.\.\.options, transientRetry: true \}\)/);
   assert.doesNotMatch(workspace, /result\.slice\(-14000\)/);
-  assert.match(html, /nova-workspace\.js\?v=1\.4\.0/);
+  assert.match(html, /nova-workspace\.js\?v=1\.5\.0/);
 });

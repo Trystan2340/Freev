@@ -1,0 +1,28 @@
+{
+  "name": "freev",
+  "version": "2.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build:css": "tailwindcss -c tailwind.config.cjs -i css/tailwind.input.css -o css/tailwind.generated.css --minify",
+    "build:offline": "node tools/build-offline-manifest.mjs",
+    "test": "node --test",
+    "test:freev-id": "node --test tests/freev-id-*.test.mjs",
+    "test:rules": "node tools/run-firebase-rules-tests.mjs",
+    "test:browser": "playwright test",
+    "verify": "npm run build:css && npm run build:offline && npm test && node tools/verify-static.mjs",
+    "serve": "node tools/serve.mjs"
+  },
+  "engines": {
+    "node": ">=20"
+  },
+  "devDependencies": {
+    "@axe-core/playwright": "^4.12.1",
+    "@firebase/rules-unit-testing": "^5.0.1",
+    "@playwright/test": "^1.62.1",
+    "autoprefixer": "^10.4.21",
+    "firebase": "^12.17.0",
+    "postcss": "^8.5.25",
+    "tailwindcss": "^3.4.17"
+  }
+}

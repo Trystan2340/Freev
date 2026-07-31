@@ -517,3 +517,64 @@ input:focus, select:focus, textarea:focus { border-color: var(--green); box-shad
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { scroll-behavior: auto !important; animation-duration: 0.01ms !important; animation-iteration-count: 1 !important; }
 }
+
+:where(a, button, input, select, textarea, [tabindex]):focus-visible {
+  outline: 3px solid #00ff66;
+  outline-offset: 3px;
+}
+
+.memory-form {
+  display: grid;
+  gap: 0.75rem;
+  margin-top: 1rem;
+  padding: 1rem;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: rgba(0, 15, 5, 0.68);
+}
+
+.memory-form label {
+  display: grid;
+  gap: 0.35rem;
+  color: var(--muted);
+  font-size: 0.72rem;
+}
+
+.memory-form input,
+.memory-form textarea {
+  width: 100%;
+  border: 1px solid var(--line-strong);
+  border-radius: 8px;
+  padding: 0.72rem;
+  color: var(--text);
+  background: #020b04;
+  font: inherit;
+}
+
+.memory-list {
+  display: grid;
+  gap: 0.65rem;
+  max-height: min(42vh, 440px);
+  margin-top: 1rem;
+  overflow-y: auto;
+}
+
+.memory-entry {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 0.75rem;
+  align-items: start;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  padding: 0.8rem;
+  background: rgba(2, 12, 5, 0.76);
+}
+
+.memory-entry strong { color: var(--text); font-size: 0.78rem; }
+.memory-entry p { margin: 0.28rem 0 0; color: var(--muted); font-size: 0.7rem; white-space: pre-wrap; }
+.memory-actions { display: flex; gap: 0.4rem; }
+
+@media (max-width: 520px) {
+  .memory-entry { grid-template-columns: 1fr; }
+  .memory-actions { display: grid; grid-template-columns: 1fr 1fr; }
+}
