@@ -38,7 +38,7 @@ jobs:
         run: npm run test:rules
 
       - name: Installer Chromium pour Playwright
-        run: npx playwright install --with-deps chromium
+        run: npx playwright install --with-deps chromium webkit
 
       - name: Tester l'interface ordinateur et mobile
         run: npm run test:browser
