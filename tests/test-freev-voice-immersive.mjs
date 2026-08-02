@@ -15,6 +15,6 @@ test("le vocal utilise l’envoi direct et une file de synthèse mobile", async 
   assert.match(voice, /function unlockSpeech/);
   assert.match(voice, /state\.currentUtterance = utterance/);
   assert.match(voice, /speakChunk\(index \+ 1\)/);
-  assert.match(html, /index-runtime-3\.js\?v=1\.1\.0/);
+  assert.match(html, /index-runtime-3\.js\?v=1\.2\.0/);
   assert.match(html, /freev-voice-immersive\.js\?v=1\.1\.0/);
 });
