@@ -37,7 +37,10 @@
     lastFocus: null,
     recognition: null,
     autoSpeech: true,
-    voices: []
+    voices: [],
+    speechGeneration: 0,
+    speechUnlocked: false,
+    currentUtterance: null
   };
 
   try {
@@ -112,6 +115,61 @@
       .slice(0, 2600);
   }
 
+  function splitForSpeech(value, maximum = 220) {
+    const text = cleanForSpeech(value);
+    if (!text) return [];
+    const chunks = [];
+    const sentences = text.match(/[^.!?;:]+[.!?;:]?\s*/g) || [text];
+    let current = '';
+    const flush = () => {
+      if (current.trim()) chunks.push(current.trim());
+      current = '';
+    };
+    sentences.forEach((sentence) => {
+      let remaining = sentence.trim();
+      while (remaining.length > maximum) {
+        const available = current ? maximum - current.length - 1 : maximum;
+        if (available < 60) flush();
+        const limit = current ? maximum - current.length - 1 : maximum;
+        let cut = remaining.lastIndexOf(' ', limit);
+        if (cut < Math.floor(limit * 0.55)) cut = limit;
+        current = `${current} ${remaining.slice(0, cut)}`.trim();
+        remaining = remaining.slice(cut).trim();
+        flush();
+      }
+      if (current && current.length + remaining.length + 1 > maximum) flush();
+      current = `${current} ${remaining}`.trim();
+    });
+    flush();
+    return chunks;
+  }
+
+  function cancelSpeech() {
+    state.speechGeneration += 1;
+    state.speaking = false;
+    state.currentUtterance = null;
+    if (!synth) return;
+    try { synth.cancel(); } catch (_) {}
+    try { synth.resume(); } catch (_) {}
+  }
+
+  function unlockSpeech() {
+    if (!synth || state.speechUnlocked) return;
+    try {
+      // iOS et certains navigateurs mobiles exigent un premier appel depuis
+      // le geste qui ouvre la modale avant d’autoriser une réponse asynchrone.
+      const unlock = new SpeechSynthesisUtterance('\u00a0');
+      unlock.volume = 0;
+      unlock.rate = 2;
+      synth.cancel();
+      synth.speak(unlock);
+      synth.resume?.();
+      state.speechUnlocked = true;
+    } catch (_) {
+      state.speechUnlocked = false;
+    }
+  }
+
   function stopRecognition() {
     if (!state.recognition) return;
     try { state.recognition.stop(); } catch (_) {}
@@ -139,16 +197,28 @@
 
   function submitTranscript(value) {
     const prompt = String(value || '').trim();
-    if (!prompt || !chatForm || !chatInput) {
+    const directSubmit = window.FreevV7Chat?.submitPrompt;
+    if (!prompt || (typeof directSubmit !== 'function' && (!chatForm || !chatInput))) {
       setVisualState('error', 'Message non envoyé', "La zone de discussion n'est pas disponible.");
       return;
     }
     state.awaitingResponse = true;
     state.manualPaused = false;
     stopRecognition();
-    if (synth) synth.cancel();
-    chatInput.value = prompt;
+    cancelSpeech();
     setVisualState('thinking', 'Freev réfléchit', prompt);
+    if (typeof directSubmit === 'function') {
+      Promise.resolve(directSubmit(prompt)).then((accepted) => {
+        if (accepted !== false) return;
+        state.awaitingResponse = false;
+        setVisualState('error', 'Message non envoyé', 'Le modèle est déjà occupé ou momentanément indisponible.');
+      }).catch((error) => {
+        state.awaitingResponse = false;
+        setVisualState('error', 'Réponse indisponible', String(error?.message || 'Réessaie dans un instant.'));
+      });
+      return;
+    }
+    chatInput.value = prompt;
     chatForm.requestSubmit();
   }
 
@@ -210,9 +280,10 @@
 
   function speak(value) {
     const text = cleanForSpeech(value);
+    const chunks = splitForSpeech(text);
     state.awaitingResponse = false;
     if (!state.open) return;
-    if (!synth || !state.autoSpeech || !text) {
+    if (!synth || !state.autoSpeech || !chunks.length) {
       state.speaking = false;
       setVisualState('idle', 'Réponse affichée', 'Tu peux continuer à parler.');
       resumeListeningSoon();
@@ -220,36 +291,66 @@
     }
 
     stopRecognition();
-    synth.cancel();
-    const utterance = new SpeechSynthesisUtterance(text);
+    cancelSpeech();
+    const generation = state.speechGeneration;
     const voice = selectedVoice();
-    if (voice) utterance.voice = voice;
-    utterance.lang = voice?.lang || 'fr-FR';
-    utterance.rate = 1;
-    utterance.pitch = 1;
-    utterance.volume = 1;
-    utterance.onstart = () => {
-      state.speaking = true;
-      setVisualState('speaking', 'Freev te répond', text);
-    };
-    utterance.onend = () => {
+    state.speaking = true;
+    setVisualState('speaking', 'Freev te répond', text);
+
+    const finish = () => {
+      if (generation !== state.speechGeneration) return;
       state.speaking = false;
+      state.currentUtterance = null;
       if (!state.open) return;
       setVisualState('idle', 'À toi', 'Je suis prêt pour ta prochaine question.');
       resumeListeningSoon();
     };
-    utterance.onerror = () => {
+
+    const fail = () => {
+      if (generation !== state.speechGeneration) return;
       state.speaking = false;
+      state.currentUtterance = null;
       if (!state.open) return;
       setVisualState('error', 'Lecture vocale interrompue', 'La réponse reste visible dans la conversation.');
     };
-    synth.speak(utterance);
+
+    const speakChunk = (index) => {
+      if (generation !== state.speechGeneration || !state.open) return;
+      if (index >= chunks.length) {
+        finish();
+        return;
+      }
+      const utterance = new SpeechSynthesisUtterance(chunks[index]);
+      state.currentUtterance = utterance;
+      if (voice) utterance.voice = voice;
+      utterance.lang = voice?.lang || 'fr-FR';
+      utterance.rate = 1;
+      utterance.pitch = 1;
+      utterance.volume = 1;
+      utterance.onend = () => window.setTimeout(() => speakChunk(index + 1), 35);
+      utterance.onerror = (event) => {
+        if (event?.error === 'interrupted' && generation !== state.speechGeneration) return;
+        fail();
+      };
+      window.setTimeout(() => {
+        if (generation !== state.speechGeneration || !state.open) return;
+        try {
+          synth.resume?.();
+          synth.speak(utterance);
+        } catch (_) {
+          fail();
+        }
+      }, index === 0 ? 70 : 20);
+    };
+
+    speakChunk(0);
   }
 
   function openModal() {
     state.open = true;
     state.manualPaused = false;
     state.lastFocus = document.activeElement;
+    unlockSpeech();
     modal.classList.remove('hidden');
     modal.classList.add('flex');
     modal.setAttribute('aria-hidden', 'false');
@@ -271,7 +372,7 @@
     state.awaitingResponse = false;
     state.speaking = false;
     stopRecognition();
-    if (synth) synth.cancel();
+    cancelSpeech();
     modal.classList.add('hidden');
     modal.classList.remove('flex');
     modal.setAttribute('aria-hidden', 'true');
@@ -289,18 +390,17 @@
       return;
     }
     if (state.speaking && synth) {
-      synth.cancel();
-      state.speaking = false;
+      cancelSpeech();
     }
     state.awaitingResponse = false;
     startListening();
   });
   speechToggle?.addEventListener('click', () => {
     state.autoSpeech = !state.autoSpeech;
+    if (state.autoSpeech) unlockSpeech();
     try { localStorage.setItem(storageKeys.speech, String(state.autoSpeech)); } catch (_) {}
     if (!state.autoSpeech && synth) {
-      synth.cancel();
-      state.speaking = false;
+      cancelSpeech();
       if (state.open) {
         setVisualState('idle', 'Lecture vocale désactivée', 'Le microphone peut rester actif.');
         resumeListeningSoon();
@@ -321,7 +421,7 @@
     if (document.hidden && state.open) {
       state.manualPaused = true;
       stopRecognition();
-      if (synth) synth.cancel();
+      cancelSpeech();
     }
   });
   window.addEventListener('freev:thinking-start', () => {
