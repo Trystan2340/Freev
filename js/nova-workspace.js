@@ -29,12 +29,14 @@ import {
   extractGeneratedFiles,
 } from "./nova-code-artifacts.js?v=1.0.0";
 import {
+  buildConversationContext,
   buildMemoryContext,
   buildPipelineMessages,
   fitProviderMessages,
   isProviderConversationTooLong,
   isProviderTransientError,
-} from "./nova-provider-context.js?v=1.0.0";
+  normalizeConversationTurns,
+} from "./nova-provider-context.js?v=1.1.0";
 
 const FIREBASE_CONFIG = Object.freeze({
   apiKey: "AIzaSyBtcQrFenU9T0C2v1qcBUpF2DfVqC_V5sM",
@@ -47,6 +49,7 @@ const FIREBASE_CONFIG = Object.freeze({
 
 const RENDER_BASE = "https://freev-iies.onrender.com";
 const HISTORY_LIMIT = 40;
+const ACTIVE_CONVERSATION_KEY = "freev_nova_active_conversation_v2";
 const CODE_EXPORT_INSTRUCTION = [
   "Lorsque tu produis du code, fournis chaque fichier complet séparément.",
   "Avant chaque bloc de code, écris une ligne `Fichier : chemin/nom.ext` avec le vrai nom, la bonne extension et le sous-dossier éventuel.",
@@ -124,6 +127,7 @@ const state = {
   models: [],
   assignments: new Map(),
   history: [],
+  conversation: [],
   memories: [],
   mode: "spark",
   councilEnabled: false,
@@ -173,6 +177,39 @@ function errorMessage(error) {
   };
   if (error?.name === "AbortError") return "Le service a dépassé le délai autorisé. Réessaie.";
   return known[code] || String(error?.message || "Erreur inconnue");
+}
+
+function restoreActiveConversation(uid) {
+  state.conversation = [];
+  try {
+    const saved = JSON.parse(sessionStorage.getItem(ACTIVE_CONVERSATION_KEY) || "null");
+    if (saved?.uid !== uid) return;
+    state.conversation = normalizeConversationTurns(saved.turns);
+  } catch (_) {
+    state.conversation = [];
+  }
+}
+
+function persistActiveConversation() {
+  if (!state.user) return;
+  try {
+    sessionStorage.setItem(ACTIVE_CONVERSATION_KEY, JSON.stringify({
+      uid: state.user.uid,
+      turns: normalizeConversationTurns(state.conversation),
+    }));
+  } catch (_) {
+    // Le contexte reste disponible en mémoire si le stockage de session est bloqué.
+  }
+}
+
+function appendConversationTurn(turn) {
+  state.conversation = normalizeConversationTurns([...state.conversation, turn]);
+  persistActiveConversation();
+}
+
+function clearActiveConversation() {
+  state.conversation = [];
+  try { sessionStorage.removeItem(ACTIVE_CONVERSATION_KEY); } catch (_) {}
 }
 
 function openDialog(id) {
@@ -331,6 +368,7 @@ async function loadNovaData() {
   state.councilTargets = new Set(COUNCIL.filter((creature) => (state.assignments.get(creature.id) || []).length === 1).map((creature) => creature.id));
   state.history = historySnap ? historySnap.docs.map((item) => ({ id: item.id, ...item.data() })) : [];
   state.memories = memorySnap.docs.map((item) => ({ id: item.id, ...item.data() }));
+  restoreActiveConversation(uid);
 }
 
 function renderModes() {
@@ -598,6 +636,26 @@ function welcomeMessage() {
   const root = byId("nova-messages");
   if (!root || root.children.length) return;
   message("assistant", "Freev Nova", "Ton espace Nova est prêt. Commence par consulter les recommandations, ajoute tes propres modèles, puis attribue-les aux trois modes ou aux créatures du Conseil.", { short: "F7" });
+}
+
+function renderActiveConversation() {
+  const root = byId("nova-messages");
+  if (!root) return;
+  root.replaceChildren();
+  if (!state.conversation.length) {
+    welcomeMessage();
+    return;
+  }
+  state.conversation.forEach((turn) => {
+    message("user", "Toi", turn.prompt, { short: "VO" });
+    const target = targetById(turn.target);
+    message(
+      "assistant",
+      turn.kind === "council" ? "Conseil Freev" : (target?.name || "Freev Nova"),
+      turn.response,
+      { short: turn.kind === "council" ? "CF" : "NV" },
+    );
+  });
 }
 
 function renderRecommendations() {
@@ -959,7 +1017,7 @@ async function callProfile(profile, messages, options = {}) {
   return String(data.response);
 }
 
-async function runPipeline(profiles, system, prompt, onStep) {
+async function runPipeline(profiles, system, prompt, onStep, conversationContext = "") {
   let result = "";
   const failures = [];
   for (let index = 0; index < profiles.length; index += 1) {
@@ -972,6 +1030,7 @@ async function runPipeline(profiles, system, prompt, onStep) {
       system,
       stageInstruction,
       codeExportInstruction: CODE_EXPORT_INSTRUCTION,
+      conversation: conversationContext,
       prompt,
       previous: result,
     });
@@ -1001,13 +1060,19 @@ async function runCodeMode(prompt) {
   if (!profiles.length) throw new Error(`Attribue au moins un modèle à ${mode.name}.`);
   const thinking = message("assistant", mode.name, "Préparation du pipeline…", { short: mode.name.split("-")[1]?.slice(0, 2) || "NV", thinking: true });
   const memoryContext = buildMemoryContext(state.memories);
+  const conversationContext = buildConversationContext(state.conversation);
   const result = await runPipeline(profiles, [mode.system, memoryContext].filter(Boolean).join("\n\n"), prompt, (profile, index, total, error) => {
     updateMessage(thinking, error
       ? `Étape ${index + 1}/${total} · ${profile.label} indisponible, passage au modèle suivant…`
       : `Étape ${index + 1}/${total} · ${profile.label} analyse et prépare sa contribution…`, true);
-  });
+  }, conversationContext);
   updateMessage(thinking, result || "Le pipeline n’a produit aucun contenu.", false);
-  await storeHistory("mode", mode.id, prompt, result, profiles.map((item) => item.label));
+  appendConversationTurn({ kind: "mode", target: mode.id, prompt, response: result });
+  try {
+    await storeHistory("mode", mode.id, prompt, result, profiles.map((item) => item.label));
+  } catch (error) {
+    toast(`Réponse conservée dans cette discussion, mais non synchronisée : ${errorMessage(error)}`, "error");
+  }
 }
 
 async function runCouncil(prompt) {
@@ -1015,6 +1080,7 @@ async function runCouncil(prompt) {
   if (!selected.length) throw new Error("Sélectionne au moins une créature du Conseil.");
   const results = [];
   const usedModels = [];
+  const conversationContext = buildConversationContext(state.conversation);
   for (const creature of selected) {
     const profile = assignmentFor(creature.id)[0];
     if (!profile) {
@@ -1026,7 +1092,7 @@ async function runCouncil(prompt) {
       const memoryContext = buildMemoryContext(state.memories);
       const result = await runPipeline([profile], [creature.system, memoryContext].filter(Boolean).join("\n\n"), prompt, (activeProfile) => {
         updateMessage(thinking, `${creature.name} travaille avec ${activeProfile.label}…`, true);
-      });
+      }, conversationContext);
       updateMessage(thinking, result, false);
       results.push(`${creature.name}: ${result}`);
       usedModels.push(`${creature.name}/${profile.label}`);
@@ -1035,7 +1101,14 @@ async function runCouncil(prompt) {
     }
   }
   if (!results.length) throw new Error("Aucune créature configurée n’a pu répondre.");
-  await storeHistory("council", selected.map((item) => item.id).join(","), prompt, results.join("\n\n"), usedModels);
+  const target = selected.map((item) => item.id).join(",");
+  const response = results.join("\n\n");
+  appendConversationTurn({ kind: "council", target, prompt, response });
+  try {
+    await storeHistory("council", target, prompt, response, usedModels);
+  } catch (error) {
+    toast(`Réponse conservée dans cette discussion, mais non synchronisée : ${errorMessage(error)}`, "error");
+  }
 }
 
 function renderMemories() {
@@ -1316,7 +1389,12 @@ function bindEvents() {
   byId("nova-admin-button")?.addEventListener("click", () => { openDialog("nova-admin-dialog"); loadAdminUsers(); });
   byId("nova-admin-refresh")?.addEventListener("click", loadAdminUsers);
   byId("nova-admin-search")?.addEventListener("input", renderAdminUsers);
-  byId("nova-clear-chat")?.addEventListener("click", () => { byId("nova-messages").replaceChildren(); welcomeMessage(); });
+  byId("nova-clear-chat")?.addEventListener("click", () => {
+    clearActiveConversation();
+    byId("nova-messages").replaceChildren();
+    welcomeMessage();
+    toast("Nouvelle discussion démarrée. L’ancien échange reste dans l’historique.");
+  });
   byId("nova-team-toggle")?.addEventListener("click", () => { state.councilEnabled = !state.councilEnabled; renderHeader(); });
   byId("nova-configure-active")?.addEventListener("click", () => openAssignmentFor(state.councilEnabled ? state.selectedCreature : state.mode));
   byId("nova-save-creature-model")?.addEventListener("click", saveSelectedCreatureModel);
@@ -1396,7 +1474,7 @@ async function initializeUser(user) {
     renderSavedModels();
     renderAssignments();
     renderMemories();
-    welcomeMessage();
+    renderActiveConversation();
   } catch (error) {
     await detectAdmin().catch(() => false);
     setStatus("Accès Nova fermé", "error");

@@ -1048,6 +1048,19 @@
             }
         }
 
+        async function submitFreevV7Prompt(message) {
+            const prompt = String(message || '').trim();
+            if (!prompt || freevV7State.sending) return false;
+            if (freevV7State.mode === 'custom') {
+                if (!window.FreevAiOptions?.sendCustomMessage) return false;
+                await window.FreevAiOptions.sendCustomMessage(prompt);
+                return true;
+            }
+            if (!freevV7State.online) return false;
+            await sendFreevV7Message(prompt);
+            return true;
+        }
+
         const freevV7Form = document.getElementById('freev-v7-form');
         const freevV7Input = document.getElementById('freev-v7-input');
         freevV7Form?.addEventListener('submit', (event) => {
@@ -1055,11 +1068,7 @@
             const prompt = (freevV7Input?.value || '').trim();
             if (!prompt) return;
             if (freevV7Input) freevV7Input.value = '';
-            if (freevV7State.mode === 'custom' && window.FreevAiOptions?.sendCustomMessage) {
-                window.FreevAiOptions.sendCustomMessage(prompt);
-            } else {
-                sendFreevV7Message(prompt);
-            }
+            void submitFreevV7Prompt(prompt);
         });
         freevV7Input?.addEventListener('keydown', (event) => {
             if (event.key === 'Enter' && !event.shiftKey) {
@@ -1073,6 +1082,7 @@
             appendMessage: appendFreevV7Message,
             startThinking: startFreevThinking,
             finishThinking: finishFreevThinking,
+            submitPrompt: submitFreevV7Prompt,
             checkNative: checkFreevV7
         });
         checkFreevV7();

@@ -2,6 +2,8 @@ const DEFAULT_MAX_MESSAGE_CHARS = 1_800;
 const DEFAULT_MAX_PAYLOAD_BYTES = 14_000;
 const DEFAULT_MISSION_CHARS = 4_200;
 const DEFAULT_PREVIOUS_CHARS = 4_800;
+const DEFAULT_CONVERSATION_CHARS = 5_200;
+const DEFAULT_CONVERSATION_TURNS = 6;
 const MIN_MESSAGE_CHARS = 280;
 const encoder = new TextEncoder();
 
@@ -39,6 +41,7 @@ export function buildPipelineMessages({
   system,
   stageInstruction,
   codeExportInstruction,
+  conversation,
   prompt,
   previous,
 }, options = {}) {
@@ -47,8 +50,17 @@ export function buildPipelineMessages({
     system,
     stageInstruction,
     codeExportInstruction,
+    conversation
+      ? "Le contexte fourni vient de cette même discussion. Réutilise le dernier projet quand l’utilisateur dit « améliore-le », « corrige-le » ou emploie une référence équivalente, sans lui demander de renvoyer le code."
+      : "",
     "Ne demande et ne révèle jamais de clé, jeton ou secret.",
   ].filter(Boolean).join("\n"), maxMessageChars, "consignes");
+  const conversationParts = splitLabeledText(
+    conversation,
+    "Contexte de la discussion actuelle (plus récent d’abord)",
+    Number(options.conversationChars) || DEFAULT_CONVERSATION_CHARS,
+    maxMessageChars,
+  );
   const missionParts = splitLabeledText(
     prompt,
     "Mission utilisateur",
@@ -62,6 +74,7 @@ export function buildPipelineMessages({
     maxMessageChars,
   );
   const messages = [{ role: "system", content: systemContent }];
+  messages.push(...conversationParts.map((part) => ({ role: "assistant", content: part.content })));
   messages.push(...missionParts.map((part) => ({ role: "user", content: part.content })));
   messages.push(...previousParts.map((part) => ({ role: "assistant", content: part.content })));
   messages.push({
@@ -71,6 +84,50 @@ export function buildPipelineMessages({
       : "Réponds maintenant à la mission avec un résultat complet et directement exploitable.",
   });
   return messages;
+}
+
+export function normalizeConversationTurns(turns, maximumTurns = DEFAULT_CONVERSATION_TURNS) {
+  const limit = Math.min(12, Math.max(1, Number(maximumTurns) || DEFAULT_CONVERSATION_TURNS));
+  return (Array.isArray(turns) ? turns : [])
+    .map((turn) => ({
+      prompt: String(turn?.prompt || "").trim().slice(0, 6_000),
+      response: String(turn?.response || "").trim().slice(0, 30_000),
+      kind: turn?.kind === "council" ? "council" : "mode",
+      target: String(turn?.target || "").trim().slice(0, 200),
+    }))
+    .filter((turn) => turn.prompt && turn.response)
+    .slice(-limit);
+}
+
+export function buildConversationContext(turns, maximumChars = DEFAULT_CONVERSATION_CHARS) {
+  const budget = Math.min(7_000, Math.max(600, Number(maximumChars) || DEFAULT_CONVERSATION_CHARS));
+  const normalized = normalizeConversationTurns(turns).reverse();
+  if (!normalized.length) return "";
+
+  const preface = "Travail déjà réalisé dans cette discussion. Le tour 1 est le plus récent. Conserve les fichiers, choix et contraintes qui n’ont pas été explicitement remplacés.";
+  let remaining = Math.max(300, budget - preface.length - 4);
+  const parts = [];
+
+  normalized.forEach((turn, index) => {
+    if (remaining < 220) return;
+    const turnsLeft = normalized.length - index;
+    const allocation = index === 0
+      ? Math.min(3_900, remaining)
+      : Math.min(1_150, Math.floor(remaining / Math.max(1, turnsLeft)));
+    const promptBudget = Math.min(650, Math.max(140, Math.floor(allocation * 0.22)));
+    const header = `Tour ${index + 1} — demande utilisateur :\n`;
+    const responseHeader = "\nRéponse/projet déjà produit :\n";
+    const prompt = compactText(turn.prompt, promptBudget, "demande précédente");
+    const responseBudget = Math.max(180, allocation - header.length - responseHeader.length - prompt.length);
+    const response = compactText(turn.response, responseBudget, "projet précédent");
+    const part = `${header}${prompt}${responseHeader}${response}`.slice(0, remaining);
+    if (part.trim()) {
+      parts.push(part);
+      remaining -= part.length + 2;
+    }
+  });
+
+  return compactText(`${preface}\n\n${parts.join("\n\n")}`, budget, "discussion");
 }
 
 function payloadByteLength(messages, fixedPayload) {
