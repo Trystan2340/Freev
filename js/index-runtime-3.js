@@ -793,7 +793,41 @@
         // Mobile Menu
         const btn = document.getElementById('mobile-menu-btn');
         const menu = document.getElementById('mobile-menu');
+        const navbar = document.getElementById('navbar');
         let mobileMenuCloseTimer = null;
+        let navbarViewportFrame = null;
+        let navbarViewportOffset = -1;
+
+        function syncMobileNavbarViewport() {
+            navbarViewportFrame = null;
+            if (!navbar) return;
+            if (window.innerWidth >= 768) {
+                navbar.style.removeProperty('--freev-mobile-viewport-offset');
+                navbarViewportOffset = -1;
+                return;
+            }
+
+            const viewport = window.visualViewport;
+            const visibleBottom = viewport
+                ? viewport.offsetTop + viewport.height
+                : window.innerHeight;
+            const hiddenBottom = Math.max(0, Math.round(window.innerHeight - visibleBottom));
+            if (hiddenBottom === navbarViewportOffset) return;
+            navbarViewportOffset = hiddenBottom;
+            navbar.style.setProperty('--freev-mobile-viewport-offset', `${hiddenBottom}px`);
+        }
+
+        function scheduleMobileNavbarViewportSync() {
+            if (navbarViewportFrame !== null) return;
+            navbarViewportFrame = requestAnimationFrame(syncMobileNavbarViewport);
+        }
+
+        scheduleMobileNavbarViewportSync();
+        window.addEventListener('scroll', scheduleMobileNavbarViewportSync, { passive: true });
+        window.addEventListener('resize', scheduleMobileNavbarViewportSync, { passive: true });
+        window.addEventListener('orientationchange', scheduleMobileNavbarViewportSync, { passive: true });
+        window.visualViewport?.addEventListener('scroll', scheduleMobileNavbarViewportSync, { passive: true });
+        window.visualViewport?.addEventListener('resize', scheduleMobileNavbarViewportSync, { passive: true });
         
         function openMobileMenu() {
             if (!btn || !menu) return;
@@ -847,6 +881,7 @@
         });
 
         window.addEventListener('resize', () => {
+            scheduleMobileNavbarViewportSync();
             if (window.innerWidth >= 768 && menu && !menu.classList.contains('hidden')) {
                 closeMobileMenu();
             }
