@@ -41,6 +41,14 @@ service cloud.firestore {
             || get(/databases/$(database)/documents/novaEntitlements/$(userId)).data.expiresAt > request.time));
     }
 
+    function ownsNicknameRegistration(nicknameLower) {
+      return request.auth != null
+        && exists(/databases/$(database)/documents/usernames/$(nicknameLower))
+        && get(/databases/$(database)/documents/usernames/$(nicknameLower)).data.uid == request.auth.uid
+        && exists(/databases/$(database)/documents/users/$(request.auth.uid))
+        && get(/databases/$(database)/documents/users/$(request.auth.uid)).data.nicknameLower == nicknameLower;
+    }
+
     match /users/{userId} {
       function clientUserFields() {
         return [
@@ -274,6 +282,55 @@ service cloud.firestore {
         && request.resource.data.createdBy == request.auth.uid
         && request.resource.data.createdAt is timestamp;
       allow delete: if isNovaOwner();
+    }
+
+    // Classement public minimal : le document porte le surnom enregistré,
+    // jamais l'UID ou l'e-mail. Seul le compte lié à ce surnom peut écrire.
+    match /gameLeaderboards/{gameId}/scores/{nicknameLower} {
+      function validGameId() {
+        return gameId in [
+          'neonsnake', 'pacman', 'beatjump', 'cyberpong',
+          'tron', 'astrominer', 'towerblock'
+        ];
+      }
+
+      function validScore() {
+        return validGameId()
+          && nicknameLower.matches('^[a-z0-9_-]{3,24}$')
+          && request.resource.data.keys().hasOnly([
+            'gameId', 'nickname', 'nicknameLower',
+            'globalScore', 'weekScore', 'weekKey',
+            'monthScore', 'monthKey', 'updatedAt'
+          ])
+          && request.resource.data.gameId == gameId
+          && request.resource.data.nicknameLower == nicknameLower
+          && request.resource.data.nickname == get(/databases/$(database)/documents/users/$(request.auth.uid)).data.nickname
+          && request.resource.data.nickname is string
+          && request.resource.data.nickname.size() >= 3
+          && request.resource.data.nickname.size() <= 24
+          && request.resource.data.globalScore is int
+          && request.resource.data.globalScore > 0
+          && request.resource.data.globalScore <= 1000000000
+          && request.resource.data.weekScore is int
+          && request.resource.data.weekScore > 0
+          && request.resource.data.weekScore <= 1000000000
+          && request.resource.data.weekKey is string
+          && request.resource.data.weekKey.matches('^[0-9]{4}-W[0-9]{2}$')
+          && request.resource.data.monthScore is int
+          && request.resource.data.monthScore > 0
+          && request.resource.data.monthScore <= 1000000000
+          && request.resource.data.monthKey is string
+          && request.resource.data.monthKey.matches('^[0-9]{4}-[0-9]{2}$')
+          && request.resource.data.updatedAt is timestamp
+          && request.resource.data.updatedAt <= request.time + duration.value(1, 'm');
+      }
+
+      allow get, list: if true;
+      allow create: if ownsNicknameRegistration(nicknameLower) && validScore();
+      allow update: if ownsNicknameRegistration(nicknameLower)
+        && validScore()
+        && request.resource.data.globalScore >= resource.data.globalScore;
+      allow delete: if ownsNicknameRegistration(nicknameLower);
     }
 
     // Configuration publique pilotée par NEXUS. Tout le monde peut lire les

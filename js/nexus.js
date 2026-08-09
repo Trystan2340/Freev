@@ -1,5 +1,5 @@
 import { getApp, getApps, initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+import { getAuth, onAuthStateChanged, reload, sendEmailVerification, signOut } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 
 const FIREBASE_CONFIG = Object.freeze({
   apiKey: "AIzaSyBtcQrFenU9T0C2v1qcBUpF2DfVqC_V5sM",
@@ -10,6 +10,7 @@ const FIREBASE_CONFIG = Object.freeze({
   appId: "1:588481455818:web:fb61c5d4003d670e71f633",
 });
 const API_BASE = "https://freev-iies.onrender.com";
+const OWNER_EMAIL = "trystan.bonnin27@icloud.com";
 const BACKGROUNDS = Object.freeze({ midnight: "#050914", nebula: "#0B1021", graphite: "#111827" });
 const MODULE_LABELS = Object.freeze({
   dashboard: "Tableau de bord",
@@ -93,6 +94,14 @@ function showGate(title, message, kind = "error") {
   byId("nexus-dashboard").classList.add("hidden");
   byId("nexus-signout").classList.toggle("hidden", !currentUser);
   setTopStatus(title, kind);
+}
+
+function showVerificationAction(visible, message = "", kind = "") {
+  byId("nexus-send-verification").classList.toggle("hidden", !visible);
+  const status = byId("nexus-verification-status");
+  status.classList.toggle("hidden", !message);
+  status.textContent = message;
+  status.dataset.kind = kind;
 }
 
 function localDateTime(value) {
@@ -238,8 +247,19 @@ async function verifyAccess(forceRefresh = false) {
     showGate("Connexion requise", "Connecte-toi sur le site principal avec ton compte Freev, puis reviens ici.");
     return;
   }
+  showVerificationAction(false);
   setTopStatus("Vérification…");
   try {
+    await reload(currentUser);
+    if ((currentUser.email || "").toLowerCase() !== OWNER_EMAIL) {
+      showGate("Mauvais compte Freev", `NEXUS est réservé au compte ${OWNER_EMAIL}.`);
+      return;
+    }
+    if (!currentUser.emailVerified) {
+      showGate("Adresse e-mail à vérifier", "Firebase doit confirmer cette adresse avant d’ouvrir NEXUS.");
+      showVerificationAction(true, "La vérification Firebase est gratuite. Après avoir ouvert le lien reçu par e-mail, reviens ici et appuie sur « Revérifier »." );
+      return;
+    }
     if (forceRefresh) await currentUser.getIdToken(true);
     renderState(await request("/api/nexus/state", { forceRefresh }));
   } catch (error) {
@@ -249,6 +269,22 @@ async function verifyAccess(forceRefresh = false) {
 }
 
 byId("nexus-retry").addEventListener("click", () => verifyAccess(true));
+byId("nexus-send-verification").addEventListener("click", async () => {
+  if (!currentUser) return;
+  byId("nexus-send-verification").disabled = true;
+  showVerificationAction(true, "Envoi de l’e-mail Firebase…");
+  try {
+    await sendEmailVerification(currentUser);
+    showVerificationAction(true, "E-mail envoyé. Ouvre le lien de vérification, puis appuie sur « Revérifier ».", "ok");
+  } catch (error) {
+    const message = error?.code === "auth/too-many-requests"
+      ? "Trop d’envois rapprochés. Attends quelques minutes puis réessaie."
+      : "L’e-mail n’a pas pu être envoyé. Réessaie dans quelques instants.";
+    showVerificationAction(true, message, "error");
+  } finally {
+    byId("nexus-send-verification").disabled = false;
+  }
+});
 byId("nexus-signout").addEventListener("click", () => signOut(auth));
 byId("maintenance-scope").addEventListener("change", updateMaintenanceFields);
 byId("maintenance-enabled").addEventListener("change", updateMaintenanceFields);

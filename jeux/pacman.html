@@ -1329,6 +1329,7 @@
                                 localStorage.setItem('pacmanHighScore', highScore);
                             }
                             addToLeaderboard(score, difficulty);
+                            window.FreevLeaderboard?.submit('pacman', highScore);
                             break;
                         } else {
                             resetPacmanPosition();

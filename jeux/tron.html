@@ -1303,6 +1303,7 @@
         document.getElementById('final-score').textContent = `Score : Bleu ${scores.p1} - ${scores.p2} Rouge`;
         updateHUD();
         saveLocalState(false);
+        window.FreevLeaderboard?.submit('tron', scores.p1);
         setTimeout(() => {
             if (gameState === 'gameover') screens.gameover.classList.remove('hidden');
         }, 760);

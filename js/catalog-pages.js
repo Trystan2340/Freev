@@ -30,8 +30,8 @@
     top.className = 'software-top';
     const icon = document.createElement('freev-icon');
     icon.setAttribute('app', item.iconId);
-    icon.setAttribute('variant', 'glass');
-    icon.setAttribute('animation', 'auto');
+    icon.setAttribute('variant', 'standard');
+    icon.setAttribute('animation', 'none');
     icon.setAttribute('size', '72');
     icon.setAttribute('label', `Icône ${item.title}`);
     const copy = document.createElement('div');
@@ -175,10 +175,34 @@
     byId('catalog-count').textContent = `${games.length} jeu${games.length > 1 ? 'x' : ''}`;
   }
 
-  function renderBoard() {
+  async function renderBoard() {
     const list = byId('board-list');
-    const rows = state.data?.leaderboards?.[state.board] || [];
     if (!list) return;
+    const requestedBoard = state.board;
+    const loading = document.createElement('p');
+    loading.className = 'board-empty';
+    loading.textContent = 'Chargement des vrais scores…';
+    list.replaceChildren(loading);
+    let rows = [];
+    try {
+      const leaderboard = await import('./freev-id/leaderboard.js?v=1.0.0');
+      rows = await leaderboard.loadArcadeLeaderboard(requestedBoard);
+    } catch (error) {
+      if (requestedBoard !== state.board) return;
+      loading.textContent = 'Classement temporairement indisponible.';
+      console.info('Classement Freev indisponible', error);
+      return;
+    }
+    if (requestedBoard !== state.board) return;
+    if (!rows.length) {
+      const empty = document.createElement('p');
+      empty.className = 'board-empty';
+      empty.textContent = requestedBoard === 'global'
+        ? 'Personne n’a encore de score.'
+        : 'Personne n’a encore joué sur cette période.';
+      list.replaceChildren(empty);
+      return;
+    }
     list.replaceChildren(...rows.map(([name, score], index) => {
       const row = document.createElement('div');
       row.className = 'board-row';
@@ -188,7 +212,7 @@
       const player = document.createElement('span');
       player.textContent = name;
       const points = document.createElement('strong');
-      points.textContent = score;
+      points.textContent = `${Number(score).toLocaleString('fr-FR')} pts`;
       row.append(rank, player, points);
       return row;
     }));

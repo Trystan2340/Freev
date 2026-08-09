@@ -1,5 +1,5 @@
 {
-  "schema": 1,
+  "schema": 2,
   "softwares": [
     {
       "id": "codemaster-v2",
@@ -174,28 +174,5 @@
       "launchTarget": "../jeux/beatjump.html",
       "legacyCoverOnly": true
     }
-  ],
-  "leaderboards": {
-    "week": [
-      ["NeoPlayer", "128 450"],
-      ["PixelMaster", "94 210"],
-      ["TronRider", "72 880"],
-      ["CyberGhost", "54 330"],
-      ["AstroMiner", "41 770"]
-    ],
-    "month": [
-      ["PixelMaster", "486 900"],
-      ["NeoPlayer", "471 240"],
-      ["AstroMiner", "398 610"],
-      ["CyberGhost", "355 480"],
-      ["TronRider", "301 220"]
-    ],
-    "global": [
-      ["NeoPlayer", "1 284 500"],
-      ["TronRider", "1 102 340"],
-      ["PixelMaster", "987 210"],
-      ["AstroMiner", "864 470"],
-      ["CyberGhost", "720 950"]
-    ]
-  }
+  ]
 }

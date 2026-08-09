@@ -21441,6 +21441,7 @@
     stats.maxSpeed = Math.max(stats.maxSpeed, state.maxSpeedReached);
     if (state.mode === "survival") stats.bestSurvival = Math.max(stats.bestSurvival, state.score1);
     saveStats();
+    window.FreevLeaderboard?.submit('cyberpong', Math.max(stats.bestSurvival, state.score1));
     const menu = document.getElementById("menu-overlay");
     const sub = document.getElementById("menu-subtitle");
     let color = winner === 1 ? "#00ffff" : "#ff00ff";
