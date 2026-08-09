@@ -8,7 +8,7 @@ import {
   getFirestore,
   serverTimestamp,
   setDoc,
-} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-lite.js";
 
 const FIREBASE_CONFIG = Object.freeze({
   apiKey: "AIzaSyBtcQrFenU9T0C2v1qcBUpF2DfVqC_V5sM",
