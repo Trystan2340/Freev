@@ -1,0 +1,33 @@
+:root {
+  --freev-constellation-cyan: 34, 211, 238;
+  --freev-constellation-purple: 168, 85, 247;
+}
+
+.freev-constellation-canvas {
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  opacity: .78;
+}
+
+body.freev-constellation-enabled {
+  position: relative;
+  isolation: isolate;
+}
+
+body.freev-constellation-enabled::before {
+  opacity: .12;
+}
+
+body.freev-constellation-enabled .page-hero::after,
+body.freev-constellation-enabled .nova-grid,
+body.freev-constellation-enabled .profile-aura {
+  display: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .freev-constellation-canvas { opacity: .56; }
+}

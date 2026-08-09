@@ -1485,6 +1485,7 @@
       }
       const { rank, accuracy } = calculateRank();
       saveRunHistory(victory, rank, accuracy);
+      window.FreevLeaderboard?.submit('beatjump', state.highScore);
       UI.menu.classList.remove('opacity-0', 'pointer-events-none');
       document.getElementById('menu-title').innerText = victory ? '🎉 Terminé !' : '💀 Game Over';
       document.getElementById('menu-subtitle').textContent = victory ? 'Résumé de ta performance' : 'Retente le morceau pour battre ton score';

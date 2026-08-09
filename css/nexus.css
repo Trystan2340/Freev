@@ -83,6 +83,9 @@ button { cursor: pointer; }
 .ghost-button:hover { border-color: rgba(32,255,117,.5); background: rgba(32,255,117,.07); }
 .primary-button { border-color: transparent; color: #001508; background: var(--nexus-green); }
 .primary-button:hover { filter: brightness(1.08); box-shadow: 0 0 28px rgba(32,255,117,.16); }
+.gate-help { max-width: 42rem; margin: 16px auto 0; color: var(--nexus-muted); font-size: 12px; }
+.gate-help[data-kind="ok"] { color: #86efac; }
+.gate-help[data-kind="error"] { color: #fecdd3; }
 .danger-button { border-color: rgba(251,113,133,.38); color: #fecdd3; background: rgba(251,113,133,.08); }
 button:disabled { cursor: not-allowed; opacity: .45; }
 :focus-visible { outline: 2px solid var(--nexus-cyan); outline-offset: 3px; }

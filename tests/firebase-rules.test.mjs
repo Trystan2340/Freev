@@ -191,6 +191,70 @@ emulatorTest("le registre des surnoms ne divulgue pas les UID aux visiteurs", as
   await assertSucceeds(getDoc(doc(signedInDb, "usernames", NICKNAME)));
 });
 
+emulatorTest("un membre inscrit publie un score sans exposer son UID", async () => {
+  await seedNicknameOwner();
+  await testEnvironment.withSecurityRulesDisabled(async (context) => {
+    await setDoc(doc(context.firestore(), "users", OWNER_UID), {
+      uid: OWNER_UID,
+      nickname: "Freev_Test",
+      nicknameLower: NICKNAME,
+    });
+  });
+  const score = {
+    gameId: "pacman",
+    nickname: "Freev_Test",
+    nicknameLower: NICKNAME,
+    globalScore: 4200,
+    weekScore: 4200,
+    weekKey: "2026-W32",
+    monthScore: 4200,
+    monthKey: "2026-08",
+    updatedAt: Timestamp.now(),
+  };
+  const ownerDb = testEnvironment.authenticatedContext(OWNER_UID).firestore();
+  const scoreRef = doc(ownerDb, "gameLeaderboards", "pacman", "scores", NICKNAME);
+  await assertSucceeds(setDoc(scoreRef, score));
+
+  const anonymousDb = testEnvironment.unauthenticatedContext().firestore();
+  const snapshot = await assertSucceeds(
+    getDoc(doc(anonymousDb, "gameLeaderboards", "pacman", "scores", NICKNAME)),
+  );
+  assert.equal(snapshot.data().nickname, "Freev_Test");
+  assert.equal("uid" in snapshot.data(), false);
+  await assertSucceeds(getDocs(collection(anonymousDb, "gameLeaderboards", "pacman", "scores")));
+});
+
+emulatorTest("un visiteur, un faux surnom et un champ privé sont refusés dans le classement", async () => {
+  await seedNicknameOwner();
+  await testEnvironment.withSecurityRulesDisabled(async (context) => {
+    await setDoc(doc(context.firestore(), "users", OWNER_UID), {
+      uid: OWNER_UID,
+      nickname: "Freev_Test",
+      nicknameLower: NICKNAME,
+    });
+  });
+  const score = {
+    gameId: "pacman",
+    nickname: "Freev_Test",
+    nicknameLower: NICKNAME,
+    globalScore: 1200,
+    weekScore: 1200,
+    weekKey: "2026-W32",
+    monthScore: 1200,
+    monthKey: "2026-08",
+    updatedAt: Timestamp.now(),
+  };
+  const anonymousDb = testEnvironment.unauthenticatedContext().firestore();
+  const otherDb = testEnvironment.authenticatedContext(OTHER_UID).firestore();
+  const ownerDb = testEnvironment.authenticatedContext(OWNER_UID).firestore();
+  const scoreRef = doc(ownerDb, "gameLeaderboards", "pacman", "scores", NICKNAME);
+
+  await assertFails(setDoc(doc(anonymousDb, "gameLeaderboards", "pacman", "scores", NICKNAME), score));
+  await assertFails(setDoc(doc(otherDb, "gameLeaderboards", "pacman", "scores", NICKNAME), score));
+  await assertFails(setDoc(scoreRef, { ...score, email: "prive@example.com" }));
+  await assertFails(setDoc(scoreRef, { ...score, nickname: "FauxJoueur" }));
+});
+
 emulatorTest("la configuration NEXUS publique est lisible mais non modifiable par un visiteur", async () => {
   const maintenance = {
     enabled: false,

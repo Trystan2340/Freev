@@ -487,6 +487,7 @@
             state.currentBox = null;
 
             document.getElementById('final-score').innerText = state.score;
+            window.FreevLeaderboard?.submit('towerblock', state.score);
             document.getElementById('game-over-screen').classList.remove('hidden');
             document.getElementById('game-over-screen').classList.add('visible');
             document.getElementById('score-container').classList.add('hidden');

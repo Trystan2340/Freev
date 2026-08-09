@@ -749,6 +749,7 @@
             playSound('hit');
             createExplosion(snake[0].x * GRID_SIZE + 10, snake[0].y * GRID_SIZE + 10, '#ff3333');
             saveStats();
+            window.FreevLeaderboard?.submit('neonsnake', stats.highScore);
             
             setTimeout(() => {
                 document.getElementById('gameOverMenu').classList.remove('hidden');

@@ -1,5 +1,5 @@
 self.FREEV_OFFLINE_MANIFEST = {
-  "version": "72fbb5b656ec0dc7",
+  "version": "2563ca9c3f17501e",
   "assets": [
     "./assets/catalog/games/astro-miner.png",
     "./assets/catalog/games/beatjump.png",
@@ -10,6 +10,7 @@ self.FREEV_OFFLINE_MANIFEST = {
     "./assets/catalog/games/tron.png",
     "./css/catalog-pages.css",
     "./css/freev-account-center.css",
+    "./css/freev-constellation.css",
     "./css/freev-id-v2.css",
     "./css/freev-public-profile.css",
     "./css/index-legacy.css",
@@ -100,6 +101,7 @@ self.FREEV_OFFLINE_MANIFEST = {
     "./js/firebase-bootstrap.js",
     "./js/freev-ai-options.js",
     "./js/freev-auth.js",
+    "./js/freev-constellation.js",
     "./js/freev-id/account-center.js",
     "./js/freev-id/account-data.js",
     "./js/freev-id/avatar-generator.js",
@@ -107,6 +109,7 @@ self.FREEV_OFFLINE_MANIFEST = {
     "./js/freev-id/cloud-saves.js",
     "./js/freev-id/cloud-sync.js",
     "./js/freev-id/freev-id-v2.js",
+    "./js/freev-id/leaderboard.js",
     "./js/freev-id/profile-schema.js",
     "./js/freev-id/public-profile.js",
     "./js/freev-id/theme-engine.js",

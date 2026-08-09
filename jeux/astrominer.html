@@ -568,6 +568,7 @@ function saveGame(silent = false) {
     playerData = normalizePlayerData(playerData);
     try {
         localStorage.setItem(SAVE_KEY, JSON.stringify(playerData));
+        window.FreevLeaderboard?.submit('astrominer', playerData.stats.totalMined);
         if (!silent) showNotification("Sauvegarde effectuée", "#00ff88");
     } catch(e) {
         console.warn('Sauvegarde impossible', e);
