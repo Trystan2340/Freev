@@ -25,6 +25,7 @@ import {
 const PROJECT_ID = "demo-freev-id-v2";
 const OWNER_UID = "owner-freev-id";
 const OTHER_UID = "other-freev-id";
+const OWNER_EMAIL = "trystan.bonnin27@icloud.com";
 const NICKNAME = "freev_test";
 const HAS_FIRESTORE_EMULATOR = Boolean(process.env.FIRESTORE_EMULATOR_HOST);
 const emulatorTest = HAS_FIRESTORE_EMULATOR ? test : test.skip;
@@ -188,6 +189,128 @@ emulatorTest("le registre des surnoms ne divulgue pas les UID aux visiteurs", as
   await assertFails(getDoc(doc(anonymousDb, "usernames", NICKNAME)));
   await assertFails(getDocs(collection(anonymousDb, "usernames")));
   await assertSucceeds(getDoc(doc(signedInDb, "usernames", NICKNAME)));
+});
+
+emulatorTest("la configuration NEXUS publique est lisible mais non modifiable par un visiteur", async () => {
+  const maintenance = {
+    enabled: false,
+    scope: "global",
+    modules: [],
+    publicTitle: "Maintenance Freev",
+    publicMessage: "Freev revient bientôt. Merci pour ta patience.",
+    expectedBackAt: null,
+    updatedAt: Timestamp.fromMillis(1_700_000_000_000),
+  };
+
+  await testEnvironment.withSecurityRulesDisabled(async (context) => {
+    await setDoc(doc(context.firestore(), "sitePublic", "maintenance"), maintenance);
+  });
+
+  const anonymousDb = testEnvironment.unauthenticatedContext().firestore();
+  await assertSucceeds(getDoc(doc(anonymousDb, "sitePublic", "maintenance")));
+  await assertFails(setDoc(doc(anonymousDb, "sitePublic", "maintenance"), maintenance));
+  await assertFails(getDocs(collection(anonymousDb, "sitePublic")));
+});
+
+emulatorTest("seul le compte propriétaire peut publier la maintenance NEXUS", async () => {
+  const nowSeconds = Math.floor(Date.now() / 1000);
+  const maintenance = {
+    enabled: true,
+    scope: "module",
+    modules: ["games", "nova"],
+    publicTitle: "Maintenance de deux espaces",
+    publicMessage: "Les jeux et Nova reviennent bientôt.",
+    expectedBackAt: Timestamp.fromMillis(1_700_000_100_000),
+    updatedAt: Timestamp.fromMillis(1_700_000_000_000),
+  };
+  const ownerDb = testEnvironment.authenticatedContext(OWNER_UID, {
+    email: OWNER_EMAIL,
+    email_verified: true,
+    auth_time: nowSeconds,
+  }).firestore();
+  const otherDb = testEnvironment.authenticatedContext(OTHER_UID, {
+    email: "autre@example.com",
+  }).firestore();
+
+  await assertSucceeds(setDoc(doc(ownerDb, "sitePublic", "maintenance"), maintenance));
+  await assertFails(setDoc(doc(otherDb, "sitePublic", "maintenance"), maintenance));
+  const unverifiedOwnerDb = testEnvironment.authenticatedContext(OWNER_UID, {
+    email: OWNER_EMAIL,
+    email_verified: false,
+    auth_time: nowSeconds,
+  }).firestore();
+  await assertFails(setDoc(doc(unverifiedOwnerDb, "sitePublic", "maintenance"), maintenance));
+  const staleOwnerDb = testEnvironment.authenticatedContext(OWNER_UID, {
+    email: OWNER_EMAIL,
+    email_verified: true,
+    auth_time: nowSeconds - 3600,
+  }).firestore();
+  await assertFails(setDoc(doc(staleOwnerDb, "sitePublic", "maintenance"), maintenance));
+  await assertFails(setDoc(doc(staleOwnerDb, "siteAdmin", "maintenance"), {
+    ...maintenance,
+    reasonInternal: "Maintenance planifiée",
+    updatedBy: OWNER_UID,
+  }));
+  await assertFails(setDoc(doc(ownerDb, "sitePublic", "maintenance"), {
+    ...maintenance,
+    reasonInternal: "champ privé interdit",
+  }));
+});
+
+emulatorTest("le design NEXUS refuse les champs bruts et les valeurs hors liste", async () => {
+  const ownerDb = testEnvironment.authenticatedContext(OWNER_UID, {
+    email: OWNER_EMAIL,
+    email_verified: true,
+  }).firestore();
+  const validDesign = {
+    primary: "#22D3EE",
+    secondary: "#A855F7",
+    background: "midnight",
+    iconTheme: "cyan",
+    iconVariant: "glass",
+    motion: "normal",
+    cardRadius: 22,
+    density: "comfortable",
+    version: 2,
+    updatedAt: Timestamp.fromMillis(1_700_000_000_000),
+  };
+
+  await assertSucceeds(setDoc(doc(ownerDb, "sitePublic", "design"), validDesign));
+  await assertFails(setDoc(doc(ownerDb, "sitePublic", "design"), {
+    ...validDesign,
+    css: "body{display:none}",
+  }));
+  await assertFails(setDoc(doc(ownerDb, "sitePublic", "design"), {
+    ...validDesign,
+    iconVariant: "inconnue",
+  }));
+});
+
+emulatorTest("le journal NEXUS est privé et immuable", async () => {
+  const ownerDb = testEnvironment.authenticatedContext(OWNER_UID, {
+    email: OWNER_EMAIL,
+    email_verified: true,
+  }).firestore();
+  const otherDb = testEnvironment.authenticatedContext(OTHER_UID, {
+    email: "autre@example.com",
+  }).firestore();
+  const auditId = "20260809T120000Z-abcdef123456";
+  const entry = {
+    id: auditId,
+    action: "maintenance-enabled",
+    target: "global",
+    summary: "Maintenance planifiée",
+    actorUid: OWNER_UID,
+    actorEmail: OWNER_EMAIL,
+    createdAt: Timestamp.fromMillis(1_700_000_000_000),
+  };
+
+  await assertSucceeds(setDoc(doc(ownerDb, "nexusAudit", auditId), entry));
+  await assertSucceeds(getDoc(doc(ownerDb, "nexusAudit", auditId)));
+  await assertFails(getDoc(doc(otherDb, "nexusAudit", auditId)));
+  await assertFails(updateDoc(doc(ownerDb, "nexusAudit", auditId), {
+    summary: "Journal modifié",
+  }));
 });
 
 emulatorTest("les mémoires Nova restent privées et bornées", async () => {

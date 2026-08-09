@@ -1,7 +1,30 @@
 import AxeBuilder from "@axe-core/playwright";
 import { expect, test } from "@playwright/test";
 
-for (const route of ["/", "/nova.html", "/profil.html?id=profil-inexistant"]) {
+test.beforeEach(async ({ page }) => {
+  await page.route("https://freev-iies.onrender.com/api/site/config", (route) => route.fulfill({
+    status: 200,
+    contentType: "application/json",
+    headers: { "Access-Control-Allow-Origin": "*" },
+    body: JSON.stringify({
+      ok: true,
+      maintenance: { enabled: false, scope: "global", modules: [] },
+      design: { primary: "#22D3EE", secondary: "#A855F7", background: "midnight", cardRadius: 22 },
+    }),
+  }));
+});
+
+for (const route of [
+  "/",
+  "/nova.html",
+  "/profil.html?id=profil-inexistant",
+  "/logiciels/",
+  "/jeux/",
+  "/outils-ia/",
+  "/nexus.html",
+  "/maintenance.html",
+  "/legal/",
+]) {
   test(`WCAG 2.2 sans violation sérieuse sur ${route}`, async ({ page }) => {
     await page.goto(route, { waitUntil: "domcontentloaded" });
     await page.waitForTimeout(300);

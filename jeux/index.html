@@ -1,0 +1,80 @@
+<!doctype html>
+<html lang="fr" data-freev-theme="cyan">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="description" content="Jouez aux créations Freev directement dans votre navigateur.">
+  <meta name="theme-color" content="#050914">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' https://www.gstatic.com; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; font-src 'self' data:; connect-src 'self' https://freev-iies.onrender.com https://*.googleapis.com https://*.firebaseio.com wss://*.firebaseio.com https://securetoken.googleapis.com https://identitytoolkit.googleapis.com https://www.gstatic.com; object-src 'none'; base-uri 'self'; form-action 'self'">
+  <title>Jeux — Freev</title>
+  <link rel="icon" href="../icons/favicon.ico">
+  <link rel="stylesheet" href="../css/tailwind.generated.css?v=1.0.0">
+  <link rel="stylesheet" href="../css/catalog-pages.css?v=2.7.0">
+  <script type="module" src="../js/site-control.js?v=2.7.0"></script>
+</head>
+<body data-page="jeux" data-root="../">
+  <header data-site-header></header>
+  <main class="page-main">
+    <section class="page-hero wrap" aria-labelledby="games-title">
+      <div class="hero-copy">
+        <span class="eyebrow">Freev Arcade</span>
+        <h1 id="games-title">Entrez dans la <span class="gradient">zone de jeu.</span></h1>
+        <p class="lead">Arcade, rythme, exploration et défis néon. Tous les jeux Freev se lancent directement dans le navigateur.</p>
+        <div class="hero-actions">
+          <a class="button primary" href="#arcade">Choisir un jeu</a>
+          <a class="button" href="../logiciels/">Voir les logiciels</a>
+        </div>
+      </div>
+    </section>
+
+    <section class="wrap" id="arcade" aria-labelledby="featured-title">
+      <div class="section-heading">
+        <div>
+          <h2 id="featured-title">À l’affiche</h2>
+          <p>Une sélection qui change automatiquement, avec pause si tu interagis.</p>
+        </div>
+        <span class="count-badge" id="catalog-count" aria-live="polite">Chargement…</span>
+      </div>
+      <div class="arcade-layout">
+        <article class="featured-game" id="featured-game" aria-live="polite">
+          <p class="empty-state">Chargement de la sélection…</p>
+        </article>
+        <aside class="leaderboard" aria-labelledby="leaderboard-title">
+          <h2 id="leaderboard-title">Classement arcade</h2>
+          <p class="leaderboard-note">Aperçu de démonstration — pas encore synchronisé en temps réel.</p>
+          <div class="board-tabs" aria-label="Période du classement">
+            <button class="board-tab active" type="button" data-board="week">Semaine</button>
+            <button class="board-tab" type="button" data-board="month">Mois</button>
+            <button class="board-tab" type="button" data-board="global">Global</button>
+          </div>
+          <div class="board-list" id="board-list"></div>
+        </aside>
+      </div>
+    </section>
+
+    <section class="wrap" aria-labelledby="all-games-title">
+      <div class="section-heading">
+        <div>
+          <h2 id="all-games-title">Tous les jeux</h2>
+          <p>Recherche rapide et lancement direct.</p>
+        </div>
+      </div>
+      <div class="toolbar">
+        <div class="search-row">
+          <label class="sr-only" for="catalog-search">Rechercher un jeu</label>
+          <input class="search-field" id="catalog-search" type="search" autocomplete="off" placeholder="Rechercher un jeu…">
+          <span class="count-badge">Jouable sur navigateur</span>
+        </div>
+      </div>
+      <div class="game-grid" id="game-grid" aria-live="polite">
+        <p class="empty-state">Chargement des jeux…</p>
+      </div>
+    </section>
+  </main>
+  <footer data-site-footer></footer>
+  <script src="../js/site-shell.js?v=2.7.0"></script>
+  <script src="../js/catalog-pages.js?v=2.7.0"></script>
+  <script type="module" src="../freev-cloud-save.js?v=3.0.0"></script>
+  <script src="../js/pwa-register.js?v=1.0.0"></script>
+</body>
+</html>

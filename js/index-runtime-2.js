@@ -1,7 +1,7 @@
 // ── Fix email : reconstruit le mailto en JS (contourne Cloudflare) ────
         (function() {
-            var u = 'trystan.bonnin27';
-            var d = 'icloud.com';
+            var u = 'freevunited';
+            var d = 'gmail.com';
             var e = u + '\u0040' + d;
             var m = 'mailto:' + e;
             document.querySelectorAll('.email-link').forEach(function(a) {

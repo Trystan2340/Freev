@@ -1,0 +1,33 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="robots" content="noindex">
+  <meta name="theme-color" content="#050914">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data:; connect-src 'self' https://freev-iies.onrender.com; object-src 'none'; base-uri 'self'; form-action 'self'">
+  <title>Maintenance — Freev</title>
+  <link rel="icon" href="icons/favicon.ico">
+  <link rel="stylesheet" href="css/nexus.css?v=1.0.0">
+</head>
+<body class="maintenance-body">
+  <main class="maintenance-shell">
+    <section class="maintenance-card" aria-live="polite">
+      <a class="nexus-brand" href="index.html" aria-label="Accueil Freev"><span>F</span> FREEV<b>.</b></a>
+      <div class="maintenance-orbit" aria-hidden="true"><i></i><i></i><i></i></div>
+      <p class="nexus-eyebrow">ÉTAT DU SERVICE</p>
+      <h1 id="maintenance-title">Vérification en cours</h1>
+      <p id="maintenance-message">Connexion au contrôle Freev…</p>
+      <p class="maintenance-date" id="maintenance-date"></p>
+      <div class="button-row">
+        <a class="primary-button" href="index.html" id="maintenance-home" hidden>Retour au site</a>
+        <button class="ghost-button" id="maintenance-retry" type="button">Actualiser</button>
+        <a class="ghost-button" href="nexus.html">Accès propriétaire</a>
+      </div>
+      <p class="maintenance-contact">Besoin d’aide ? <a href="mailto:freevunited@gmail.com">freevunited@gmail.com</a></p>
+    </section>
+  </main>
+  <script src="js/maintenance-page.js?v=1.0.0"></script>
+  <script src="js/pwa-register.js?v=3.1.0" defer></script>
+</body>
+</html>

@@ -4,13 +4,18 @@
   "private": true,
   "type": "module",
   "scripts": {
+    "icons:sync": "npm --prefix packages/freev-icon-system run icons:sync",
+    "icons:check": "npm --prefix packages/freev-icon-system run icons:check",
+    "icons:build": "npm --prefix packages/freev-icon-system run build",
+    "icons:web": "node tools/build-icon-web-runtime.mjs",
+    "validate:catalog": "node tools/validate-catalog-icons.mjs",
     "build:css": "tailwindcss -c tailwind.config.cjs -i css/tailwind.input.css -o css/tailwind.generated.css --minify",
     "build:offline": "node tools/build-offline-manifest.mjs",
     "test": "node --test",
     "test:freev-id": "node --test tests/freev-id-*.test.mjs",
     "test:rules": "node tools/run-firebase-rules-tests.mjs",
     "test:browser": "playwright test",
-    "verify": "npm run build:css && npm run build:offline && npm test && node tools/verify-static.mjs",
+    "verify": "npm run icons:sync && npm run icons:check && npm run icons:build && npm run icons:web && npm run validate:catalog && npm run build:css && npm run build:offline && npm test && node tools/verify-static.mjs",
     "serve": "node tools/serve.mjs"
   },
   "engines": {

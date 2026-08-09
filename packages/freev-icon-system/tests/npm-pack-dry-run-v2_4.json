@@ -1,0 +1,486 @@
+[
+  {
+    "id": "@freev/icon-system@2.4.0",
+    "name": "@freev/icon-system",
+    "version": "2.4.0",
+    "size": 8732234,
+    "unpackedSize": 9125437,
+    "shasum": "69ca3a4e98e52075715a4fb685b9182155ef4b0b",
+    "integrity": "sha512-9S2MnqAmlGOKMLd+DnVGY5yByFrWsnczMbaip9aVhoD5aMaaD8kAV/W1pXp8p1KGLyueGBpXW5SPpVz+hAw4aw==",
+    "filename": "freev-icon-system-2.4.0.tgz",
+    "files": [
+      {
+        "path": "LICENSE-NOTICE.txt",
+        "size": 158,
+        "mode": 420
+      },
+      {
+        "path": "README.md",
+        "size": 1734,
+        "mode": 420
+      },
+      {
+        "path": "dist/freev-icon.d.ts",
+        "size": 1690,
+        "mode": 420
+      },
+      {
+        "path": "dist/freev-icon.js",
+        "size": 16299,
+        "mode": 420
+      },
+      {
+        "path": "dist/freev-react.d.ts",
+        "size": 751,
+        "mode": 420
+      },
+      {
+        "path": "dist/freev-themes.css",
+        "size": 579,
+        "mode": 420
+      },
+      {
+        "path": "dist/freev-vue.d.ts",
+        "size": 556,
+        "mode": 420
+      },
+      {
+        "path": "dist/FreevIconReact.js",
+        "size": 780,
+        "mode": 420
+      },
+      {
+        "path": "dist/FreevIconReact.jsx",
+        "size": 520,
+        "mode": 420
+      },
+      {
+        "path": "dist/FreevIconVue.js",
+        "size": 1001,
+        "mode": 420
+      },
+      {
+        "path": "dist/FreevIconVue.vue",
+        "size": 796,
+        "mode": 420
+      },
+      {
+        "path": "masters/clean/CodeMaster_V2.png",
+        "size": 1033572,
+        "mode": 420
+      },
+      {
+        "path": "masters/clean/DataVault.png",
+        "size": 1077645,
+        "mode": 420
+      },
+      {
+        "path": "masters/clean/Freev_Convert.png",
+        "size": 1042336,
+        "mode": 420
+      },
+      {
+        "path": "masters/clean/Freev_Sketch_Pro.png",
+        "size": 1022107,
+        "mode": 420
+      },
+      {
+        "path": "masters/clean/Freev_TaskFlow.png",
+        "size": 1055820,
+        "mode": 420
+      },
+      {
+        "path": "masters/clean/PixelForge.png",
+        "size": 1033244,
+        "mode": 420
+      },
+      {
+        "path": "masters/clean/ResumeMaster.png",
+        "size": 1089226,
+        "mode": 420
+      },
+      {
+        "path": "masters/clean/StreamStudio_Pro.png",
+        "size": 1048101,
+        "mode": 420
+      },
+      {
+        "path": "package.json",
+        "size": 1860,
+        "mode": 420
+      },
+      {
+        "path": "symbols/animation-cover/DataVault.png",
+        "size": 27391,
+        "mode": 420
+      },
+      {
+        "path": "symbols/animation-cover/Freev_Convert.png",
+        "size": 21529,
+        "mode": 420
+      },
+      {
+        "path": "symbols/animation-cover/Freev_Sketch_Pro.png",
+        "size": 15903,
+        "mode": 420
+      },
+      {
+        "path": "symbols/animation-cover/ResumeMaster.png",
+        "size": 15538,
+        "mode": 420
+      },
+      {
+        "path": "symbols/animation-cover/StreamStudio_Pro.png",
+        "size": 12252,
+        "mode": 420
+      },
+      {
+        "path": "symbols/animation-layers/CodeMaster_V2/layer-1.png",
+        "size": 14124,
+        "mode": 420
+      },
+      {
+        "path": "symbols/animation-layers/DataVault/layer-1.png",
+        "size": 18260,
+        "mode": 420
+      },
+      {
+        "path": "symbols/animation-layers/Freev_Convert/layer-1.png",
+        "size": 7736,
+        "mode": 420
+      },
+      {
+        "path": "symbols/animation-layers/Freev_Convert/layer-2.png",
+        "size": 7760,
+        "mode": 420
+      },
+      {
+        "path": "symbols/animation-layers/Freev_Sketch_Pro/layer-1.png",
+        "size": 11819,
+        "mode": 420
+      },
+      {
+        "path": "symbols/animation-layers/Freev_TaskFlow/layer-1.png",
+        "size": 7598,
+        "mode": 420
+      },
+      {
+        "path": "symbols/animation-layers/Freev_TaskFlow/layer-2.png",
+        "size": 7272,
+        "mode": 420
+      },
+      {
+        "path": "symbols/animation-layers/Freev_TaskFlow/layer-3.png",
+        "size": 6897,
+        "mode": 420
+      },
+      {
+        "path": "symbols/animation-layers/PixelForge/layer-1.png",
+        "size": 7056,
+        "mode": 420
+      },
+      {
+        "path": "symbols/animation-layers/PixelForge/layer-2.png",
+        "size": 7067,
+        "mode": 420
+      },
+      {
+        "path": "symbols/animation-layers/ResumeMaster/layer-1.png",
+        "size": 7189,
+        "mode": 420
+      },
+      {
+        "path": "symbols/animation-layers/StreamStudio_Pro/layer-1.png",
+        "size": 9077,
+        "mode": 420
+      },
+      {
+        "path": "symbols/animation/CodeMaster_V2.png",
+        "size": 14124,
+        "mode": 420
+      },
+      {
+        "path": "symbols/animation/DataVault.png",
+        "size": 18260,
+        "mode": 420
+      },
+      {
+        "path": "symbols/animation/Freev_Convert.png",
+        "size": 8985,
+        "mode": 420
+      },
+      {
+        "path": "symbols/animation/Freev_Sketch_Pro.png",
+        "size": 11819,
+        "mode": 420
+      },
+      {
+        "path": "symbols/animation/Freev_TaskFlow.png",
+        "size": 8349,
+        "mode": 420
+      },
+      {
+        "path": "symbols/animation/PixelForge.png",
+        "size": 7525,
+        "mode": 420
+      },
+      {
+        "path": "symbols/animation/ResumeMaster.png",
+        "size": 7189,
+        "mode": 420
+      },
+      {
+        "path": "symbols/animation/StreamStudio_Pro.png",
+        "size": 9077,
+        "mode": 420
+      },
+      {
+        "path": "symbols/mask/CodeMaster_V2.png",
+        "size": 13109,
+        "mode": 420
+      },
+      {
+        "path": "symbols/mask/DataVault.png",
+        "size": 8077,
+        "mode": 420
+      },
+      {
+        "path": "symbols/mask/Freev_Convert.png",
+        "size": 11738,
+        "mode": 420
+      },
+      {
+        "path": "symbols/mask/Freev_Sketch_Pro.png",
+        "size": 9795,
+        "mode": 420
+      },
+      {
+        "path": "symbols/mask/Freev_TaskFlow.png",
+        "size": 7529,
+        "mode": 420
+      },
+      {
+        "path": "symbols/mask/PixelForge.png",
+        "size": 9007,
+        "mode": 420
+      },
+      {
+        "path": "symbols/mask/ResumeMaster.png",
+        "size": 10614,
+        "mode": 420
+      },
+      {
+        "path": "symbols/mask/StreamStudio_Pro.png",
+        "size": 7994,
+        "mode": 420
+      },
+      {
+        "path": "symbols/small-mask/CodeMaster_V2.png",
+        "size": 13109,
+        "mode": 420
+      },
+      {
+        "path": "symbols/small-mask/DataVault.png",
+        "size": 7018,
+        "mode": 420
+      },
+      {
+        "path": "symbols/small-mask/Freev_Convert.png",
+        "size": 11738,
+        "mode": 420
+      },
+      {
+        "path": "symbols/small-mask/Freev_Sketch_Pro.png",
+        "size": 9795,
+        "mode": 420
+      },
+      {
+        "path": "symbols/small-mask/Freev_TaskFlow.png",
+        "size": 6081,
+        "mode": 420
+      },
+      {
+        "path": "symbols/small-mask/PixelForge.png",
+        "size": 9007,
+        "mode": 420
+      },
+      {
+        "path": "symbols/small-mask/ResumeMaster.png",
+        "size": 10614,
+        "mode": 420
+      },
+      {
+        "path": "symbols/small-mask/StreamStudio_Pro.png",
+        "size": 7994,
+        "mode": 420
+      },
+      {
+        "path": "symbols/theme/CodeMaster_V2_black.png",
+        "size": 11688,
+        "mode": 420
+      },
+      {
+        "path": "symbols/theme/CodeMaster_V2_brand-cyan.png",
+        "size": 13032,
+        "mode": 420
+      },
+      {
+        "path": "symbols/theme/CodeMaster_V2_white.png",
+        "size": 13109,
+        "mode": 420
+      },
+      {
+        "path": "symbols/theme/DataVault_black.png",
+        "size": 7028,
+        "mode": 420
+      },
+      {
+        "path": "symbols/theme/DataVault_brand-cyan.png",
+        "size": 8082,
+        "mode": 420
+      },
+      {
+        "path": "symbols/theme/DataVault_white.png",
+        "size": 8077,
+        "mode": 420
+      },
+      {
+        "path": "symbols/theme/Freev_Convert_black.png",
+        "size": 11730,
+        "mode": 420
+      },
+      {
+        "path": "symbols/theme/Freev_Convert_brand-cyan.png",
+        "size": 11719,
+        "mode": 420
+      },
+      {
+        "path": "symbols/theme/Freev_Convert_white.png",
+        "size": 11738,
+        "mode": 420
+      },
+      {
+        "path": "symbols/theme/Freev_Sketch_Pro_black.png",
+        "size": 9429,
+        "mode": 420
+      },
+      {
+        "path": "symbols/theme/Freev_Sketch_Pro_brand-cyan.png",
+        "size": 10017,
+        "mode": 420
+      },
+      {
+        "path": "symbols/theme/Freev_Sketch_Pro_white.png",
+        "size": 9795,
+        "mode": 420
+      },
+      {
+        "path": "symbols/theme/Freev_TaskFlow_black.png",
+        "size": 6469,
+        "mode": 420
+      },
+      {
+        "path": "symbols/theme/Freev_TaskFlow_brand-cyan.png",
+        "size": 7548,
+        "mode": 420
+      },
+      {
+        "path": "symbols/theme/Freev_TaskFlow_white.png",
+        "size": 7529,
+        "mode": 420
+      },
+      {
+        "path": "symbols/theme/PixelForge_black.png",
+        "size": 8229,
+        "mode": 420
+      },
+      {
+        "path": "symbols/theme/PixelForge_brand-cyan.png",
+        "size": 9190,
+        "mode": 420
+      },
+      {
+        "path": "symbols/theme/PixelForge_white.png",
+        "size": 9007,
+        "mode": 420
+      },
+      {
+        "path": "symbols/theme/ResumeMaster_black.png",
+        "size": 10006,
+        "mode": 420
+      },
+      {
+        "path": "symbols/theme/ResumeMaster_brand-cyan.png",
+        "size": 10737,
+        "mode": 420
+      },
+      {
+        "path": "symbols/theme/ResumeMaster_white.png",
+        "size": 10614,
+        "mode": 420
+      },
+      {
+        "path": "symbols/theme/StreamStudio_Pro_black.png",
+        "size": 7077,
+        "mode": 420
+      },
+      {
+        "path": "symbols/theme/StreamStudio_Pro_brand-cyan.png",
+        "size": 7984,
+        "mode": 420
+      },
+      {
+        "path": "symbols/theme/StreamStudio_Pro_white.png",
+        "size": 7994,
+        "mode": 420
+      },
+      {
+        "path": "types/freev-icon.d.ts",
+        "size": 1690,
+        "mode": 420
+      },
+      {
+        "path": "types/freev-react.d.ts",
+        "size": 751,
+        "mode": 420
+      },
+      {
+        "path": "types/freev-vue.d.ts",
+        "size": 556,
+        "mode": 420
+      },
+      {
+        "path": "web/frameworks/FreevIconReact.jsx",
+        "size": 781,
+        "mode": 420
+      },
+      {
+        "path": "web/frameworks/FreevIconVue.js",
+        "size": 1002,
+        "mode": 420
+      },
+      {
+        "path": "web/frameworks/FreevIconVue.vue",
+        "size": 797,
+        "mode": 420
+      },
+      {
+        "path": "web/freev-icon.js",
+        "size": 16299,
+        "mode": 420
+      },
+      {
+        "path": "web/index.html",
+        "size": 3364,
+        "mode": 420
+      },
+      {
+        "path": "web/styles/freev-themes.css",
+        "size": 579,
+        "mode": 420
+      }
+    ],
+    "entryCount": 94,
+    "bundled": []
+  }
+]

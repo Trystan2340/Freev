@@ -1,0 +1,66 @@
+<!doctype html>
+<html lang="fr" data-freev-theme="cyan">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="description" content="Découvrez les logiciels Freev : développement, création, productivité, sécurité et utilitaires.">
+  <meta name="theme-color" content="#050914">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' https://www.gstatic.com; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; font-src 'self' data:; connect-src 'self' https://freev-iies.onrender.com https://*.googleapis.com https://*.firebaseio.com wss://*.firebaseio.com https://securetoken.googleapis.com https://identitytoolkit.googleapis.com https://www.gstatic.com; object-src 'none'; base-uri 'self'; form-action 'self'">
+  <title>Logiciels — Freev</title>
+  <link rel="icon" href="../icons/favicon.ico">
+  <link rel="stylesheet" href="../css/tailwind.generated.css?v=1.0.0">
+  <link rel="stylesheet" href="../css/catalog-pages.css?v=2.7.0">
+  <script type="module" src="../freev-icons/dist/freev-icon.js?v=2.7.0"></script>
+  <script type="module" src="../js/site-control.js?v=2.7.0"></script>
+</head>
+<body data-page="logiciels" data-root="../">
+  <header data-site-header></header>
+  <main class="page-main">
+    <section class="page-hero wrap" aria-labelledby="software-title">
+      <div class="hero-copy">
+        <span class="eyebrow">Écosystème Freev</span>
+        <h1 id="software-title">Des outils pour <span class="gradient">créer sans limites.</span></h1>
+        <p class="lead">Développement, design, productivité et sécurité : retrouve tous les logiciels Freev dans un catalogue rapide, filtrable et adapté au mobile.</p>
+        <div class="hero-actions">
+          <a class="button primary" href="#catalogue">Explorer le catalogue</a>
+          <a class="button" href="../outils-ia/">Découvrir les outils IA</a>
+        </div>
+      </div>
+    </section>
+
+    <section class="wrap" id="catalogue" aria-labelledby="catalogue-title">
+      <div class="section-heading">
+        <div>
+          <h2 id="catalogue-title">Catalogue des logiciels</h2>
+          <p>Les huit applications officielles utilisent les icônes originales Freev V2.7.</p>
+        </div>
+        <span class="count-badge" id="catalog-count" aria-live="polite">Chargement…</span>
+      </div>
+      <div class="toolbar">
+        <div class="filters" aria-label="Filtrer les logiciels">
+          <button class="filter active" type="button" data-filter="all">Tous</button>
+          <button class="filter" type="button" data-filter="dev">Développement</button>
+          <button class="filter" type="button" data-filter="design">Design & création</button>
+          <button class="filter" type="button" data-filter="prod">Productivité</button>
+          <button class="filter" type="button" data-filter="secu">Sécurité</button>
+          <button class="filter" type="button" data-filter="multi">Multimédia</button>
+          <button class="filter" type="button" data-filter="util">Utilitaires</button>
+        </div>
+        <div class="search-row">
+          <label class="sr-only" for="catalog-search">Rechercher un logiciel</label>
+          <input class="search-field" id="catalog-search" type="search" autocomplete="off" placeholder="Rechercher par nom, usage ou technologie…">
+          <span class="count-badge">Catalogue Freev officiel</span>
+        </div>
+      </div>
+      <div class="catalog-grid" id="software-grid" aria-live="polite">
+        <p class="empty-state">Chargement du catalogue…</p>
+      </div>
+    </section>
+  </main>
+  <footer data-site-footer></footer>
+  <script src="../js/site-shell.js?v=2.7.0"></script>
+  <script src="../js/catalog-pages.js?v=2.7.0"></script>
+  <script type="module" src="../freev-cloud-save.js?v=3.0.0"></script>
+  <script src="../js/pwa-register.js?v=1.0.0"></script>
+</body>
+</html>

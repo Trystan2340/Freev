@@ -1,0 +1,226 @@
+{
+  "name": "FREEV Icon System V2.7 Final",
+  "version": "2.7.0",
+  "sourcePolicy": "exact original raster masters kept unchanged; runtime uses cleaned copies with only border matte removed",
+  "apps": {
+    "CodeMaster_V2": {
+      "label": "CodeMaster V2",
+      "animation": "glow-code",
+      "kind": "software"
+    },
+    "StreamStudio_Pro": {
+      "label": "StreamStudio Pro",
+      "animation": "pulse-play",
+      "kind": "software"
+    },
+    "Freev_TaskFlow": {
+      "label": "Freev TaskFlow",
+      "animation": "flow-cards",
+      "kind": "software"
+    },
+    "Freev_Sketch_Pro": {
+      "label": "Freev Sketch Pro",
+      "animation": "draw-pencil",
+      "kind": "software"
+    },
+    "DataVault": {
+      "label": "DataVault",
+      "animation": "lock-vault",
+      "kind": "software"
+    },
+    "Freev_Convert": {
+      "label": "Freev Convert",
+      "animation": "convert-swap",
+      "kind": "software"
+    },
+    "PixelForge": {
+      "label": "PixelForge",
+      "animation": "pixel-spark",
+      "kind": "software"
+    },
+    "ResumeMaster": {
+      "label": "ResumeMaster",
+      "animation": "resume-reveal",
+      "kind": "software"
+    }
+  },
+  "themes": [
+    "cyan",
+    "purple",
+    "emerald",
+    "gold",
+    "ruby",
+    "rose",
+    "orange",
+    "graphite",
+    "ice"
+  ],
+  "options": {
+    "theme": [
+      "inherit",
+      "cyan",
+      "purple",
+      "emerald",
+      "gold",
+      "ruby",
+      "rose",
+      "orange",
+      "graphite",
+      "ice"
+    ],
+    "mode": [
+      "auto",
+      "light",
+      "dark"
+    ],
+    "state": [
+      "default",
+      "hover",
+      "active",
+      "disabled",
+      "loading"
+    ],
+    "badge": [
+      "none",
+      "new",
+      "update",
+      "beta",
+      "pro",
+      "notification",
+      "download"
+    ],
+    "animation": [
+      "none",
+      "auto",
+      "glow-code",
+      "pulse-play",
+      "flow-cards",
+      "draw-pencil",
+      "lock-vault",
+      "convert-swap",
+      "pixel-spark",
+      "resume-reveal"
+    ],
+    "size": "arbitrary; <=32 automatically uses simplified exact-derived symbol",
+    "variant": [
+      "standard",
+      "glass",
+      "transparent",
+      "monochrome-white",
+      "monochrome-black",
+      "monochrome-brand",
+      "small-simplified"
+    ]
+  },
+  "platforms": [
+    "web/favicon",
+    "PWA maskable",
+    "Android adaptive + API33 monochrome",
+    "iOS legacy AppIcon",
+    "iOS Any/Dark/Tinted",
+    "Icon Composer source previews",
+    "Windows ICO",
+    "macOS PNG/ICNS"
+  ],
+  "accessibility": [
+    "aria-label",
+    "decorative",
+    "button semantics for interactive",
+    "keyboard Enter/Space",
+    "focus-visible",
+    "aria-disabled",
+    "aria-busy",
+    "prefers-reduced-motion",
+    "prefers-contrast"
+  ],
+  "performance": [
+    "source image cache",
+    "memory-weighted LRU render cache",
+    "48 MB default cache cap",
+    "1024px default canvas-side cap"
+  ],
+  "assetPaths": [
+    "module-relative default",
+    "asset-base attribute override",
+    "FREEV_ICON_ASSET_BASE global override"
+  ],
+  "fixesV22": [
+    "browser alpha masks",
+    "TaskFlow cleanup",
+    "DataVault small glyph",
+    "Android res structure",
+    "Apple modern appearances",
+    "internal animation overlays",
+    "CORS/error handling",
+    "keyboard interaction",
+    "developer packaging/tests"
+  ],
+  "animationLayers": {
+    "CodeMaster_V2": 1,
+    "StreamStudio_Pro": 1,
+    "Freev_TaskFlow": 3,
+    "Freev_Sketch_Pro": 1,
+    "DataVault": 1,
+    "Freev_Convert": 2,
+    "PixelForge": 2,
+    "ResumeMaster": 1
+  },
+  "fixesV23": [
+    "true per-app animation sublayers",
+    "standard-mode animation cover masks to remove raster ghosting",
+    "full-canvas mask alignment",
+    "cache key includes resolved asset URL",
+    "rejected image promises are evicted",
+    "full PWA manifests",
+    "publishable npm metadata and React/Vue exports",
+    "V2.3 demo labels",
+    "automated Chromium visual-regression tests",
+    "cache management public API"
+  ],
+  "legacyAliases": {
+    "icon-style": "variant (compatibility alias)"
+  },
+  "breakingFixV23": "The semantic use of the native HTML style attribute was removed. Use variant=...; style remains available for normal CSS.",
+  "audit_fixes_v2_4": [
+    "finite size validation",
+    "disabled click blocking",
+    "reduced-motion exact static fallback",
+    "React/Vue package path correction",
+    "typed React/Vue exports",
+    "static loading export rejection",
+    "six Apple Icon Composer appearance sources"
+  ],
+  "audit_fixes_v2_6": [
+    "strict whitelists for app/theme/mode/state/badge/animation/motion",
+    "animation attribute injection hardening",
+    "robust global cache/render configuration validation",
+    "invalid asset-base fallback with freev-icon-error event",
+    "invalid app fallback plus error event for all variants",
+    "SSR-safe web component module import",
+    "small-size badges collapse to status dots",
+    "portable Chromium test launcher",
+    "PWA short-name cleanup",
+    "version metadata synchronization"
+  ],
+  "mandatoryIconPipeline": {
+    "enabled": true,
+    "autoProcessOnBuild": true,
+    "incomingFolder": "incoming/",
+    "registry": "registry/apps.json",
+    "rejectIncomplete": true,
+    "rejectUnregisteredMasters": true,
+    "watchCommand": "npm run icons:watch",
+    "launchers": [
+      "START_ICON_WATCHER.bat",
+      "SYNC_NEW_ICONS.bat",
+      "start-icon-watcher.sh",
+      "sync-new-icons.sh"
+    ]
+  },
+  "automaticOnboarding": {
+    "registry": "registry/apps.json",
+    "incoming": "incoming/",
+    "command": "python tools/icon_pipeline.py sync --enforce",
+    "buildGate": true
+  }
+}

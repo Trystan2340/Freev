@@ -1,0 +1,9 @@
+**/__pycache__/**
+**/*.pyc
+**/*.pyo
+incoming/*.png
+incoming/*.jpg
+incoming/*.jpeg
+incoming/*.webp
+incoming/*.json
+!incoming/_example.metadata.json

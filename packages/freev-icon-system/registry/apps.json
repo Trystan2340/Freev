@@ -1,0 +1,87 @@
+{
+  "schema": 1,
+  "defaultApp": "CodeMaster_V2",
+  "defaultNewAppAnimation": "pulse-play",
+  "apps": [
+    {
+      "id": "CodeMaster_V2",
+      "label": "CodeMaster V2",
+      "kind": "software",
+      "shortName": "CodeMaster",
+      "animation": "glow-code",
+      "animationLayers": 1,
+      "animationCover": false,
+      "reconstructAnimationSymbol": true
+    },
+    {
+      "id": "StreamStudio_Pro",
+      "label": "StreamStudio Pro",
+      "kind": "software",
+      "shortName": "StreamStudio",
+      "animation": "pulse-play",
+      "animationLayers": 1,
+      "animationCover": true,
+      "reconstructAnimationSymbol": true
+    },
+    {
+      "id": "Freev_TaskFlow",
+      "label": "Freev TaskFlow",
+      "kind": "software",
+      "shortName": "TaskFlow",
+      "animation": "flow-cards",
+      "animationLayers": 3,
+      "animationCover": false,
+      "reconstructAnimationSymbol": false
+    },
+    {
+      "id": "Freev_Sketch_Pro",
+      "label": "Freev Sketch Pro",
+      "kind": "software",
+      "shortName": "Sketch Pro",
+      "animation": "draw-pencil",
+      "animationLayers": 1,
+      "animationCover": true,
+      "reconstructAnimationSymbol": true
+    },
+    {
+      "id": "DataVault",
+      "label": "DataVault",
+      "kind": "software",
+      "shortName": "DataVault",
+      "animation": "lock-vault",
+      "animationLayers": 1,
+      "animationCover": true,
+      "reconstructAnimationSymbol": false
+    },
+    {
+      "id": "Freev_Convert",
+      "label": "Freev Convert",
+      "kind": "software",
+      "shortName": "Convert",
+      "animation": "convert-swap",
+      "animationLayers": 2,
+      "animationCover": true,
+      "reconstructAnimationSymbol": true
+    },
+    {
+      "id": "PixelForge",
+      "label": "PixelForge",
+      "kind": "software",
+      "shortName": "PixelForge",
+      "animation": "pixel-spark",
+      "animationLayers": 2,
+      "animationCover": false,
+      "reconstructAnimationSymbol": true
+    },
+    {
+      "id": "ResumeMaster",
+      "label": "ResumeMaster",
+      "kind": "software",
+      "shortName": "ResumeMaster",
+      "animation": "resume-reveal",
+      "animationLayers": 1,
+      "animationCover": true,
+      "reconstructAnimationSymbol": false
+    }
+  ]
+}

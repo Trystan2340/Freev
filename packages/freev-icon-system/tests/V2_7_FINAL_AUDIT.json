@@ -1,0 +1,50 @@
+{
+  "version": "2.7.0",
+  "score": 9.98,
+  "status": "PASS",
+  "errors": [],
+  "warnings": [
+    "Original FREEV artwork remains raster-based; new raster masters are preserved exactly when supplied as PNG.",
+    "Automatic glyph extraction is intentionally fail-closed: low confidence requires a sibling .mask.png instead of silently creating a bad icon.",
+    "PWA deployment URLs remain templates and must match the final deployed application.",
+    "Package remains UNLICENSED until a distribution license is chosen."
+  ],
+  "stats": {
+    "file_count": 999,
+    "size_mb": 98.41,
+    "app_count": 8,
+    "png_count": 770,
+    "commands": {
+      "pipeline_check": {
+        "returncode": 0,
+        "stdout": "Generated registry for 8 FREEV apps\n✓ FREEV mandatory icon check PASS\n",
+        "stderr": ""
+      },
+      "node_check": {
+        "returncode": 0,
+        "stdout": "",
+        "stderr": ""
+      },
+      "build": {
+        "returncode": 0,
+        "stdout": "Generated registry for 8 FREEV apps\n✓ FREEV registry complete: 8 apps; mandatory outputs present\nFREEV Icon System V2.7 automatic build complete\n",
+        "stderr": ""
+      },
+      "ssr": {
+        "returncode": 0,
+        "stdout": "SSR import PASS\n",
+        "stderr": ""
+      },
+      "onboarding": {
+        "returncode": 0,
+        "stdout": "{\n  \"app\": \"AutoPipeline_Test\",\n  \"processed\": true,\n  \"build_gate_auto_process\": true,\n  \"registry\": true,\n  \"outputs\": true,\n  \"generated_runtime\": true,\n  \"typescript\": true,\n  \"cleanup\": true,\n  \"ok\": true,\n  \"stdout\": \"Generated registry for 9 FREEV apps\\nC:\\\\Users\\\\Trystan\\\\Documents\\\\Codex\\\\2026-07-21\\\\sites-plugin-sites-openai-bundled-cr-4\\\\work\\\\freev-id-v2-pr15\\\\packages\\\\freev-icon-system\\\\animations\\\\v2_3_internal\\\\AutoPipeline_Test.webp\\nGenerated registry for 9 FREEV apps\\n✓ FREEV auto-added AutoPipeline_Test (game) — confidence 1.0\\n✓ FREEV registry complete: 9 apps; mandatory outputs present\\nFREEV Icon System V2.7 automatic build complete\\n\",\n  \"stderr\": \"\"\n}\n",
+        "stderr": ""
+      },
+      "npm_pack": {
+        "returncode": 0,
+        "stdout": "    },\n      {\n        \"path\": \"symbols/theme/ResumeMaster_black.png\",\n        \"size\": 10006,\n        \"mode\": 420\n      },\n      {\n        \"path\": \"symbols/theme/ResumeMaster_brand-cyan.png\",\n        \"size\": 10737,\n        \"mode\": 420\n      },\n      {\n        \"path\": \"symbols/theme/ResumeMaster_white.png\",\n        \"size\": 10614,\n        \"mode\": 420\n      },\n      {\n        \"path\": \"symbols/theme/StreamStudio_Pro_black.png\",\n        \"size\": 7077,\n        \"mode\": 420\n      },\n      {\n        \"path\": \"symbols/theme/StreamStudio_Pro_brand-cyan.png\",\n        \"size\": 7984,\n        \"mode\": 420\n      },\n      {\n        \"path\": \"symbols/theme/StreamStudio_Pro_white.png\",\n        \"size\": 7994,\n        \"mode\": 420\n      },\n      {\n        \"path\": \"tools/export_animation.py\",\n        \"size\": 3854,\n        \"mode\": 420\n      },\n      {\n        \"path\": \"tools/export_icon.py\",\n        \"size\": 1538,\n        \"mode\": 420\n      },\n      {\n        \"path\": \"tools/freev_registry.py\",\n        \"size\": 2097,\n        \"mode\": 420\n      },\n      {\n        \"path\": \"tools/freev_render.py\",\n        \"size\": 4943,\n        \"mode\": 420\n      },\n      {\n        \"path\": \"tools/generate_registry.py\",\n        \"size\": 2586,\n        \"mode\": 420\n      },\n      {\n        \"path\": \"tools/icon_pipeline.py\",\n        \"size\": 22255,\n        \"mode\": 420\n      },\n      {\n        \"path\": \"types/freev-icon.d.ts\",\n        \"size\": 1707,\n        \"mode\": 420\n      },\n      {\n        \"path\": \"types/freev-react.d.ts\",\n        \"size\": 751,\n        \"mode\": 420\n      },\n      {\n        \"path\": \"types/freev-vue.d.ts\",\n        \"size\": 556,\n        \"mode\": 420\n      },\n      {\n        \"path\": \"web/apps.json\",\n        \"size\": 753,\n        \"mode\": 420\n      },\n      {\n        \"path\": \"web/frameworks/FreevIconReact.jsx\",\n        \"size\": 781,\n        \"mode\": 420\n      },\n      {\n        \"path\": \"web/frameworks/FreevIconVue.js\",\n        \"size\": 1002,\n        \"mode\": 420\n      },\n      {\n        \"path\": \"web/frameworks/FreevIconVue.vue\",\n        \"size\": 797,\n        \"mode\": 420\n      },\n      {\n        \"path\": \"web/freev-icon.js\",\n        \"size\": 17937,\n        \"mode\": 420\n      },\n      {\n        \"path\": \"web/generated-apps.js\",\n        \"size\": 2657,\n        \"mode\": 420\n      },\n      {\n        \"path\": \"web/index.html\",\n        \"size\": 3496,\n        \"mode\": 420\n      },\n      {\n        \"path\": \"web/styles/freev-themes.css\",\n        \"size\": 579,\n        \"mode\": 420\n      }\n    ],\n    \"entryCount\": 104,\n    \"bundled\": []\n  }\n}\n",
+        "stderr": ""
+      }
+    }
+  }
+}

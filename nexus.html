@@ -1,0 +1,106 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="robots" content="noindex,nofollow,noarchive">
+  <meta name="referrer" content="no-referrer">
+  <meta name="theme-color" content="#030806">
+  <meta name="freev-app-check-site-key" content="6LeryW4tAAAAAG9WNqx_iWFgO2ajWSzwV7Hdx6l8">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' https://www.gstatic.com https://www.google.com https://www.recaptcha.net; style-src 'self' 'unsafe-inline'; img-src 'self' data:; connect-src 'self' https://freev-iies.onrender.com https://*.googleapis.com https://*.firebaseio.com wss://*.firebaseio.com https://securetoken.googleapis.com https://identitytoolkit.googleapis.com https://www.gstatic.com https://www.google.com https://www.recaptcha.net; frame-src https://*.firebaseapp.com https://www.google.com https://www.recaptcha.net; object-src 'none'; base-uri 'self'; form-action 'self'">
+  <title>Freev NEXUS — Administration</title>
+  <link rel="icon" href="icons/favicon.ico">
+  <link rel="stylesheet" href="css/nexus.css?v=1.0.0">
+  <script defer src="js/error-monitor.js?v=1.0.0"></script>
+</head>
+<body>
+  <header class="nexus-topbar">
+    <a class="nexus-brand" href="index.html" aria-label="Retour au site Freev"><span>F</span> FREEV<b>.</b> NEXUS</a>
+    <div class="top-actions">
+      <span class="status-pill" id="nexus-status" role="status">Vérification…</span>
+      <a class="ghost-button" href="nova.html">Nova</a>
+      <a class="ghost-button" href="index.html">Site public</a>
+      <button class="ghost-button hidden" id="nexus-signout" type="button">Déconnexion</button>
+    </div>
+  </header>
+
+  <main>
+    <section class="nexus-gate" id="nexus-gate" aria-live="polite">
+      <div class="gate-card">
+        <p class="nexus-eyebrow">ACCÈS PROPRIÉTAIRE VÉRIFIÉ PAR LE SERVEUR</p>
+        <h1 id="nexus-gate-title">Connexion sécurisée</h1>
+        <p id="nexus-gate-copy">Firebase vérifie ta session, puis Render confirme ton rôle propriétaire.</p>
+        <div class="button-row">
+          <a class="primary-button" href="index.html#login">Se connecter sur Freev</a>
+          <button class="ghost-button" id="nexus-retry" type="button">Revérifier</button>
+        </div>
+      </div>
+    </section>
+
+    <section class="nexus-main hidden" id="nexus-dashboard" aria-label="Tableau de bord NEXUS">
+      <header class="dashboard-heading">
+        <div>
+          <p class="nexus-eyebrow">CENTRE DE CONTRÔLE FREEV</p>
+          <h1>NEXUS <span class="accent">V2.7</span></h1>
+          <p>Maintenance persistante, apparence contrôlée et journal d’administration. Aucun rôle n’est accepté depuis le navigateur.</p>
+        </div>
+        <span class="status-pill" data-kind="ok">Propriétaire vérifié</span>
+      </header>
+
+      <div class="dashboard-grid">
+        <div class="stack">
+          <section class="panel" aria-labelledby="maintenance-panel-title">
+            <header class="panel-header">
+              <div><h2 id="maintenance-panel-title">Maintenance du site</h2><p>Bloque tout Freev ou seulement Jeux, Outils IA et Nova.</p></div>
+              <span class="status-pill" id="maintenance-state">Chargement…</span>
+            </header>
+            <form class="panel-body" id="maintenance-form">
+              <div class="form-grid">
+                <label class="choice"><input id="maintenance-enabled" type="checkbox"> Activer la maintenance</label>
+                <label class="field"><span>Périmètre</span><select id="maintenance-scope"><option value="global">Tout le site</option><option value="module">Modules choisis</option></select></label>
+                <fieldset class="field full" id="maintenance-modules"><legend>Modules concernés</legend><div class="choice-row"><label class="choice"><input type="checkbox" value="games"> Jeux</label><label class="choice"><input type="checkbox" value="ai"> Outils IA</label><label class="choice"><input type="checkbox" value="nova"> Nova</label></div></fieldset>
+                <label class="field"><span>Titre public</span><input id="maintenance-public-title" maxlength="80" required></label>
+                <label class="field"><span>Retour estimé</span><input id="maintenance-expected" type="datetime-local"></label>
+                <label class="field full"><span>Message public</span><textarea id="maintenance-public-message" minlength="10" maxlength="300" required></textarea></label>
+                <label class="field full"><span>Motif interne (jamais public)</span><textarea id="maintenance-reason" maxlength="500"></textarea></label>
+              </div>
+              <div class="critical-box" id="maintenance-confirm-box">Pour fermer tout Freev, écris exactement <b>FERMER FREEV</b>.<label class="field"><input id="maintenance-confirmation" autocomplete="off" placeholder="FERMER FREEV"></label></div>
+              <div class="form-actions"><button class="primary-button" type="submit">Enregistrer la maintenance</button></div>
+              <p class="form-status" id="maintenance-status" role="status"></p>
+            </form>
+          </section>
+
+          <section class="panel" aria-labelledby="design-panel-title">
+            <header class="panel-header"><div><h2 id="design-panel-title">Design global sécurisé</h2><p>Valeurs autorisées uniquement : aucun CSS ou JavaScript brut.</p></div><span class="status-pill" id="design-version">V1</span></header>
+            <form class="panel-body" id="design-form">
+              <div class="form-grid">
+                <label class="field"><span>Couleur principale</span><input id="design-primary" type="color"></label>
+                <label class="field"><span>Couleur secondaire</span><input id="design-secondary" type="color"></label>
+                <label class="field"><span>Fond</span><select id="design-background"><option value="midnight">Midnight</option><option value="nebula">Nebula</option><option value="graphite">Graphite</option></select></label>
+                <label class="field"><span>Thème d’icônes</span><select id="design-icon-theme"><option>cyan</option><option>purple</option><option>emerald</option><option>gold</option><option>ruby</option><option>rose</option><option>orange</option><option>graphite</option><option>ice</option></select></label>
+                <label class="field"><span>Variante d’icônes</span><select id="design-icon-variant"><option>glass</option><option>standard</option><option>transparent</option><option>monochrome-white</option><option>monochrome-black</option><option>monochrome-brand</option><option>small-simplified</option></select></label>
+                <label class="field"><span>Animation</span><select id="design-motion"><option value="calm">Calme</option><option value="normal">Normale</option><option value="dynamic">Dynamique</option></select></label>
+                <label class="field"><span>Densité</span><select id="design-density"><option value="comfortable">Confortable</option><option value="compact">Compacte</option></select></label>
+                <label class="field"><span>Arrondi des cartes : <output id="design-radius-output">22</output> px</span><input id="design-radius" type="range" min="12" max="32" step="1"></label>
+                <label class="field full"><span>Confirmation de publication</span><input id="design-confirmation" autocomplete="off" placeholder="PUBLIER LE DESIGN"></label>
+              </div>
+              <article class="preview-card" id="design-preview"><b>Aperçu Freev</b><p>Le système applique les couleurs, le fond et l’arrondi sans accepter de code arbitraire.</p></article>
+              <div class="form-actions"><button class="ghost-button" id="design-preview-button" type="button">Prévisualiser</button><button class="danger-button" id="design-rollback-button" type="button">Restaurer la version précédente</button><button class="primary-button" type="submit">Publier le design</button></div>
+              <p class="form-status" id="design-status" role="status"></p>
+            </form>
+          </section>
+        </div>
+
+        <aside class="stack">
+          <section class="panel" aria-labelledby="modules-title"><header class="panel-header"><div><h2 id="modules-title">Modules NEXUS</h2><p>État réel des fonctions disponibles.</p></div></header><div class="panel-body module-grid" id="nexus-modules"></div></section>
+          <section class="panel" aria-labelledby="audit-title"><header class="panel-header"><div><h2 id="audit-title">Journal immuable</h2><p>30 actions récentes, réservées au propriétaire.</p></div></header><div class="panel-body audit-list" id="nexus-audit"><p class="form-status">Aucune action enregistrée.</p></div></section>
+        </aside>
+      </div>
+    </section>
+  </main>
+
+  <script type="module" src="js/firebase-bootstrap.js?v=1.0.0"></script>
+  <script type="module" src="js/nexus.js?v=1.0.0"></script>
+  <script src="js/pwa-register.js?v=3.1.0" defer></script>
+</body>
+</html>

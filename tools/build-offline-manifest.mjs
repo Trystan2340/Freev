@@ -4,10 +4,11 @@ import { dirname, relative, resolve, sep } from "node:path";
 import { fileURLToPath } from "node:url";
 
 const root = resolve(dirname(fileURLToPath(import.meta.url)), "..");
-const roots = ["css", "icons", "icôns", "js", "jeux", "logiciels", "telechargement"];
+const roots = ["assets/catalog", "css", "data", "freev-icons", "icons", "icôns", "js", "jeux", "legal", "logiciels", "outils-ia", "telechargement"];
 const rootFiles = [
   "index.html",
   "nova.html",
+  "maintenance.html",
   "profil.html",
   "offline.html",
   "manifest.json",
@@ -15,7 +16,13 @@ const rootFiles = [
   "freev-cloud-save.js",
   "main.js",
 ];
-const excluded = new Set(["css/tailwind.input.css", "js/tailwind-config.js"]);
+const excluded = new Set([
+  "css/tailwind.input.css",
+  "js/tailwind-config.js",
+  "css/nexus.css",
+  "js/nexus-entry.js",
+  "js/nexus.js",
+]);
 
 async function walk(path) {
   const entries = await readdir(path, { withFileTypes: true });

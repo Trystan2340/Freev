@@ -1,0 +1,115 @@
+import { expect, test } from "@playwright/test";
+
+test.beforeEach(async ({ page }) => {
+  await page.addInitScript((config) => {
+    const nativeFetch = window.fetch.bind(window);
+    window.fetch = (input, options) => {
+      const url = typeof input === "string" ? input : input?.url || "";
+      if (url === "https://freev-iies.onrender.com/api/site/config") {
+        return Promise.resolve(new Response(JSON.stringify(config), {
+          status: 200,
+          headers: { "Content-Type": "application/json" },
+        }));
+      }
+      return nativeFetch(input, options);
+    };
+  }, {
+    ok: true,
+    maintenance: { enabled: false, scope: "global", modules: [] },
+    design: { primary: "#22D3EE", secondary: "#A855F7", background: "midnight", cardRadius: 22 },
+  });
+});
+
+async function expectNoHorizontalOverflow(page) {
+  const sizes = await page.evaluate(() => ({
+    viewport: document.documentElement.clientWidth,
+    content: document.documentElement.scrollWidth,
+  }));
+  expect(sizes.content).toBeLessThanOrEqual(sizes.viewport + 1);
+}
+
+test("le catalogue logiciels rend les huit icônes officielles et filtre les cartes", async ({ page }) => {
+  await page.goto("/logiciels/", { waitUntil: "domcontentloaded" });
+  await expect(page.locator("#software-grid .catalog-card")).toHaveCount(8);
+  await expect(page.locator("#software-grid freev-icon")).toHaveCount(8);
+  await page.locator("[data-filter=dev]").click();
+  await expect(page.locator("#software-grid .catalog-card")).toHaveCount(1);
+  await page.locator("#catalog-search").fill("CV");
+  await expect(page.locator("#software-grid .empty-state")).toBeVisible();
+  await page.locator("[data-filter=all]").click();
+  await expect(page.locator("#software-grid .catalog-card")).toHaveCount(1);
+  await expectNoHorizontalOverflow(page);
+});
+
+test("la page jeux rend les sept jeux, la sélection et la recherche", async ({ page }) => {
+  await page.goto("/jeux/", { waitUntil: "domcontentloaded" });
+  await expect(page.locator("#featured-game img")).toBeVisible();
+  await expect(page.locator("#game-grid .game-card")).toHaveCount(7);
+  await page.locator("#catalog-search").fill("snake");
+  await expect(page.locator("#game-grid .game-card")).toHaveCount(1);
+  await expect(page.locator("#game-grid h3")).toHaveText("NEON SNAKE");
+  await expectNoHorizontalOverflow(page);
+});
+
+test("la page IA conserve la configuration, l’historique et la bibliothèque", async ({ page }) => {
+  await page.route(/\/status$/, (route) => route.fulfill({
+    status: 200,
+    contentType: "application/json",
+    body: JSON.stringify({ ok: true, version: "7.0" }),
+  }));
+  await page.goto("/outils-ia/", { waitUntil: "domcontentloaded" });
+  await expect(page.locator("#freev-v7-form")).toBeVisible();
+  await expect(page.locator("[data-status-text]")).toHaveText("En ligne");
+  await page.locator("#freev-api-settings-button").click();
+  await expect(page.locator("#freev-api-settings")).toBeVisible();
+  await page.locator("#freev-model-library-button").click();
+  await expect(page.locator("#freev-model-library-modal")).toBeVisible();
+  await expect(page.locator("#freev-model-grid > article")).toHaveCount(18);
+  await page.locator("#freev-model-library-close").click();
+  await page.locator("#freev-history-button").click();
+  await expect(page.locator("#freev-history-modal")).toBeVisible();
+  await page.locator("#freev-history-close").click();
+  await expectNoHorizontalOverflow(page);
+});
+
+test("les nouvelles pages ne produisent aucune erreur JavaScript ni ressource locale cassée", async ({ page }) => {
+  await page.addInitScript(() => {
+    if (navigator.serviceWorker) {
+      Object.defineProperty(navigator.serviceWorker, "register", {
+        configurable: true,
+        value: async () => ({ active: null }),
+      });
+    }
+  });
+  const pageErrors = [];
+  const brokenLocalResponses = [];
+  page.on("pageerror", (error) => pageErrors.push(error.message));
+  page.on("response", (response) => {
+    const url = new URL(response.url());
+    if (url.hostname === "127.0.0.1" && response.status() >= 400) {
+      brokenLocalResponses.push(`${response.status()} ${url.pathname}`);
+    }
+  });
+  await page.route(/\/status$/, (route) => route.fulfill({
+    status: 200,
+    contentType: "application/json",
+    body: JSON.stringify({ ok: true, version: "7.0" }),
+  }));
+  for (const route of ["/logiciels/", "/jeux/", "/outils-ia/", "/legal/"]) {
+    await page.goto(route, { waitUntil: "domcontentloaded" });
+    await page.waitForTimeout(250);
+  }
+  expect(pageErrors).toEqual([]);
+  expect(brokenLocalResponses).toEqual([]);
+});
+
+test("le menu mobile ouvre les pages dédiées sans quitter l’écran", async ({ page }, testInfo) => {
+  test.skip(!testInfo.project.name.includes("mobile"), "Contrôle réservé au viewport mobile");
+  await page.goto("/logiciels/", { waitUntil: "domcontentloaded" });
+  const toggle = page.locator(".mobile-toggle");
+  await expect(toggle).toBeVisible();
+  await toggle.click();
+  await expect(toggle).toHaveAttribute("aria-expanded", "true");
+  await expect(page.locator("#site-mobile-nav")).toBeVisible();
+  await expectNoHorizontalOverflow(page);
+});
