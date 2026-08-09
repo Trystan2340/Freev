@@ -307,7 +307,7 @@ emulatorTest("seul le compte propriétaire peut publier la maintenance NEXUS", a
   const staleOwnerDb = testEnvironment.authenticatedContext(OWNER_UID, {
     email: OWNER_EMAIL,
     email_verified: true,
-    auth_time: nowSeconds - 3600,
+    auth_time: nowSeconds - (60 * 60),
   }).firestore();
   await assertFails(setDoc(doc(staleOwnerDb, "sitePublic", "maintenance"), maintenance));
   await assertFails(setDoc(doc(staleOwnerDb, "siteAdmin", "maintenance"), {
@@ -318,6 +318,128 @@ emulatorTest("seul le compte propriétaire peut publier la maintenance NEXUS", a
   await assertFails(setDoc(doc(ownerDb, "sitePublic", "maintenance"), {
     ...maintenance,
     reasonInternal: "champ privé interdit",
+  }));
+});
+
+emulatorTest("une ancienne session propriétaire peut seulement rouvrir un site en maintenance", async () => {
+  const nowSeconds = Math.floor(Date.now() / 1000);
+  const updatedAt = Timestamp.now();
+  const publicMaintenance = {
+    enabled: true,
+    scope: "global",
+    modules: [],
+    publicTitle: "Maintenance Freev",
+    publicMessage: "Freev revient bientôt. Merci pour ta patience.",
+    expectedBackAt: null,
+    updatedAt,
+  };
+  const privateMaintenance = {
+    ...publicMaintenance,
+    reasonInternal: "Maintenance planifiée",
+    updatedBy: OWNER_UID,
+  };
+
+  await testEnvironment.withSecurityRulesDisabled(async (context) => {
+    await Promise.all([
+      setDoc(doc(context.firestore(), "sitePublic", "maintenance"), publicMaintenance),
+      setDoc(doc(context.firestore(), "siteAdmin", "maintenance"), privateMaintenance),
+    ]);
+  });
+
+  const oldOwnerDb = testEnvironment.authenticatedContext(OWNER_UID, {
+    email: OWNER_EMAIL,
+    email_verified: true,
+    auth_time: nowSeconds - (24 * 60 * 60),
+  }).firestore();
+  const publicRef = doc(oldOwnerDb, "sitePublic", "maintenance");
+  const privateRef = doc(oldOwnerDb, "siteAdmin", "maintenance");
+  const otherDb = testEnvironment.authenticatedContext(OTHER_UID, {
+    email: "autre@example.com",
+    email_verified: true,
+    auth_time: nowSeconds - (24 * 60 * 60),
+  }).firestore();
+  const unverifiedOwnerDb = testEnvironment.authenticatedContext(OWNER_UID, {
+    email: OWNER_EMAIL,
+    email_verified: false,
+    auth_time: nowSeconds - (24 * 60 * 60),
+  }).firestore();
+  const futureOwnerDb = testEnvironment.authenticatedContext(OWNER_UID, {
+    email: OWNER_EMAIL,
+    email_verified: true,
+    auth_time: nowSeconds + (60 * 60),
+  }).firestore();
+  const disablePublic = {
+    enabled: false,
+    updatedAt: Timestamp.now(),
+  };
+  const disablePrivate = {
+    ...disablePublic,
+    updatedBy: OWNER_UID,
+  };
+
+  await assertFails(updateDoc(doc(otherDb, "sitePublic", "maintenance"), disablePublic));
+  await assertFails(updateDoc(doc(otherDb, "siteAdmin", "maintenance"), disablePrivate));
+  await assertFails(updateDoc(doc(unverifiedOwnerDb, "sitePublic", "maintenance"), disablePublic));
+  await assertFails(updateDoc(doc(unverifiedOwnerDb, "siteAdmin", "maintenance"), disablePrivate));
+  await assertFails(updateDoc(doc(futureOwnerDb, "sitePublic", "maintenance"), disablePublic));
+  await assertFails(updateDoc(doc(futureOwnerDb, "siteAdmin", "maintenance"), disablePrivate));
+
+  await assertFails(updateDoc(publicRef, {
+    enabled: false,
+    updatedAt: Timestamp.fromMillis(Date.now() - (10 * 60 * 1000)),
+  }));
+  await assertFails(updateDoc(publicRef, {
+    enabled: false,
+    updatedAt: Timestamp.fromMillis(Date.now() + (10 * 60 * 1000)),
+  }));
+  await assertFails(updateDoc(privateRef, {
+    enabled: false,
+    updatedAt: Timestamp.fromMillis(Date.now() - (10 * 60 * 1000)),
+    updatedBy: OWNER_UID,
+  }));
+  await assertFails(updateDoc(privateRef, {
+    enabled: false,
+    updatedAt: Timestamp.fromMillis(Date.now() + (10 * 60 * 1000)),
+    updatedBy: OWNER_UID,
+  }));
+  await assertFails(updateDoc(publicRef, {
+    enabled: false,
+    publicMessage: "Message modifié pendant la réouverture.",
+    updatedAt: Timestamp.now(),
+  }));
+  await assertFails(updateDoc(privateRef, {
+    enabled: false,
+    publicMessage: "Message privé modifié pendant la réouverture.",
+    updatedAt: Timestamp.now(),
+    updatedBy: OWNER_UID,
+  }));
+  await assertSucceeds(updateDoc(publicRef, {
+    enabled: false,
+    updatedAt: Timestamp.now(),
+  }));
+  await assertSucceeds(updateDoc(privateRef, {
+    enabled: false,
+    updatedAt: Timestamp.now(),
+    updatedBy: OWNER_UID,
+  }));
+
+  await assertFails(updateDoc(publicRef, {
+    enabled: true,
+    updatedAt: Timestamp.now(),
+  }));
+  await assertFails(updateDoc(privateRef, {
+    enabled: true,
+    updatedAt: Timestamp.now(),
+    updatedBy: OWNER_UID,
+  }));
+  await assertFails(updateDoc(publicRef, {
+    publicMessage: "Message modifié par une ancienne session.",
+    updatedAt: Timestamp.now(),
+  }));
+  await assertFails(updateDoc(privateRef, {
+    publicMessage: "Message privé modifié par une ancienne session.",
+    updatedAt: Timestamp.now(),
+    updatedBy: OWNER_UID,
   }));
 });
 
