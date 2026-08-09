@@ -5,9 +5,12 @@ import { test } from "node:test";
 const read = (path) => readFile(new URL(`../${path}`, import.meta.url), "utf8");
 
 test("le catalogue utilise les huit icônes officielles distinctes", async () => {
-  const [catalogSource, renderer] = await Promise.all([
+  const [catalogSource, renderer, home, softwarePage, gitignore] = await Promise.all([
     read("data/catalog.json"),
     read("js/catalog-pages.js"),
+    read("index.html"),
+    read("logiciels/index.html"),
+    read(".gitignore"),
   ]);
   const catalog = JSON.parse(catalogSource);
   const iconIds = catalog.softwares.map((software) => software.iconId);
@@ -15,6 +18,12 @@ test("le catalogue utilise les huit icônes officielles distinctes", async () =>
   assert.equal(new Set(iconIds).size, 8);
   assert.match(renderer, /setAttribute\('variant', 'standard'\)/);
   assert.doesNotMatch(renderer, /setAttribute\('variant', 'glass'\)/);
+  assert.match(home, /freev-icons\/dist\/freev-icon\.js/);
+  assert.match(softwarePage, /freev-icons\/dist\/freev-icon\.js/);
+  for (const iconId of iconIds) {
+    assert.match(home, new RegExp(`app="${iconId}"`));
+  }
+  assert.match(gitignore, /!freev-icons\/dist\/\*\*/);
 });
 
 test("aucun joueur fictif ne reste dans le catalogue", async () => {
