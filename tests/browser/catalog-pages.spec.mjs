@@ -31,7 +31,12 @@ async function expectNoHorizontalOverflow(page) {
 test("le catalogue logiciels rend les huit icônes officielles et filtre les cartes", async ({ page }) => {
   await page.goto("/logiciels/", { waitUntil: "domcontentloaded" });
   await expect(page.locator("#software-grid .catalog-card")).toHaveCount(8);
-  await expect(page.locator("#software-grid freev-icon")).toHaveCount(8);
+  const icons = page.locator("#software-grid freev-icon");
+  await expect(icons).toHaveCount(8);
+  await expect.poll(() => icons.evaluateAll((elements) => elements.every((icon) => {
+    const bounds = icon.getBoundingClientRect();
+    return bounds.width >= 64 && bounds.height >= 64 && Boolean(icon.shadowRoot?.querySelector("canvas"));
+  }))).toBe(true);
   await page.locator("[data-filter=dev]").click();
   await expect(page.locator("#software-grid .catalog-card")).toHaveCount(1);
   await page.locator("#catalog-search").fill("CV");
@@ -39,6 +44,16 @@ test("le catalogue logiciels rend les huit icônes officielles et filtre les car
   await page.locator("[data-filter=all]").click();
   await expect(page.locator("#software-grid .catalog-card")).toHaveCount(1);
   await expectNoHorizontalOverflow(page);
+});
+
+test("l’accueil affiche les huit icônes officielles des logiciels", async ({ page }) => {
+  await page.goto("/", { waitUntil: "domcontentloaded" });
+  const icons = page.locator("#logiciels freev-icon");
+  await expect(icons).toHaveCount(8);
+  await expect.poll(() => icons.evaluateAll((elements) => elements.every((icon) => {
+    const bounds = icon.getBoundingClientRect();
+    return bounds.width === 64 && bounds.height === 64 && Boolean(icon.shadowRoot?.querySelector("canvas"));
+  }))).toBe(true);
 });
 
 test("la page jeux rend les sept jeux, la sélection et la recherche", async ({ page }) => {

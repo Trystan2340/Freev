@@ -5,6 +5,8 @@ npm-debug.log*
 !.env.example
 coverage/
 dist/
+!freev-icons/dist/
+!freev-icons/dist/**
 playwright-report/
 test-results/
 firebase-debug.log*
