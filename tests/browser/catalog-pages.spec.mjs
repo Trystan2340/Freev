@@ -99,7 +99,13 @@ test("les nouvelles pages ne produisent aucune erreur JavaScript ni ressource lo
     await page.goto(route, { waitUntil: "domcontentloaded" });
     await page.waitForTimeout(250);
   }
-  expect(pageErrors).toEqual([]);
+  // WebKit Linux signale parfois le nettoyage reCAPTCHA externe comme une
+  // erreur CORS. Ce bruit fournisseur ne correspond pas à une erreur Freev.
+  const relevantErrors = pageErrors.filter((message) => !(
+    message.includes("www.google.com/recaptcha/api2/clr")
+    && message.includes("access control checks")
+  ));
+  expect(relevantErrors).toEqual([]);
   expect(brokenLocalResponses).toEqual([]);
 });
 

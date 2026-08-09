@@ -1,7 +1,10 @@
 import { expect, test } from "@playwright/test";
 
 test("référence visuelle du tableau NEXUS", async ({ page }, testInfo) => {
-  test.skip(testInfo.project.name.includes("safari"), "Référence visuelle Chromium uniquement");
+  test.skip(
+    process.platform !== "win32" || testInfo.project.name.includes("safari"),
+    "Référence visuelle Chromium Windows uniquement",
+  );
   await page.goto("/nexus.html", { waitUntil: "domcontentloaded" });
   await expect(page.locator("#nexus-gate-title")).toContainText(/Connexion|Session|Accès/);
   await page.evaluate(() => {
@@ -39,7 +42,10 @@ test("référence visuelle du tableau NEXUS", async ({ page }, testInfo) => {
 });
 
 test("référence visuelle de la maintenance", async ({ page }, testInfo) => {
-  test.skip(testInfo.project.name.includes("safari"), "Référence visuelle Chromium uniquement");
+  test.skip(
+    process.platform !== "win32" || testInfo.project.name.includes("safari"),
+    "Référence visuelle Chromium Windows uniquement",
+  );
   await page.route("https://freev-iies.onrender.com/api/site/config", (route) => route.fulfill({
     status: 200,
     contentType: "application/json",

@@ -21,7 +21,10 @@ const routes = [
 
 for (const [name, route, readySelector] of routes) {
   test(`référence visuelle ${name}`, async ({ page }, testInfo) => {
-    test.skip(testInfo.project.name.includes("safari"), "Référence visuelle Chromium uniquement");
+    test.skip(
+      process.platform !== "win32" || testInfo.project.name.includes("safari"),
+      "Référence visuelle Chromium Windows uniquement",
+    );
     await page.route(/\/status$/, (request) => request.fulfill({
       status: 200,
       contentType: "application/json",

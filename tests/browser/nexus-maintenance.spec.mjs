@@ -73,6 +73,8 @@ test("NEXUS reste fermé sans session Firebase et ne révèle pas le tableau de 
 
 test("la structure du tableau NEXUS reste utilisable sur l’écran courant", async ({ page }) => {
   await page.goto("/nexus.html", { waitUntil: "domcontentloaded" });
+  // Attend la fin du contrôle Firebase avant de figer l'état visuel du tableau.
+  await expect(page.locator("#nexus-gate")).toBeVisible();
   await page.evaluate(() => {
     document.getElementById("nexus-gate").classList.add("hidden");
     document.getElementById("nexus-dashboard").classList.remove("hidden");
