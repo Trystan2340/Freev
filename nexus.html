@@ -10,7 +10,7 @@
   <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' https://www.gstatic.com https://www.google.com https://www.recaptcha.net; style-src 'self' 'unsafe-inline'; img-src 'self' data:; connect-src 'self' https://freev-iies.onrender.com https://*.googleapis.com https://*.firebaseio.com wss://*.firebaseio.com https://securetoken.googleapis.com https://identitytoolkit.googleapis.com https://www.gstatic.com https://www.google.com https://www.recaptcha.net; frame-src https://*.firebaseapp.com https://www.google.com https://www.recaptcha.net; object-src 'none'; base-uri 'self'; form-action 'self'">
   <title>Freev NEXUS — Administration</title>
   <link rel="icon" href="icons/favicon.ico">
-  <link rel="stylesheet" href="css/nexus.css?v=1.0.0">
+  <link rel="stylesheet" href="css/nexus.css?v=1.1.0">
   <script defer src="js/error-monitor.js?v=1.0.0"></script>
 </head>
 <body>
@@ -67,7 +67,8 @@
                 <label class="field full"><span>Motif interne (jamais public)</span><textarea id="maintenance-reason" maxlength="500"></textarea></label>
               </div>
               <div class="critical-box" id="maintenance-confirm-box">Pour fermer tout Freev, écris exactement <b>FERMER FREEV</b>.<label class="field"><input id="maintenance-confirmation" autocomplete="off" placeholder="FERMER FREEV"></label></div>
-              <div class="form-actions"><button class="primary-button" type="submit">Enregistrer la maintenance</button></div>
+              <p class="session-note">Ta connexion administrateur reste valable pendant 8 heures pour les actions critiques.</p>
+              <div class="form-actions"><button class="primary-button hidden" id="maintenance-reopen" type="button">Rouvrir immédiatement le site</button><button class="ghost-button" type="submit">Enregistrer les réglages</button></div>
               <p class="form-status" id="maintenance-status" role="status"></p>
             </form>
           </section>
@@ -102,7 +103,7 @@
   </main>
 
   <script type="module" src="js/firebase-bootstrap.js?v=1.0.0"></script>
-  <script type="module" src="js/nexus.js?v=1.0.0"></script>
+  <script type="module" src="js/nexus.js?v=1.1.0"></script>
   <script src="js/pwa-register.js?v=3.1.0" defer></script>
 </body>
 </html>

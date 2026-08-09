@@ -166,6 +166,7 @@ function renderMaintenance(maintenance = {}) {
   const enabled = maintenance.enabled === true;
   byId("maintenance-state").textContent = enabled ? "Maintenance active" : "Site ouvert";
   byId("maintenance-state").dataset.kind = enabled ? "error" : "ok";
+  byId("maintenance-reopen").classList.toggle("hidden", !enabled);
   updateMaintenanceFields();
 }
 
@@ -290,6 +291,23 @@ byId("maintenance-scope").addEventListener("change", updateMaintenanceFields);
 byId("maintenance-enabled").addEventListener("change", updateMaintenanceFields);
 byId("design-radius").addEventListener("input", () => {
   byId("design-radius-output").value = byId("design-radius").value;
+});
+
+byId("maintenance-reopen").addEventListener("click", async () => {
+  if (busy || !window.confirm("Rouvrir immédiatement tout le site Freev ?")) return;
+  setBusy(true);
+  setFormStatus("maintenance-status", "Réouverture du site…");
+  try {
+    const result = await request("/api/nexus/maintenance", {
+      body: { ...maintenancePayload(), enabled: false, confirmation: "" },
+    });
+    renderMaintenance(result.maintenance);
+    setFormStatus("maintenance-status", "Le site Freev est de nouveau ouvert.", "success");
+  } catch (error) {
+    setFormStatus("maintenance-status", error.message, "error");
+  } finally {
+    setBusy(false);
+  }
 });
 
 byId("maintenance-form").addEventListener("submit", async (event) => {
