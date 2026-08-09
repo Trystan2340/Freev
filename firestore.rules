@@ -15,12 +15,18 @@ service cloud.firestore {
     }
 
     // Une action de maintenance exige une reconnexion datant de moins de
-    // dix minutes. Cela ferme aussi la voie Firestore directe si une ancienne
-    // session propriétaire est récupérée dans un navigateur compromis.
+    // dix minutes. La désactivation dispose plus bas d'une exception stricte
+    // qui ne permet jamais de modifier le contenu de la maintenance.
     function hasRecentAuthentication() {
       return request.auth != null
         && request.auth.token.auth_time is int
         && request.auth.token.auth_time >= (request.time.toMillis() / 1000) - 600
+        && request.auth.token.auth_time <= (request.time.toMillis() / 1000) + 30;
+    }
+
+    function hasSaneAuthenticationTime() {
+      return request.auth != null
+        && request.auth.token.auth_time is int
         && request.auth.token.auth_time <= (request.time.toMillis() / 1000) + 30;
     }
 
@@ -365,6 +371,17 @@ service cloud.firestore {
           && request.resource.data.updatedAt <= request.time + duration.value(1, 'm');
       }
 
+      function isStrictMaintenanceDisable() {
+        return hasSaneAuthenticationTime()
+          && resource.data.enabled == true
+          && request.resource.data.enabled == false
+          && request.resource.data.diff(resource.data).affectedKeys()
+            .hasOnly(['enabled', 'updatedAt'])
+          && request.resource.data.updatedAt >= request.time - duration.value(1, 'm')
+          && request.resource.data.updatedAt <= request.time + duration.value(1, 'm')
+          && validMaintenance();
+      }
+
       function validDesign() {
         return request.resource.data.keys().hasOnly([
             'primary', 'secondary', 'background', 'iconTheme', 'iconVariant',
@@ -400,8 +417,13 @@ service cloud.firestore {
 
       allow get: if documentId in ['maintenance', 'design'];
       allow list: if false;
-      allow create, update: if isNovaOwner()
+      allow create: if isNovaOwner()
         && ((documentId == 'maintenance' && hasRecentAuthentication() && validMaintenance())
+          || (documentId == 'design' && validDesign()));
+      allow update: if isNovaOwner()
+        && ((documentId == 'maintenance'
+              && ((hasRecentAuthentication() && validMaintenance())
+                || isStrictMaintenanceDisable()))
           || (documentId == 'design' && validDesign()));
       allow delete: if false;
     }
@@ -427,6 +449,17 @@ service cloud.firestore {
           && request.resource.data.reasonInternal.size() <= 500
           && request.resource.data.updatedBy == request.auth.uid
           && request.resource.data.updatedAt is timestamp;
+      }
+
+      function isStrictPrivateMaintenanceDisable() {
+        return hasSaneAuthenticationTime()
+          && resource.data.enabled == true
+          && request.resource.data.enabled == false
+          && request.resource.data.diff(resource.data).affectedKeys()
+            .hasOnly(['enabled', 'updatedAt', 'updatedBy'])
+          && request.resource.data.updatedAt >= request.time - duration.value(1, 'm')
+          && request.resource.data.updatedAt <= request.time + duration.value(1, 'm')
+          && validPrivateMaintenance();
       }
 
       function validPrivateDesign() {
@@ -457,8 +490,13 @@ service cloud.firestore {
 
       allow get: if isNovaOwner() && documentId in ['maintenance', 'design'];
       allow list: if false;
-      allow create, update: if isNovaOwner()
+      allow create: if isNovaOwner()
         && ((documentId == 'maintenance' && hasRecentAuthentication() && validPrivateMaintenance())
+          || (documentId == 'design' && validPrivateDesign()));
+      allow update: if isNovaOwner()
+        && ((documentId == 'maintenance'
+              && ((hasRecentAuthentication() && validPrivateMaintenance())
+                || isStrictPrivateMaintenanceDisable()))
           || (documentId == 'design' && validPrivateDesign()));
       allow delete: if false;
     }

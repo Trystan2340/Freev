@@ -79,7 +79,7 @@ test("NEXUS explique et répare une adresse propriétaire non vérifiée", async
 test("NEXUS permet de rouvrir le site sans ressaisir la maintenance", async () => {
   const [html, nexus] = await Promise.all([read("nexus.html"), read("js/nexus.js")]);
   assert.match(html, /id="maintenance-reopen"/);
-  assert.match(html, /connexion administrateur reste valable pendant 8 heures/);
+  assert.match(html, /Réouverture disponible sans reconnexion récente; changements sensibles connexion récente/);
   assert.match(nexus, /maintenance-reopen/);
   assert.match(nexus, /enabled: false, confirmation: ""/);
   assert.match(nexus, /Le site Freev est de nouveau ouvert/);
