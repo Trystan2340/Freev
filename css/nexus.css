@@ -139,6 +139,7 @@ button:disabled { cursor: not-allowed; opacity: .45; }
 .choice input { accent-color: var(--nexus-green); }
 .critical-box { margin-top: 16px; border: 1px solid rgba(255,200,87,.26); border-radius: 12px; padding: 13px; color: #ffe4a8; background: rgba(255,200,87,.055); font-size: 11px; }
 .form-actions { display: flex; flex-wrap: wrap; justify-content: flex-end; gap: 9px; margin-top: 18px; }
+.session-note { margin: 14px 0 0; color: var(--nexus-muted); font-size: 10px; }
 .form-status { min-height: 23px; margin: 12px 0 0; color: var(--nexus-muted); font-size: 11px; }
 .form-status[data-kind="success"] { color: #8fffb6; }
 .form-status[data-kind="error"] { color: #fda4af; }
