@@ -1,0 +1,202 @@
+<!doctype html>
+<html lang="fr" data-freev-theme="cyan">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="description" content="Discutez avec Freev Brain V7 ou connectez votre propre modèle local ou API.">
+  <meta name="theme-color" content="#050914">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' https://www.gstatic.com https://www.google.com https://www.recaptcha.net; style-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com; font-src 'self' data: https://cdnjs.cloudflare.com; img-src 'self' data: blob:; connect-src 'self' https://freev-iies.onrender.com https://*.googleapis.com https://*.firebaseio.com wss://*.firebaseio.com https://*.firebasestorage.app https://securetoken.googleapis.com https://identitytoolkit.googleapis.com https://www.gstatic.com https://www.google.com https://www.recaptcha.net http://127.0.0.1:* http://localhost:*; frame-src https://*.firebaseapp.com https://accounts.google.com https://www.google.com https://www.recaptcha.net; worker-src 'self' blob:; object-src 'none'; base-uri 'self'; form-action 'self'">
+  <meta name="referrer" content="strict-origin-when-cross-origin">
+  <meta http-equiv="Permissions-Policy" content="camera=(), geolocation=(), payment=(), usb=(), microphone=(self)">
+  <meta name="freev-app-check-site-key" content="6LeryW4tAAAAAG9WNqx_iWFgO2ajWSzwV7Hdx6l8">
+  <title>Outils IA — Freev Brain V7</title>
+  <link rel="icon" href="../icons/favicon.ico">
+  <link rel="stylesheet" href="../css/tailwind.generated.css?v=1.0.0">
+  <link rel="stylesheet" href="../css/freev-id-v2.css?v=2.0.0">
+  <link rel="stylesheet" href="../css/catalog-pages.css?v=2.7.0">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <script type="module" src="../js/site-control.js?v=2.7.0"></script>
+</head>
+<body data-page="outils-ia" data-root="../">
+  <header data-site-header></header>
+  <main class="page-main">
+    <div class="wrap ai-layout">
+      <section class="ai-intro" aria-labelledby="ai-title">
+        <span class="eyebrow">Freev Brain V7</span>
+        <h1 id="ai-title">Parler avec <span class="gradient">Freev V7.</span></h1>
+        <p class="lead">Utilise le cerveau natif Freev, ta propre clé API ou un modèle local. La même conversation prend en charge le texte et le vocal immersif.</p>
+        <div class="hero-actions">
+          <a class="button primary" href="#conversation">Commencer</a>
+          <a class="button" href="../nova.html">Ouvrir Freev Nova</a>
+        </div>
+        <div class="feature-list" aria-label="Capacités de Freev Brain V7">
+          <article class="feature-card"><b>Recherche hybride</b><span>Index Freev et classement multi-critères.</span></article>
+          <article class="feature-card"><b>Modèles au choix</b><span>API compatible OpenAI, Ollama ou LM Studio.</span></article>
+          <article class="feature-card"><b>Clés protégées</b><span>Chiffrement côté serveur Render et métadonnées Firebase.</span></article>
+          <article class="feature-card"><b>Vocal immersif</b><span>Micro, transcription et réponse parlée par le navigateur.</span></article>
+        </div>
+        <p class="count-badge">Freev Nova reste réservé aux comptes disposant de l’accès Nova.</p>
+      </section>
+
+      <section class="ai-card" id="conversation" aria-labelledby="freev-v7-chat-title">
+        <div class="ai-card-head">
+          <div>
+            <h2 id="freev-v7-chat-title">Freev Brain V7</h2>
+            <p id="freev-v7-mode-description">Conversation · base Freev native · vocal immersif</p>
+          </div>
+          <span class="status" id="freev-v7-status" role="status" aria-live="polite">
+            <span id="freev-v7-status-dot" aria-hidden="true">●</span>
+            <span data-status-text>Connexion…</span>
+          </span>
+        </div>
+
+        <div class="model-tools" aria-label="Choisir et configurer le modèle">
+          <button class="button primary" id="freev-mode-native" type="button">Freev V7</button>
+          <button class="button" id="freev-mode-custom" type="button">Autre IA</button>
+          <button class="button" id="freev-api-settings-button" type="button">Configurer une clé API</button>
+          <button class="button" id="freev-model-library-button" type="button">Bibliothèque de modèles</button>
+          <div class="saved-models">
+            <button class="button" id="freev-saved-models-button" type="button" aria-haspopup="menu" aria-expanded="false">
+              <span id="freev-current-model-label">Freev V7</span> ▾
+            </button>
+            <div class="saved-menu hidden" id="freev-saved-models-menu" role="menu">
+              <p class="px-2 pb-2 text-[10px] font-bold uppercase tracking-wide text-gray-500">Changer de modèle</p>
+              <div id="freev-saved-models-list"></div>
+            </div>
+          </div>
+          <button class="button" id="freev-history-button" type="button">Historique <span class="count-badge" id="freev-history-count">0</span></button>
+          <button class="button" id="freev-voice-button" type="button" aria-haspopup="dialog">Vocal immersif</button>
+        </div>
+
+        <div class="settings-panel hidden" id="freev-api-settings">
+          <div class="settings-grid">
+            <div class="field">
+              <label for="freev-provider-preset">Fournisseur</label>
+              <select id="freev-provider-preset">
+                <option value="custom">Personnalisé — API compatible OpenAI</option>
+                <option value="openai">OpenAI</option>
+                <option value="gemini">Google Gemini</option>
+                <option value="openrouter">OpenRouter</option>
+                <option value="mistral">Mistral AI</option>
+                <option value="groq">Groq</option>
+                <option value="deepseek">DeepSeek</option>
+                <option value="together">Together AI</option>
+                <option value="nvidia">NVIDIA NIM</option>
+                <option value="ollama">Ollama — local</option>
+                <option value="lmstudio">LM Studio — local</option>
+              </select>
+            </div>
+            <div class="field">
+              <label for="freev-custom-model">Nom du modèle</label>
+              <input id="freev-custom-model" type="text" placeholder="gpt-4o-mini, qwen3:8b…">
+            </div>
+            <div class="field full">
+              <label for="freev-custom-base-url">URL de base de l’API</label>
+              <input id="freev-custom-base-url" type="url" inputmode="url" placeholder="https://api.openai.com/v1">
+            </div>
+            <div class="field full">
+              <label for="freev-custom-api-key">Clé API — vide pour un modèle local</label>
+              <input id="freev-custom-api-key" type="password" autocomplete="off" placeholder="Connecte-toi puis colle ta clé">
+            </div>
+          </div>
+          <div class="hero-actions">
+            <button class="button primary" id="freev-save-api-settings" type="button">Enregistrer et utiliser</button>
+            <button class="button" id="freev-clear-api-key" type="button">Effacer la clé</button>
+          </div>
+          <p class="mt-3 text-[10px] leading-relaxed text-gray-500">Pour une API distante, connecte-toi à ton compte Freev. La clé est chiffrée par Render et n’est jamais renvoyée à cette page. Les modèles locaux restent sur ton appareil.</p>
+        </div>
+
+        <div class="messages" id="freev-v7-output" aria-live="polite" aria-label="Conversation avec Freev Brain V7">
+          <div class="mr-6 rounded-xl border border-cyan-400/15 bg-cyan-500/5 p-3 text-gray-300">
+            <p class="font-bold text-cyan-200">Freev V7</p>
+            <p class="mt-1 leading-relaxed">Bonjour ! Pose-moi une question pour commencer.</p>
+          </div>
+        </div>
+        <form class="chat-form" id="freev-v7-form">
+          <label class="sr-only" for="freev-v7-input">Écrire un message à Freev Brain V7</label>
+          <textarea id="freev-v7-input" maxlength="4000" rows="1" placeholder="Écris ton message…"></textarea>
+          <button class="chat-send" id="freev-v7-send" type="submit" aria-label="Envoyer le message">➤</button>
+        </form>
+      </section>
+    </div>
+  </main>
+
+  <div class="modal hidden" id="freev-model-library-modal" role="dialog" aria-modal="true" aria-labelledby="freev-model-library-title">
+    <div class="modal-panel">
+      <div class="modal-head">
+        <div><span class="eyebrow">Modèles locaux</span><h2 id="freev-model-library-title">Bibliothèque téléchargeable</h2><p class="lead">Copie la commande d’installation, puis utilise le modèle avec Ollama ou LM Studio.</p></div>
+        <button class="close-button" id="freev-model-library-close" type="button" aria-label="Fermer la bibliothèque">✕</button>
+      </div>
+      <div class="hero-actions" role="group" aria-label="Moteur local">
+        <button class="button primary" id="freev-runtime-ollama" type="button">Ollama</button>
+        <button class="button" id="freev-runtime-lmstudio" type="button">LM Studio</button>
+      </div>
+      <p class="count-badge" id="freev-device-recommendation"></p>
+      <div class="model-filter-grid mt-4">
+        <input class="search-field" id="freev-model-search" type="search" placeholder="Rechercher un modèle…">
+        <select class="search-field" id="freev-model-family"><option value="all">Toutes les familles</option></select>
+        <select class="search-field" id="freev-model-ram"><option value="all">Toute RAM</option><option value="4">≤ 4 Go</option><option value="8">≤ 8 Go</option><option value="16">≤ 16 Go</option><option value="32">≤ 32 Go</option><option value="64">≤ 64 Go</option></select>
+        <select class="search-field" id="freev-model-sort"><option value="recommended">Recommandés</option><option value="size">Taille croissante</option><option value="name">Nom A → Z</option></select>
+      </div>
+      <div class="section-heading"><span id="freev-model-count" aria-live="polite"></span><span class="count-badge">Tailles indicatives</span></div>
+      <div class="model-grid" id="freev-model-grid"></div>
+      <div class="hero-actions" style="justify-content:space-between">
+        <button class="button" id="freev-model-prev" type="button">← Précédent</button>
+        <span class="count-badge" id="freev-model-page"></span>
+        <button class="button" id="freev-model-next" type="button">Suivant →</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal hidden" id="freev-history-modal" role="dialog" aria-modal="true" aria-labelledby="freev-history-title">
+    <div class="modal-panel">
+      <div class="modal-head">
+        <div><span class="eyebrow">Local et cloud</span><h2 id="freev-history-title">Historique des discussions</h2><p class="lead">Questions et réponses de Freev V7 et de tes modèles enregistrés.</p></div>
+        <button class="close-button" id="freev-history-close" type="button" aria-label="Fermer l’historique">✕</button>
+      </div>
+      <div class="history-list" id="freev-history-list"></div>
+      <div class="hero-actions" style="justify-content:flex-end">
+        <button class="button" id="freev-history-clear" type="button">Vider l’historique</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="freev-voice-modal modal hidden" id="freev-voice-modal" role="dialog" aria-modal="true" aria-hidden="true" aria-labelledby="freev-voice-title">
+    <div class="freev-voice-panel modal-panel">
+      <div class="modal-head">
+        <div><span class="eyebrow">Freev Brain V7</span><h2 id="freev-voice-title">Conversation vocale immersive</h2><p class="lead">Parle naturellement, Freev transcrit puis te répond à voix haute.</p></div>
+        <button class="freev-voice-control close-button" id="freev-voice-close" type="button" aria-label="Fermer le mode vocal">✕</button>
+      </div>
+      <div class="freev-voice-stage" id="freev-voice-stage" data-state="idle">
+        <span class="freev-voice-ring" aria-hidden="true"></span><span class="freev-voice-ring" aria-hidden="true"></span>
+        <div class="freev-voice-orb" aria-hidden="true">F7</div>
+        <div class="freev-voice-wave" aria-hidden="true">
+          <span style="--bar:1"></span><span style="--bar:4"></span><span style="--bar:2"></span><span style="--bar:6"></span><span style="--bar:3"></span><span style="--bar:7"></span><span style="--bar:4"></span><span style="--bar:6"></span><span style="--bar:2"></span>
+        </div>
+      </div>
+      <div class="text-center">
+        <p class="font-bold text-cyan-100" id="freev-voice-state" aria-live="polite">Prêt à écouter</p>
+        <p class="mt-2 rounded-2xl border border-white/10 bg-slate-950/55 px-4 py-3 text-sm text-slate-300" id="freev-voice-transcript" aria-live="polite">Appuie sur le micro et commence à parler.</p>
+      </div>
+      <div class="hero-actions" style="justify-content:center">
+        <button class="freev-voice-control button primary" id="freev-voice-mic" type="button"><i class="fa-solid fa-microphone" aria-hidden="true"></i><span>Écouter</span></button>
+        <button class="freev-voice-control button" id="freev-voice-speech-toggle" type="button" aria-pressed="true"><i class="fa-solid fa-volume-high" aria-hidden="true"></i><span>Réponse vocale</span></button>
+      </div>
+      <div class="field" style="max-width:420px;margin:18px auto 0">
+        <label for="freev-voice-select">Voix du navigateur</label>
+        <select id="freev-voice-select"></select>
+      </div>
+      <p class="mt-4 text-center text-[10px] text-slate-500">La reconnaissance et la lecture utilisent les fonctions du navigateur. Freev ne stocke pas l’audio.</p>
+    </div>
+  </div>
+
+  <footer data-site-footer></footer>
+  <script src="../js/site-shell.js?v=2.7.0"></script>
+  <script src="../js/freev-v7-chat.js?v=2.7.0"></script>
+  <script src="../js/freev-ai-options.js?v=7.4.1"></script>
+  <script src="../js/freev-voice-immersive.js?v=1.1.0"></script>
+  <script type="module" src="../js/firebase-bootstrap.js?v=1.0.0"></script>
+  <script id="freev-auth-module" type="module" src="../js/freev-auth.js?v=1.2.0"></script>
+  <script src="../js/pwa-register.js?v=1.0.0"></script>
+</body>
+</html>

@@ -1,0 +1,51 @@
+{
+  "master_hash_match": {
+    "CodeMaster_V2": true,
+    "StreamStudio_Pro": true,
+    "Freev_TaskFlow": true,
+    "Freev_Sketch_Pro": true,
+    "DataVault": true,
+    "Freev_Convert": true,
+    "PixelForge": true,
+    "ResumeMaster": true
+  },
+  "png_errors": [],
+  "ico_errors": [],
+  "icns_errors": [],
+  "symbol_nonempty": {
+    "CodeMaster_V2": true,
+    "StreamStudio_Pro": true,
+    "Freev_TaskFlow": true,
+    "Freev_Sketch_Pro": true,
+    "DataVault": true,
+    "Freev_Convert": true,
+    "PixelForge": true,
+    "ResumeMaster": true
+  },
+  "small_files": 216,
+  "platform_counts": {
+    "web": 72,
+    "pwa": 32,
+    "android": 64,
+    "ios": 96,
+    "windows": 8,
+    "macos": 64
+  },
+  "js_check": {
+    "ok": true,
+    "stderr": ""
+  },
+  "sample_exports": [
+    "tests/sample-standard.png",
+    "tests/sample-glass.png",
+    "tests/sample-transparent.png",
+    "tests/sample-monochrome-white.png",
+    "tests/sample-monochrome-black.png",
+    "tests/sample-monochrome-brand.png",
+    "tests/sample-small-simplified.png"
+  ],
+  "all_master_match": true,
+  "all_png_ok": true,
+  "all_ico_ok": true,
+  "all_symbols_ok": true
+}

@@ -1,0 +1,20 @@
+{
+  "version": "2.2.0",
+  "originalMastersAllMatch": true,
+  "maskModes": {
+    "CodeMaster_V2": "RGBA",
+    "StreamStudio_Pro": "RGBA",
+    "Freev_TaskFlow": "RGBA",
+    "Freev_Sketch_Pro": "RGBA",
+    "DataVault": "RGBA",
+    "Freev_Convert": "RGBA",
+    "PixelForge": "RGBA",
+    "ResumeMaster": "RGBA"
+  },
+  "maskAlphaValid": true,
+  "androidReadyApps": 8,
+  "iosModernApps": 8,
+  "animationPreviews": 8,
+  "smallAssets": 216,
+  "jsSyntax": "PASS"
+}

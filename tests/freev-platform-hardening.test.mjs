@@ -11,7 +11,7 @@ async function htmlPages(folder = "") {
   const pages = [];
   for (const entry of await readdir(join(root, folder), { withFileTypes: true })) {
     const relativePath = join(folder, entry.name);
-    if (entry.isDirectory() && !["node_modules", ".git", "test-results", "playwright-report"].includes(entry.name)) {
+    if (entry.isDirectory() && !["node_modules", "packages", ".git", "test-results", "playwright-report"].includes(entry.name)) {
       pages.push(...await htmlPages(relativePath));
     } else if (entry.isFile() && entry.name.endsWith(".html")) {
       pages.push(relativePath.replaceAll("\\", "/"));
@@ -61,17 +61,33 @@ test("l’authentification gratuite garde Google et désactive Apple ainsi que l
   assert.doesNotMatch(`${html}\n${auth}\n${account}`, /-----BEGIN PRIVATE KEY-----/);
 });
 
-test("le manifeste hors-ligne couvre chaque page et chaque page enregistre la PWA", async () => {
+test("le manifeste hors-ligne couvre chaque page publique sans exposer NEXUS", async () => {
   const source = await read("offline-manifest.js");
   const match = source.match(/^self\.FREEV_OFFLINE_MANIFEST = ([\s\S]+);\s*$/);
   assert.ok(match, "manifeste hors-ligne invalide");
   const manifest = JSON.parse(match[1]);
+  const privatePages = new Set(["nexus.html"]);
   assert.match(manifest.version, /^[a-f0-9]{16}$/);
   assert.ok(manifest.assets.length >= 70);
   for (const normalized of await htmlPages()) {
+    if (privatePages.has(normalized)) {
+      assert.ok(!manifest.assets.includes(`./${normalized}`), `${normalized} ne doit jamais être préchargé`);
+      continue;
+    }
     assert.ok(manifest.assets.includes(`./${normalized}`), `${normalized} absent du manifeste`);
     assert.match(await read(normalized), /pwa-register\.js/, `${normalized} n’enregistre pas la PWA`);
   }
+
+  for (const privateAsset of [
+    "./nexus.html",
+    "./js/nexus.js",
+    "./js/nexus-entry.js",
+    "./css/nexus.css",
+  ]) {
+    assert.ok(!manifest.assets.includes(privateAsset), `${privateAsset} ne doit jamais être mis en cache`);
+  }
+
+  assert.match(await read("sw.js"), /NEVER_CACHE_PATHS/);
 });
 
 test("le moniteur client retire les emails, clés et requêtes des sources", async () => {
@@ -80,4 +96,34 @@ test("le moniteur client retire les emails, clés et requêtes des sources", asy
   assert.match(monitor, /\[redacted\]/);
   assert.match(monitor, /\.pathname\.split/);
   assert.doesNotMatch(monitor, /\.stack/);
+});
+
+test("NEXUS ne fait confiance qu’au jeton Firebase vérifié par Render", async () => {
+  const [html, nexus, entry, control] = await Promise.all([
+    read("nexus.html"),
+    read("js/nexus.js"),
+    read("js/nexus-entry.js"),
+    read("js/site-control.js"),
+  ]);
+  assert.match(html, /noindex,nofollow,noarchive/);
+  assert.doesNotMatch(html, /trystan\.bonnin27@icloud\.com/i);
+  assert.doesNotMatch(html, /data-freev-nexus-entry/);
+  assert.match(nexus, /Authorization: `Bearer \$\{token\}`/);
+  assert.match(entry, /\/api\/nexus\/access/);
+  assert.match(entry, /createEntries\(\)/);
+  assert.doesNotMatch(`${nexus}\n${entry}\n${control}`, /localStorage.*(?:owner|admin)|(?:owner|admin).*localStorage/i);
+});
+
+test("la maintenance utilise l’état Render persistant et conserve un bypass propriétaire vérifié", async () => {
+  const [control, page] = await Promise.all([
+    read("js/site-control.js"),
+    read("maintenance.html"),
+  ]);
+  assert.match(control, /\/api\/site\/config/);
+  assert.match(control, /\/api\/nexus\/access/);
+  assert.match(control, /Authorization: `Bearer \$\{token\}`/);
+  assert.match(control, /location\.replace/);
+  assert.doesNotMatch(control, /localStorage|sessionStorage/);
+  assert.match(page, /Accès propriétaire/);
+  assert.match(page, /freevunited@gmail\.com/);
 });

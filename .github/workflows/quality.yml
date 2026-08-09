@@ -22,6 +22,14 @@ jobs:
           node-version: 22
           cache: npm
 
+      - name: Installer Python pour le pipeline d'icônes
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Installer les dépendances du système d'icônes
+        run: pip install -r packages/freev-icon-system/requirements.txt
+
       - name: Installer Java pour Firebase Emulator
         uses: actions/setup-java@v4
         with:

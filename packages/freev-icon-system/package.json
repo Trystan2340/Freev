@@ -1,0 +1,87 @@
+{
+  "name": "@freev/icon-system",
+  "version": "2.7.0",
+  "type": "module",
+  "description": "FREEV Icon System V2.7 Final — mandatory automatic onboarding for every new game/software icon",
+  "license": "UNLICENSED",
+  "engines": {
+    "node": ">=18"
+  },
+  "exports": {
+    ".": {
+      "types": "./types/freev-icon.d.ts",
+      "import": "./dist/freev-icon.js",
+      "default": "./dist/freev-icon.js"
+    },
+    "./web": {
+      "types": "./types/freev-icon.d.ts",
+      "import": "./dist/freev-icon.js",
+      "default": "./dist/freev-icon.js"
+    },
+    "./themes": "./dist/freev-themes.css",
+    "./react": {
+      "types": "./types/freev-react.d.ts",
+      "import": "./dist/FreevIconReact.js",
+      "default": "./dist/FreevIconReact.js"
+    },
+    "./vue": {
+      "types": "./types/freev-vue.d.ts",
+      "import": "./dist/FreevIconVue.js",
+      "default": "./dist/FreevIconVue.js"
+    },
+    "./package.json": "./package.json",
+    "./vue-sfc": "./dist/FreevIconVue.vue"
+  },
+  "types": "./types/freev-icon.d.ts",
+  "sideEffects": [
+    "./dist/freev-icon.js",
+    "./dist/freev-themes.css"
+  ],
+  "scripts": {
+    "check": "node --check web/freev-icon.js",
+    "test": "python -X utf8 tests/run_all.py",
+    "test:browser": "python -X utf8 tests/browser_visual_regression.py",
+    "build": "node build.mjs",
+    "audit": "python -X utf8 tests/final_audit.py",
+    "test:edge": "python -X utf8 tests/v2_4_edge_cases.py",
+    "test:security": "python -X utf8 tests/v2_6_security_runtime.py",
+    "test:ssr": "node tests/ssr_import.mjs",
+    "icons:sync": "python -X utf8 tools/icon_pipeline.py sync --enforce",
+    "icons:add": "python -X utf8 tools/icon_pipeline.py add",
+    "icons:watch": "python -X utf8 tools/icon_pipeline.py watch",
+    "icons:check": "python -X utf8 tools/icon_pipeline.py check"
+  },
+  "files": [
+    "web/",
+    "masters/clean/",
+    "symbols/",
+    "types/",
+    "dist/",
+    "README.md",
+    "LICENSE-NOTICE.txt",
+    "registry/",
+    "tools/",
+    "incoming/README.md"
+  ],
+  "peerDependencies": {
+    "react": ">=18",
+    "vue": ">=3"
+  },
+  "peerDependenciesMeta": {
+    "react": {
+      "optional": true
+    },
+    "vue": {
+      "optional": true
+    }
+  },
+  "keywords": [
+    "freev",
+    "icons",
+    "web-component",
+    "icon-system",
+    "themes",
+    "pwa",
+    "adaptive-icons"
+  ]
+}

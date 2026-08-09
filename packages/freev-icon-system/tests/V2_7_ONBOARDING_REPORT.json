@@ -1,0 +1,13 @@
+{
+  "app": "AutoPipeline_Test",
+  "processed": true,
+  "build_gate_auto_process": true,
+  "registry": true,
+  "outputs": true,
+  "generated_runtime": true,
+  "typescript": true,
+  "cleanup": true,
+  "ok": true,
+  "stdout": "Generated registry for 9 FREEV apps\nC:\\Users\\Trystan\\Documents\\Codex\\2026-07-21\\sites-plugin-sites-openai-bundled-cr-4\\work\\freev-id-v2-pr15\\packages\\freev-icon-system\\animations\\v2_3_internal\\AutoPipeline_Test.webp\nGenerated registry for 9 FREEV apps\n✓ FREEV auto-added AutoPipeline_Test (game) — confidence 1.0\n✓ FREEV registry complete: 9 apps; mandatory outputs present\nFREEV Icon System V2.7 automatic build complete\n",
+  "stderr": ""
+}

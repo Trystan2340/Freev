@@ -10,7 +10,18 @@ service cloud.firestore {
     // Les autres administrateurs sont déclarés dans novaAdmins/{uid}.
     function isNovaOwner() {
       return request.auth != null
-        && request.auth.token.email == 'trystan.bonnin27@icloud.com';
+        && request.auth.token.email == 'trystan.bonnin27@icloud.com'
+        && request.auth.token.email_verified == true;
+    }
+
+    // Une action de maintenance exige une reconnexion datant de moins de
+    // dix minutes. Cela ferme aussi la voie Firestore directe si une ancienne
+    // session propriétaire est récupérée dans un navigateur compromis.
+    function hasRecentAuthentication() {
+      return request.auth != null
+        && request.auth.token.auth_time is int
+        && request.auth.token.auth_time >= (request.time.toMillis() / 1000) - 600
+        && request.auth.token.auth_time <= (request.time.toMillis() / 1000) + 30;
     }
 
     function isNovaAdmin() {
@@ -263,6 +274,167 @@ service cloud.firestore {
         && request.resource.data.createdBy == request.auth.uid
         && request.resource.data.createdAt is timestamp;
       allow delete: if isNovaOwner();
+    }
+
+    // Configuration publique pilotée par NEXUS. Tout le monde peut lire les
+    // deux documents nécessaires au site, mais seul le propriétaire vérifié
+    // peut les écrire. Aucun secret ni motif interne n'est accepté ici.
+    match /sitePublic/{documentId} {
+      function validMaintenance() {
+        return request.resource.data.keys().hasOnly([
+            'enabled', 'scope', 'modules', 'publicTitle', 'publicMessage',
+            'expectedBackAt', 'updatedAt'
+          ])
+          && request.resource.data.keys().hasAll([
+            'enabled', 'scope', 'modules', 'publicTitle', 'publicMessage',
+            'expectedBackAt', 'updatedAt'
+          ])
+          && request.resource.data.enabled is bool
+          && request.resource.data.scope in ['global', 'module']
+          && request.resource.data.modules is list
+          && request.resource.data.modules.size() <= 3
+          && request.resource.data.modules.hasOnly(['games', 'ai', 'nova'])
+          && (request.resource.data.scope == 'module'
+            || request.resource.data.modules.size() == 0)
+          && request.resource.data.publicTitle is string
+          && request.resource.data.publicTitle.size() >= 5
+          && request.resource.data.publicTitle.size() <= 80
+          && request.resource.data.publicMessage is string
+          && request.resource.data.publicMessage.size() >= 10
+          && request.resource.data.publicMessage.size() <= 300
+          && (request.resource.data.expectedBackAt == null
+            || request.resource.data.expectedBackAt is timestamp)
+          && request.resource.data.updatedAt is timestamp
+          && request.resource.data.updatedAt <= request.time + duration.value(1, 'm');
+      }
+
+      function validDesign() {
+        return request.resource.data.keys().hasOnly([
+            'primary', 'secondary', 'background', 'iconTheme', 'iconVariant',
+            'motion', 'cardRadius', 'density', 'version', 'updatedAt'
+          ])
+          && request.resource.data.keys().hasAll([
+            'primary', 'secondary', 'background', 'iconTheme', 'iconVariant',
+            'motion', 'cardRadius', 'density', 'version', 'updatedAt'
+          ])
+          && request.resource.data.primary is string
+          && request.resource.data.primary.matches('^#[0-9A-F]{6}$')
+          && request.resource.data.secondary is string
+          && request.resource.data.secondary.matches('^#[0-9A-F]{6}$')
+          && request.resource.data.background in ['midnight', 'nebula', 'graphite']
+          && request.resource.data.iconTheme in [
+            'cyan', 'purple', 'emerald', 'gold', 'ruby', 'rose',
+            'orange', 'graphite', 'ice'
+          ]
+          && request.resource.data.iconVariant in [
+            'standard', 'glass', 'transparent', 'monochrome-white',
+            'monochrome-black', 'monochrome-brand', 'small-simplified'
+          ]
+          && request.resource.data.motion in ['calm', 'normal', 'dynamic']
+          && request.resource.data.density in ['compact', 'comfortable']
+          && request.resource.data.cardRadius is int
+          && request.resource.data.cardRadius >= 12
+          && request.resource.data.cardRadius <= 32
+          && request.resource.data.version is int
+          && request.resource.data.version >= 1
+          && request.resource.data.updatedAt is timestamp
+          && request.resource.data.updatedAt <= request.time + duration.value(1, 'm');
+      }
+
+      allow get: if documentId in ['maintenance', 'design'];
+      allow list: if false;
+      allow create, update: if isNovaOwner()
+        && ((documentId == 'maintenance' && hasRecentAuthentication() && validMaintenance())
+          || (documentId == 'design' && validDesign()));
+      allow delete: if false;
+    }
+
+    // Copie privée utilisée pour les motifs internes et le retour arrière.
+    // Elle n'est jamais exposée à un autre compte ni aux visiteurs.
+    match /siteAdmin/{documentId} {
+      function validPrivateMaintenance() {
+        return request.resource.data.keys().hasOnly([
+            'enabled', 'scope', 'modules', 'publicTitle', 'publicMessage',
+            'expectedBackAt', 'updatedAt', 'reasonInternal', 'updatedBy'
+          ])
+          && request.resource.data.enabled is bool
+          && request.resource.data.scope in ['global', 'module']
+          && request.resource.data.modules is list
+          && request.resource.data.modules.size() <= 3
+          && request.resource.data.modules.hasOnly(['games', 'ai', 'nova'])
+          && request.resource.data.publicTitle is string
+          && request.resource.data.publicTitle.size() <= 80
+          && request.resource.data.publicMessage is string
+          && request.resource.data.publicMessage.size() <= 300
+          && request.resource.data.reasonInternal is string
+          && request.resource.data.reasonInternal.size() <= 500
+          && request.resource.data.updatedBy == request.auth.uid
+          && request.resource.data.updatedAt is timestamp;
+      }
+
+      function validPrivateDesign() {
+        return request.resource.data.keys().hasOnly([
+            'primary', 'secondary', 'background', 'iconTheme', 'iconVariant',
+            'motion', 'cardRadius', 'density', 'version', 'updatedAt',
+            'previous', 'updatedBy'
+          ])
+          && request.resource.data.primary is string
+          && request.resource.data.primary.matches('^#[0-9A-F]{6}$')
+          && request.resource.data.secondary is string
+          && request.resource.data.secondary.matches('^#[0-9A-F]{6}$')
+          && request.resource.data.background in ['midnight', 'nebula', 'graphite']
+          && request.resource.data.iconTheme is string
+          && request.resource.data.iconVariant is string
+          && request.resource.data.motion in ['calm', 'normal', 'dynamic']
+          && request.resource.data.density in ['compact', 'comfortable']
+          && request.resource.data.cardRadius is int
+          && request.resource.data.cardRadius >= 12
+          && request.resource.data.cardRadius <= 32
+          && request.resource.data.version is int
+          && request.resource.data.version >= 1
+          && request.resource.data.previous is map
+          && request.resource.data.previous.size() <= 12
+          && request.resource.data.updatedBy == request.auth.uid
+          && request.resource.data.updatedAt is timestamp;
+      }
+
+      allow get: if isNovaOwner() && documentId in ['maintenance', 'design'];
+      allow list: if false;
+      allow create, update: if isNovaOwner()
+        && ((documentId == 'maintenance' && hasRecentAuthentication() && validPrivateMaintenance())
+          || (documentId == 'design' && validPrivateDesign()));
+      allow delete: if false;
+    }
+
+    // Journal d'administration : le propriétaire peut créer et consulter les
+    // entrées, mais personne ne peut les modifier ou les supprimer ensuite.
+    match /nexusAudit/{auditId} {
+      function validAuditEntry() {
+        return auditId.matches('^[0-9TZ]{16,24}-[a-f0-9]{12}$')
+          && request.resource.data.keys().hasOnly([
+            'id', 'action', 'target', 'summary', 'actorUid', 'actorEmail',
+            'createdAt'
+          ])
+          && request.resource.data.keys().hasAll([
+            'id', 'action', 'target', 'summary', 'actorUid', 'actorEmail',
+            'createdAt'
+          ])
+          && request.resource.data.id == auditId
+          && request.resource.data.action is string
+          && request.resource.data.action.size() <= 60
+          && request.resource.data.target is string
+          && request.resource.data.target.size() <= 80
+          && request.resource.data.summary is string
+          && request.resource.data.summary.size() <= 240
+          && request.resource.data.actorUid == request.auth.uid
+          && request.resource.data.actorEmail == request.auth.token.email
+          && request.resource.data.createdAt is timestamp
+          && request.resource.data.createdAt <= request.time + duration.value(1, 'm');
+      }
+
+      allow get, list: if isNovaOwner();
+      allow create: if isNovaOwner() && validAuditEntry();
+      allow update, delete: if false;
     }
 
     match /usernames/{nicknameLower} {

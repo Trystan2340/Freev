@@ -1,0 +1,34 @@
+{
+  "CodeMaster_V2": {
+    "match": true,
+    "sha256": "7f2ab9b5ebe7292583f7582b3299a172a225104844d29793f8ee1651b69296b3"
+  },
+  "StreamStudio_Pro": {
+    "match": true,
+    "sha256": "760e8c44fa73fe707df8d536697c6add1e07004ba38fccf7b57be3578ecf8033"
+  },
+  "Freev_TaskFlow": {
+    "match": true,
+    "sha256": "939779bf4fb5bb8f215c0f216be7bdf7939bb33ac1bf87b080415ee769615f07"
+  },
+  "Freev_Sketch_Pro": {
+    "match": true,
+    "sha256": "4ea1d407110a18307ae7e39b4e0d340dc814653d6822be04b43213d50ae6a916"
+  },
+  "DataVault": {
+    "match": true,
+    "sha256": "a8d906939a2bb43435de9f3d1e81ee25cc8ad2c34b7002232ca364c05cd1c2f7"
+  },
+  "Freev_Convert": {
+    "match": true,
+    "sha256": "3e15d52381208f0a3b95ed2eb87cda4a776fcf1d236a5b1cab3fcfa41e152831"
+  },
+  "PixelForge": {
+    "match": true,
+    "sha256": "7ea16881edfdce806966c80f6f77acb988cc0e3b07617c45483d5f346e2e5caf"
+  },
+  "ResumeMaster": {
+    "match": true,
+    "sha256": "fe221428cca46568c347f9ca9cfeacd77e4b34d7fe799524639fdf9003d7f44e"
+  }
+}

@@ -365,7 +365,7 @@ input:focus, select:focus, textarea:focus { border-color: var(--green); box-shad
   border-radius: 12px;
   background: rgba(1, 8, 3, 0.9);
 }
-.send-button { flex: 0 0 52px; width: 52px; height: 52px; border-color: var(--green); border-radius: 13px; background: var(--green); color: #021004; font-size: 1.1rem; font-weight: 900; box-shadow: 0 8px 24px rgba(0, 255, 65, 0.15); }
+.send-button { flex: 0 0 52px; width: 52px; min-width: 52px; height: 52px; min-height: 52px; padding: 0; border-color: var(--green); border-radius: 13px; background: var(--green); color: #021004; font-size: 1.1rem; font-weight: 900; box-shadow: 0 8px 24px rgba(0, 255, 65, 0.15); -webkit-appearance: none; appearance: none; }
 .send-button:hover { background: var(--green-soft); }
 .send-button:disabled { cursor: wait; opacity: 0.5; }
 .composer-note { margin: 0; padding: 0.65rem 1.3rem 0.9rem; color: #58705c; font-size: 0.58rem; }
@@ -603,7 +603,8 @@ input:focus, select:focus, textarea:focus { border-color: var(--green); box-shad
   .message-body { padding: 0.7rem; }
   .composer { position: sticky; bottom: 0; padding: 0.7rem; padding-bottom: max(0.7rem, env(safe-area-inset-bottom)); box-shadow: 0 -14px 28px rgba(0, 0, 0, 0.22); }
   .composer textarea { min-height: 48px; max-height: 132px; }
-  .send-button { flex-basis: 48px; width: 48px; height: 48px; border-radius: 12px; }
+  /* Safari iOS peut réduire la largeur d'un bouton flex malgré flex-basis. */
+  .send-button { flex-basis: 48px; width: 48px; min-width: 48px; height: 48px; min-height: 48px; border-radius: 12px; }
   .composer-note { display: none; }
   .creature-list { grid-template-columns: 1fr; }
   .creature-desktop { min-height: 290px; }

@@ -1,0 +1,2 @@
+/* Change seulement data-freev-theme sur <html>. Les icônes theme="inherit" se mettent à jour. */
+html[data-freev-theme="cyan"]{--freev-theme:#11D7FF}html[data-freev-theme="purple"]{--freev-theme:#C84DFF}html[data-freev-theme="emerald"]{--freev-theme:#23E1A7}html[data-freev-theme="gold"]{--freev-theme:#FFD23B}html[data-freev-theme="ruby"]{--freev-theme:#FF4B5C}html[data-freev-theme="rose"]{--freev-theme:#FF4FCB}html[data-freev-theme="orange"]{--freev-theme:#FF8A2A}html[data-freev-theme="graphite"]{--freev-theme:#6E86A4}html[data-freev-theme="ice"]{--freev-theme:#D9F3FF}

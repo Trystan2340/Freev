@@ -1,0 +1,42 @@
+[
+  {
+    "id": "CodeMaster_V2",
+    "label": "CodeMaster V2",
+    "kind": "software"
+  },
+  {
+    "id": "StreamStudio_Pro",
+    "label": "StreamStudio Pro",
+    "kind": "software"
+  },
+  {
+    "id": "Freev_TaskFlow",
+    "label": "Freev TaskFlow",
+    "kind": "software"
+  },
+  {
+    "id": "Freev_Sketch_Pro",
+    "label": "Freev Sketch Pro",
+    "kind": "software"
+  },
+  {
+    "id": "DataVault",
+    "label": "DataVault",
+    "kind": "software"
+  },
+  {
+    "id": "Freev_Convert",
+    "label": "Freev Convert",
+    "kind": "software"
+  },
+  {
+    "id": "PixelForge",
+    "label": "PixelForge",
+    "kind": "software"
+  },
+  {
+    "id": "ResumeMaster",
+    "label": "ResumeMaster",
+    "kind": "software"
+  }
+]

@@ -5,6 +5,12 @@ const CACHE_PREFIX = "freev-offline-";
 const CACHE_VERSION = `${CACHE_PREFIX}${manifest.version}`;
 const OFFLINE_URL = "./offline.html";
 const APP_SHELL = ["./", "./offline-manifest.js", ...manifest.assets];
+const NEVER_CACHE_PATHS = new Set([
+  new URL("./nexus.html", self.location.href).pathname,
+  new URL("./js/nexus.js", self.location.href).pathname,
+  new URL("./js/nexus-entry.js", self.location.href).pathname,
+  new URL("./css/nexus.css", self.location.href).pathname,
+]);
 const CACHEABLE_EXTERNAL_ORIGINS = new Set([
   "https://cdnjs.cloudflare.com",
   "https://cdn.jsdelivr.net",
@@ -36,7 +42,9 @@ function isCacheableLocalRequest(request) {
   const url = new URL(request.url);
   if (request.method !== "GET") return false;
   if (url.origin === self.location.origin) {
-    return !url.pathname.includes("/__/") && !url.pathname.includes("/api/");
+    return !NEVER_CACHE_PATHS.has(url.pathname)
+      && !url.pathname.includes("/__/")
+      && !url.pathname.includes("/api/");
   }
   return CACHEABLE_EXTERNAL_ORIGINS.has(url.origin);
 }

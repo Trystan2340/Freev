@@ -1,0 +1,22 @@
+{
+  "version": "2.7.0",
+  "generatedFrom": "packages/freev-icon-system",
+  "apps": [
+    "CodeMaster_V2",
+    "StreamStudio_Pro",
+    "Freev_TaskFlow",
+    "Freev_Sketch_Pro",
+    "DataVault",
+    "Freev_Convert",
+    "PixelForge",
+    "ResumeMaster"
+  ],
+  "publishedPaths": [
+    "dist",
+    "masters/clean",
+    "symbols/mask",
+    "symbols/small-mask",
+    "symbols/animation-cover",
+    "symbols/animation-layers"
+  ]
+}

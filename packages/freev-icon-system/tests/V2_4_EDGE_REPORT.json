@@ -1,0 +1,26 @@
+{
+  "invalid_size": true,
+  "disabled_click": true,
+  "motion_off_static": {
+    "CodeMaster_V2": true,
+    "StreamStudio_Pro": true,
+    "Freev_TaskFlow": true,
+    "Freev_Sketch_Pro": true,
+    "DataVault": true,
+    "Freev_Convert": true,
+    "PixelForge": true,
+    "ResumeMaster": true
+  },
+  "reduced_motion_static": {
+    "CodeMaster_V2": true,
+    "StreamStudio_Pro": true,
+    "Freev_TaskFlow": true,
+    "Freev_Sketch_Pro": true,
+    "DataVault": true,
+    "Freev_Convert": true,
+    "PixelForge": true,
+    "ResumeMaster": true
+  },
+  "console_errors": [],
+  "ok": true
+}

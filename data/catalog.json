@@ -1,0 +1,201 @@
+{
+  "schema": 1,
+  "softwares": [
+    {
+      "id": "codemaster-v2",
+      "iconId": "CodeMaster_V2",
+      "title": "CodeMaster V2",
+      "description": "Un IDE léger optimisé pour le développement web rapide.",
+      "category": "dev",
+      "categoryLabel": "Développement",
+      "tags": ["IDE", "Web", "Léger"],
+      "technology": "Electron / TypeScript",
+      "version": "v2.8 · stable",
+      "status": "available",
+      "launchTarget": "../logiciels/codemaster.html"
+    },
+    {
+      "id": "streamstudio-pro",
+      "iconId": "StreamStudio_Pro",
+      "title": "StreamStudio Pro",
+      "description": "Capture d’écran et webcam performante en temps réel.",
+      "category": "multi",
+      "categoryLabel": "Multimédia",
+      "tags": ["Capture", "Streaming", "Vidéo"],
+      "technology": "C++ / Qt",
+      "version": "v4.1 · creator",
+      "status": "available",
+      "launchTarget": "../logiciels/streamstudiopro.html"
+    },
+    {
+      "id": "freev-taskflow",
+      "iconId": "Freev_TaskFlow",
+      "title": "Freev TaskFlow",
+      "description": "Gestionnaire de tâches intelligent basé sur Kanban et l’IA.",
+      "category": "prod",
+      "categoryLabel": "Productivité",
+      "tags": ["Kanban", "IA", "Organisation"],
+      "technology": "React / Node.js",
+      "version": "v3.2 · IA",
+      "status": "available",
+      "launchTarget": "../logiciels/freev-taskflow.html"
+    },
+    {
+      "id": "freev-sketch-pro",
+      "iconId": "Freev_Sketch_Pro",
+      "title": "Freev Sketch Pro",
+      "description": "Tableau blanc 3D collaboratif et modélisation intuitive.",
+      "category": "design",
+      "categoryLabel": "Design & Création",
+      "tags": ["3D", "Whiteboard", "Design"],
+      "technology": "Three.js / WebGL",
+      "version": "v1.9 · 3D",
+      "status": "available",
+      "launchTarget": "../logiciels/freevsketchpro.html"
+    },
+    {
+      "id": "datavault",
+      "iconId": "DataVault",
+      "title": "DataVault",
+      "description": "Coffre-fort numérique personnel chiffré et sécurisé.",
+      "category": "secu",
+      "categoryLabel": "Données & Sécurité",
+      "tags": ["Sécurité", "Chiffrement", "Stockage"],
+      "technology": "Python",
+      "version": "v5.0 · chiffré",
+      "status": "available",
+      "launchTarget": "../logiciels/coffre.html"
+    },
+    {
+      "id": "freev-convert",
+      "iconId": "Freev_Convert",
+      "title": "Freev Convert",
+      "description": "Convertisseur universel rapide pour fichiers, devises et unités.",
+      "category": "util",
+      "categoryLabel": "Utilitaires",
+      "tags": ["Conversion", "Fichiers", "Unités"],
+      "technology": "Rust",
+      "version": "v2.1 · rapide",
+      "status": "available",
+      "launchTarget": "../logiciels/freevconvert.html"
+    },
+    {
+      "id": "pixelforge",
+      "iconId": "PixelForge",
+      "title": "PixelForge",
+      "description": "Éditeur de Pixel Art intuitif avec export PNG et GIF.",
+      "category": "design",
+      "categoryLabel": "Design & Création",
+      "tags": ["Pixel Art", "Sprites", "Export"],
+      "technology": "JavaScript / Canvas",
+      "version": "v1.7 · pixel",
+      "status": "available",
+      "launchTarget": "../logiciels/pixelforge.html"
+    },
+    {
+      "id": "resumemaster",
+      "iconId": "ResumeMaster",
+      "title": "ResumeMaster",
+      "description": "Créateur de CV professionnels avec builder glisser-déposer.",
+      "category": "prod",
+      "categoryLabel": "Productivité",
+      "tags": ["CV", "Builder", "PDF"],
+      "technology": "React / TypeScript",
+      "version": "v3.0 · export",
+      "status": "available",
+      "launchTarget": "../logiciels/resumemaster.html"
+    }
+  ],
+  "games": [
+    {
+      "id": "pacman",
+      "title": "PAC-MAN",
+      "subtitle": "Le classique revisité",
+      "description": "Le mythique labyrinthe renaît avec des effets néon et des power-ups FREEV.",
+      "cover": "../assets/catalog/games/pacman.png",
+      "launchTarget": "../jeux/pacman.html",
+      "featured": true,
+      "legacyCoverOnly": true
+    },
+    {
+      "id": "tron",
+      "title": "TRON",
+      "subtitle": "Course de motos légères",
+      "description": "Filez sur la grille néon et laissez vos rivaux dans votre sillage lumineux.",
+      "cover": "../assets/catalog/games/tron.png",
+      "launchTarget": "../jeux/tron.html",
+      "featured": true,
+      "legacyCoverOnly": true
+    },
+    {
+      "id": "cyber-pong",
+      "title": "CYBER PONG",
+      "subtitle": "Duel 3D néo-rétro",
+      "description": "Un duel de pong en 3D avec effets néon et mode compétitif.",
+      "cover": "../assets/catalog/games/cyber-pong.png",
+      "launchTarget": "../jeux/cyberpong.html",
+      "featured": true,
+      "legacyCoverOnly": true
+    },
+    {
+      "id": "astro-miner",
+      "title": "ASTRO MINER",
+      "subtitle": "Survie & exploration",
+      "description": "Explorez les astéroïdes, minez les cristaux et survivez dans le vide spatial.",
+      "cover": "../assets/catalog/games/astro-miner.png",
+      "launchTarget": "../jeux/astrominer.html",
+      "featured": true,
+      "legacyCoverOnly": true
+    },
+    {
+      "id": "neon-snake",
+      "title": "NEON SNAKE",
+      "subtitle": "Le serpent néon",
+      "description": "Le classique du serpent revisité avec power-ups et mode infini.",
+      "cover": "../assets/catalog/games/neon-snake.png",
+      "launchTarget": "../jeux/neonsnake.html",
+      "legacyCoverOnly": true
+    },
+    {
+      "id": "tower-block",
+      "title": "TOWER BLOCK",
+      "subtitle": "Empile et dépasse-toi",
+      "description": "Empilez les blocs le plus haut possible sans les faire tomber.",
+      "cover": "../assets/catalog/games/tower-block.png",
+      "launchTarget": "../jeux/towerblock.html",
+      "legacyCoverOnly": true
+    },
+    {
+      "id": "beatjump",
+      "title": "BEATJUMP",
+      "subtitle": "Sautez sur les beats",
+      "description": "Sautez en rythme dans un jeu musical au style rétro-futuriste.",
+      "cover": "../assets/catalog/games/beatjump.png",
+      "launchTarget": "../jeux/beatjump.html",
+      "legacyCoverOnly": true
+    }
+  ],
+  "leaderboards": {
+    "week": [
+      ["NeoPlayer", "128 450"],
+      ["PixelMaster", "94 210"],
+      ["TronRider", "72 880"],
+      ["CyberGhost", "54 330"],
+      ["AstroMiner", "41 770"]
+    ],
+    "month": [
+      ["PixelMaster", "486 900"],
+      ["NeoPlayer", "471 240"],
+      ["AstroMiner", "398 610"],
+      ["CyberGhost", "355 480"],
+      ["TronRider", "301 220"]
+    ],
+    "global": [
+      ["NeoPlayer", "1 284 500"],
+      ["TronRider", "1 102 340"],
+      ["PixelMaster", "987 210"],
+      ["AstroMiner", "864 470"],
+      ["CyberGhost", "720 950"]
+    ]
+  }
+}

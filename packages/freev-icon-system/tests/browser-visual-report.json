@@ -1,0 +1,82 @@
+{
+  "mask_visual": {
+    "CodeMaster_V2": {
+      "white_ratio": 0.0294,
+      "background_ratio": 0.9611,
+      "ok": true
+    },
+    "StreamStudio_Pro": {
+      "white_ratio": 0.0227,
+      "background_ratio": 0.9736,
+      "ok": true
+    },
+    "Freev_TaskFlow": {
+      "white_ratio": 0.0769,
+      "background_ratio": 0.8843,
+      "ok": true
+    },
+    "Freev_Sketch_Pro": {
+      "white_ratio": 0.0478,
+      "background_ratio": 0.9453,
+      "ok": true
+    },
+    "DataVault": {
+      "white_ratio": 0.0463,
+      "background_ratio": 0.9327,
+      "ok": true
+    },
+    "Freev_Convert": {
+      "white_ratio": 0.0453,
+      "background_ratio": 0.9443,
+      "ok": true
+    },
+    "PixelForge": {
+      "white_ratio": 0.0557,
+      "background_ratio": 0.9297,
+      "ok": true
+    },
+    "ResumeMaster": {
+      "white_ratio": 0.0347,
+      "background_ratio": 0.9519,
+      "ok": true
+    }
+  },
+  "animation_visual": {
+    "CodeMaster_V2": {
+      "changed_ratio": 0.0351,
+      "ok": true
+    },
+    "StreamStudio_Pro": {
+      "changed_ratio": 0.0334,
+      "ok": true
+    },
+    "Freev_TaskFlow": {
+      "changed_ratio": 0.0394,
+      "ok": true
+    },
+    "Freev_Sketch_Pro": {
+      "changed_ratio": 0.0579,
+      "ok": true
+    },
+    "DataVault": {
+      "changed_ratio": 0.0351,
+      "ok": true
+    },
+    "Freev_Convert": {
+      "changed_ratio": 0.0749,
+      "ok": true
+    },
+    "PixelForge": {
+      "changed_ratio": 0.0634,
+      "ok": true
+    },
+    "ResumeMaster": {
+      "changed_ratio": 0.0118,
+      "ok": true
+    }
+  },
+  "theme_inherit": true,
+  "keyboard": true,
+  "console_errors": [],
+  "ok": true
+}

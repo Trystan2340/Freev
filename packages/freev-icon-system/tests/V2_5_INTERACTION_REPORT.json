@@ -1,0 +1,10 @@
+{
+  "pointer_activate_once": true,
+  "keyboard_enter_activate_once": true,
+  "keyboard_space_activate_once": true,
+  "noninteractive_no_activate": true,
+  "disabled_no_activate": true,
+  "size_cap_2048": true,
+  "console_errors": [],
+  "ok": true
+}

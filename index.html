@@ -32,6 +32,7 @@
 <!-- Marked.js for Markdown parsing -->
 <script defer src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
 <script defer src="js/error-monitor.js?v=1.0.0"></script>
+<script type="module" src="js/site-control.js?v=2.7.0"></script>
 <link href="css/index-legacy.css?v=1.1.0" rel="stylesheet"/>
 </head>
 <body class="font-sans antialiased selection:bg-brand-accent selection:text-brand-dark" data-freev-banner="aurora">
@@ -52,15 +53,15 @@
                     ACCUEIL
                     <span class="absolute -bottom-1 left-0 w-0 h-0.5 bg-brand-accent transition-all group-hover:w-full"></span>
 </a>
-<a class="hover:text-brand-accent transition-colors relative group" href="#logiciels">
+<a class="hover:text-brand-accent transition-colors relative group" href="logiciels/">
                     LOGICIELS
                     <span class="absolute -bottom-1 left-0 w-0 h-0.5 bg-brand-accent transition-all group-hover:w-full"></span>
 </a>
-<a class="hover:text-brand-accent transition-colors relative group" href="#jeux">
+<a class="hover:text-brand-accent transition-colors relative group" href="jeux/">
                     JEUX
                     <span class="absolute -bottom-1 left-0 w-0 h-0.5 bg-brand-accent transition-all group-hover:w-full"></span>
 </a>
-<a class="hover:text-brand-accent transition-colors relative group" href="#ia">
+<a class="hover:text-brand-accent transition-colors relative group" href="outils-ia/">
                     OUTILS IA
                     <span class="absolute -bottom-1 left-0 w-0 h-0.5 bg-brand-accent transition-all group-hover:w-full"></span>
 </a>
@@ -88,9 +89,9 @@
 <div class="glass rounded-2xl p-3 mx-auto border border-white/10 bg-brand-dark/95 shadow-xl">
 <div class="grid grid-cols-2 gap-2 text-center text-sm font-semibold">
 <a class="mobile-link py-2.5 px-2 hover:bg-white/5 rounded-lg" href="#home">ACCUEIL</a>
-<a class="mobile-link py-2.5 px-2 hover:bg-white/5 rounded-lg" href="#logiciels">LOGICIELS</a>
-<a class="mobile-link py-2.5 px-2 hover:bg-white/5 rounded-lg" href="#jeux">JEUX</a>
-<a class="mobile-link py-2.5 px-2 hover:bg-white/5 rounded-lg" href="#ia">OUTILS IA</a>
+<a class="mobile-link py-2.5 px-2 hover:bg-white/5 rounded-lg" href="logiciels/">LOGICIELS</a>
+<a class="mobile-link py-2.5 px-2 hover:bg-white/5 rounded-lg" href="jeux/">JEUX</a>
+<a class="mobile-link py-2.5 px-2 hover:bg-white/5 rounded-lg" href="outils-ia/">OUTILS IA</a>
 <a class="mobile-link py-2.5 px-2 rounded-lg border border-emerald-400/20 bg-emerald-400/5 text-emerald-200" href="nova.html">NOVA</a>
 <hr class="col-span-2 border-white/10"/>
 <div class="col-span-2 flex justify-center gap-3 pt-1">
@@ -251,11 +252,11 @@
                 Explorez un hub tout-en-un combinant logiciels exclusifs, jeux immersifs et puissance de l'IA.
             </p>
 <div class="flex flex-col sm:flex-row gap-4 justify-center reveal" style="transition-delay: 300ms;">
-<a class="group px-6 sm:px-8 py-3 bg-white text-slate-950 font-bold rounded-full hover:bg-white transition-all flex items-center justify-center gap-2" href="#logiciels">
+<a class="group px-6 sm:px-8 py-3 bg-white text-slate-950 font-bold rounded-full hover:bg-white transition-all flex items-center justify-center gap-2" href="logiciels/">
                     Voir les projets
                     <i class="fa-solid fa-arrow-right group-hover:translate-x-1 transition-transform"></i>
 </a>
-<a class="px-6 sm:px-8 py-3 border border-white/20 rounded-full hover:bg-white/10 transition-all backdrop-blur-sm" href="#ia">
+<a class="px-6 sm:px-8 py-3 border border-white/20 rounded-full hover:bg-white/10 transition-all backdrop-blur-sm" href="outils-ia/">
                     Tester l'IA
                 </a>
 </div>
@@ -761,27 +762,30 @@ Freev Brain V7 répond avec la base propre de Freev. Tu peux aussi connecter ta 
 <!-- Footer -->
 <footer class="bg-black border-t border-white/10 pt-16 pb-24 md:pb-8" id="contact">
 <div class="container mx-auto px-6">
-<div class="grid grid-cols-1 md:grid-cols-3 gap-12 mb-12">
-<div class="col-span-1 md:col-span-1">
+<div class="grid grid-cols-1 gap-10 mb-12 sm:grid-cols-2 lg:grid-cols-5">
+<div class="sm:col-span-2">
 <h2 class="text-2xl font-heading font-bold mb-4">FREEV<span class="text-brand-primary">.</span></h2>
-<p class="text-gray-500 text-sm">
-                        L'univers digital imaginé et conçu par Trystan2340. 
-                        Innovation, Jeux et Éducation.
-                    </p>
+<p class="max-w-sm text-gray-500 text-sm">Un espace numérique indépendant : logiciels, jeux, intelligence artificielle et création.</p>
+<div class="mt-5 flex gap-2" aria-label="Réseaux et communauté">
+<a aria-label="GitHub de Trystan2340" class="flex h-9 w-9 items-center justify-center rounded-lg border border-white/10 text-xs font-bold text-gray-400 transition-colors hover:border-cyan-400/30 hover:text-cyan-300" href="https://github.com/Trystan2340" rel="noopener noreferrer" target="_blank">GH</a>
+<span aria-disabled="true" class="flex h-9 w-9 cursor-not-allowed items-center justify-center rounded-lg border border-white/10 text-xs font-bold text-gray-600" title="Discord bientôt disponible">DC</span>
+</div>
 </div>
 <div>
-<h4 class="font-bold mb-4 text-white">Contact</h4>
-<p class="text-gray-400 text-sm mb-2">Une question ? Un projet ?</p>
-<a class="email-link email-text text-brand-primary hover:text-white transition-colors text-sm font-bold" href="#">
-                        trystan.bonnin27@icloud.com
-                    </a>
+<h3 class="font-bold mb-4 text-white text-sm">Plateforme</h3>
+<nav class="grid gap-2 text-xs text-gray-500" aria-label="Plateforme"><a class="hover:text-white" href="logiciels/">Logiciels</a><a class="hover:text-white" href="jeux/">Jeux</a><a class="hover:text-white" href="outils-ia/">Outils IA</a><a class="hover:text-white" href="nova.html">Freev Nova</a></nav>
 </div>
-<!-- La section "Suivez-nous" a été supprimée -->
+<div>
+<h3 class="font-bold mb-4 text-white text-sm">Légal</h3>
+<nav class="grid gap-2 text-xs text-gray-500" aria-label="Informations légales"><a class="hover:text-white" href="legal/mentions-legales.html">Mentions légales</a><a class="hover:text-white" href="legal/confidentialite.html">Confidentialité</a><a class="hover:text-white" href="legal/conditions-utilisation.html">Conditions d’utilisation</a><a class="hover:text-white" href="legal/cookies.html">Cookies</a><a class="hover:text-white" href="legal/">Tous les documents</a></nav>
 </div>
-<div class="border-t border-white/5 pt-8 text-center text-gray-600 text-sm">
-<!-- Correction de l'année -->
-                © 2026 Freev by Trystan2340. Tous droits réservés.
-            </div>
+<div>
+<h3 class="font-bold mb-4 text-white text-sm">Contact</h3>
+<p class="text-gray-500 text-xs mb-2">Une question ou un signalement ?</p>
+<a class="email-link email-text text-brand-primary hover:text-white transition-colors text-xs font-bold break-all" href="mailto:freevunited@gmail.com">freevunited@gmail.com</a>
+</div>
+</div>
+<div class="border-t border-white/5 pt-8 text-center text-gray-600 text-sm">© 2026 Freev by Trystan2340. Tous droits réservés.</div>
 </div>
 </footer>
 <!-- Scripts -->
@@ -792,6 +796,7 @@ Freev Brain V7 répond avec la base propre de Freev. Tu peux aussi connecter ta 
 <script src="js/index-runtime-4.js?v=1.1.0"></script>
 <script src="js/firebase-bootstrap.js?v=1.0.0" type="module"></script>
 <script id="freev-auth-module" type="module" src="js/freev-auth.js?v=1.2.0"></script>
+<script src="js/nexus-entry.js?v=1.0.0" type="module"></script>
 <script src="js/freev-id/freev-id-v2.js?v=2.0.0" type="module"></script>
 <script src="js/freev-id/account-center.js?v=2.1.0" type="module"></script>
 <script defer="" src="js/pwa-register.js?v=3.1.0"></script>

@@ -1,0 +1,13 @@
+{
+  "animation_injection_blocked": true,
+  "invalid_animation_static": true,
+  "invalid_badge_hidden": true,
+  "invalid_globals_safe": true,
+  "invalid_asset_base_error_and_fallback": true,
+  "invalid_app_error_all_variants": true,
+  "small_badge_inside_bounds": true,
+  "ssr_safe": true,
+  "console_errors": [],
+  "ssr_output": "SSR import PASS",
+  "ok": true
+}
