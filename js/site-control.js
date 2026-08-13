@@ -17,6 +17,8 @@ const SAFE_HEX = /^#[0-9A-F]{6}$/i;
 const SAFE_MOTION = new Set(["calm", "normal", "dynamic"]);
 const SAFE_DENSITY = new Set(["compact", "comfortable"]);
 const EXEMPT_ROUTES = ["/maintenance.html", "/nexus.html", "/profil.html", "/legal/"];
+// Le site reste accessible même si une ancienne configuration distante active la maintenance.
+const MAINTENANCE_REDIRECT_ENABLED = false;
 
 function currentModule(pathname) {
   const path = pathname.toLowerCase();
@@ -52,6 +54,7 @@ function applyDesign(design = {}) {
 }
 
 function isMaintenanceActive(maintenance = {}) {
+  if (!MAINTENANCE_REDIRECT_ENABLED) return false;
   if (maintenance.enabled !== true) return false;
   if (maintenance.scope === "global") return true;
   const moduleName = currentModule(location.pathname);
