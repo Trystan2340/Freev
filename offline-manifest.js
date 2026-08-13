@@ -1,5 +1,5 @@
 self.FREEV_OFFLINE_MANIFEST = {
-  "version": "7646c049f83aadad",
+  "version": "f348d9277df28ee8",
   "assets": [
     "./assets/catalog/games/astro-miner.png",
     "./assets/catalog/games/beatjump.png",
@@ -192,11 +192,16 @@ self.FREEV_OFFLINE_MANIFEST = {
     "./logiciels/resumemaster.html",
     "./logiciels/signaturestudio.html",
     "./logiciels/streamstudiopro.html",
+    "./logiciels/vendor/cropperjs/LICENSE",
     "./logiciels/vendor/cropperjs/cropper.min.css",
     "./logiciels/vendor/cropperjs/cropper.min.js",
+    "./logiciels/vendor/marked/LICENSE",
     "./logiciels/vendor/marked/marked.umd.js",
+    "./logiciels/vendor/papaparse/LICENSE",
     "./logiciels/vendor/papaparse/papaparse.min.js",
+    "./logiciels/vendor/qrcodejs/LICENSE",
     "./logiciels/vendor/qrcodejs/qrcode.min.js",
+    "./logiciels/vendor/signature-pad/LICENSE",
     "./logiciels/vendor/signature-pad/signature_pad.umd.min.js",
     "./main.js",
     "./maintenance.html",

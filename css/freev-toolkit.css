@@ -112,12 +112,14 @@ a { color: inherit; }
 .sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0, 0, 0, 0); white-space: nowrap; }
 
 @media (max-width: 820px) {
-  .tool-grid, .tool-grid.equal { grid-template-columns: 1fr; }
+  /* minmax(0, 1fr) empêche les contenus intrinsèques (QR/canvas/tableau)
+     d'élargir la grille au-delà de l'écran sur mobile. */
+  .tool-grid, .tool-grid.equal { grid-template-columns: minmax(0, 1fr); }
   .tool-hero { grid-template-columns: 1fr; }
   .tool-hero freev-icon { display: none; }
 }
 @media (max-width: 560px) {
-  .tool-shell { width: min(100% - 20px, 1180px); padding-top: 12px; }
+  .tool-shell { width: min(calc(100% - 20px), 1180px); padding-top: 12px; }
   .tool-nav { align-items: stretch; flex-direction: column; }
   .tool-back { width: 100%; }
   .tool-card { border-radius: 18px; padding: 16px; }
