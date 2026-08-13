@@ -57,13 +57,14 @@ test("Excalidraw est auto-hébergé, crédité et raccordé au cloud borné", as
 });
 
 test("OpenCut est auto-hébergé, crédité et adapté sans services serveur", async () => {
-  const [page, notices, cloudAdapters, version, license, catalogSource] = await Promise.all([
+	const [page, notices, cloudAdapters, version, license, catalogSource, noJekyll] = await Promise.all([
     read("logiciels/opencut/index.html"),
     read("THIRD_PARTY_NOTICES.md"),
     read("js/freev-id/cloud-adapters.js"),
     read("logiciels/opencut/VERSION.txt"),
     read("logiciels/opencut/LICENSE"),
-    read("data/catalog.json"),
+		read("data/catalog.json"),
+		read(".nojekyll"),
   ]);
   assert.match(page, /OpenCut — Freev/);
   assert.match(page, /\.\/_next\/static\/chunks/);
@@ -72,7 +73,8 @@ test("OpenCut est auto-hébergé, crédité et adapté sans services serveur", a
   assert.match(version, /f4bd689f51cf12a4dd0a32f602f761be314d9686/);
   assert.match(version, /server, account, blog and API routes excluded/i);
   assert.match(license, /Permission is hereby granted, free of charge/);
-  assert.match(catalogSource, /"iconId": "OpenCut"/);
+	assert.match(catalogSource, /"iconId": "OpenCut"/);
+	assert.match(noJekyll, /publier les dossiers techniques/);
 });
 
 test("chaque jeu publie son score via le module Firebase commun", async () => {
