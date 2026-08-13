@@ -57,6 +57,21 @@ test("l’accueil affiche les treize icônes officielles des logiciels", async (
 });
 
 test("les cinq logiciels GitHub sont intégrés à Freev et restent utilisables", async ({ page }) => {
+  // WebKit peut refuser le service worker sur le serveur local numérique même si
+  // l'application intercepte cette erreur. Le mode hors-ligne est testé séparément.
+  await page.addInitScript(() => {
+    if (navigator.serviceWorker) {
+      Object.defineProperty(navigator.serviceWorker, "register", {
+        configurable: true,
+        value: async () => ({
+          active: null,
+          installing: null,
+          addEventListener() {},
+          update: async () => {},
+        }),
+      });
+    }
+  });
   const tools = [
     ["/logiciels/qrstudio.html", "QR Studio", "QR_Studio"],
     ["/logiciels/markdownstudio.html", "Markdown Studio", "Markdown_Studio"],
@@ -66,13 +81,15 @@ test("les cinq logiciels GitHub sont intégrés à Freev et restent utilisables"
   ];
   for (const [route, title, iconId] of tools) {
     const errors = [];
-    page.on("pageerror", (error) => errors.push(error.message));
+    const collectError = (error) => errors.push(error.message);
+    page.on("pageerror", collectError);
     await page.goto(route, { waitUntil: "domcontentloaded" });
     await expect(page.getByRole("heading", { name: title, level: 1 })).toBeVisible();
     await expect(page.getByRole("link", { name: /Retour aux logiciels/ })).toHaveAttribute("href", "./");
     await expect(page.locator(`freev-icon[app="${iconId}"]`).first()).toBeVisible();
     await expectNoHorizontalOverflow(page);
     expect(errors).toEqual([]);
+    page.off("pageerror", collectError);
   }
 });
 
