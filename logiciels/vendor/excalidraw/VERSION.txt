@@ -1,0 +1,4 @@
+@excalidraw/excalidraw 0.18.1
+Repository: https://github.com/excalidraw/excalidraw
+Source commit checked: abeeaeba217ab3b5193b78c8d8d63c373b518ced
+License: MIT

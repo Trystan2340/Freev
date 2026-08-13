@@ -169,6 +169,19 @@
       "version": "v1.0 · open source",
       "status": "available",
       "launchTarget": "../logiciels/cropstudio.html"
+    },
+    {
+      "id": "excalidraw",
+      "iconId": "Excalidraw",
+      "title": "Excalidraw",
+      "description": "Dessine, annote et construis des diagrammes sur un tableau blanc complet.",
+      "category": "design",
+      "categoryLabel": "Design & Création",
+      "tags": ["Tableau blanc", "Diagrammes", "Dessin"],
+      "technology": "Excalidraw / React / Canvas",
+      "version": "v0.18.1 · open source",
+      "status": "available",
+      "launchTarget": "../logiciels/excalidraw.html"
     }
   ],
   "games": [

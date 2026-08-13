@@ -28,11 +28,11 @@ async function expectNoHorizontalOverflow(page, label = "page") {
   expect(sizes.content, `${label}: largeur ${sizes.content}px pour un écran de ${sizes.viewport}px`).toBeLessThanOrEqual(sizes.viewport + 1);
 }
 
-test("le catalogue logiciels rend les treize icônes officielles et filtre les cartes", async ({ page }) => {
+test("le catalogue logiciels rend les quatorze icônes officielles et filtre les cartes", async ({ page }) => {
   await page.goto("/logiciels/", { waitUntil: "domcontentloaded" });
-  await expect(page.locator("#software-grid .catalog-card")).toHaveCount(13);
+  await expect(page.locator("#software-grid .catalog-card")).toHaveCount(14);
   const icons = page.locator("#software-grid freev-icon");
-  await expect(icons).toHaveCount(13);
+  await expect(icons).toHaveCount(14);
   await expect.poll(() => icons.evaluateAll((elements) => elements.every((icon) => {
     const bounds = icon.getBoundingClientRect();
     return bounds.width >= 64 && bounds.height >= 64 && Boolean(icon.shadowRoot?.querySelector("canvas"));
@@ -46,10 +46,10 @@ test("le catalogue logiciels rend les treize icônes officielles et filtre les c
   await expectNoHorizontalOverflow(page);
 });
 
-test("l’accueil affiche les treize icônes officielles des logiciels", async ({ page }) => {
+test("l’accueil affiche les quatorze icônes officielles des logiciels", async ({ page }) => {
   await page.goto("/", { waitUntil: "domcontentloaded" });
   const icons = page.locator("#logiciels freev-icon");
-  await expect(icons).toHaveCount(13);
+  await expect(icons).toHaveCount(14);
   await expect.poll(() => icons.evaluateAll((elements) => elements.every((icon) => {
     const bounds = icon.getBoundingClientRect();
     return bounds.width === 64 && bounds.height === 64 && Boolean(icon.shadowRoot?.querySelector("canvas"));
@@ -103,6 +103,35 @@ test("QR Studio et Markdown Studio exécutent leurs fonctions principales", asyn
   await page.locator("#markdown-input").fill("# Test Freev\n\n**Fonctionnel**");
   await expect(page.locator("#markdown-preview h1")).toHaveText("Test Freev");
   await expect(page.locator("#markdown-preview strong")).toHaveText("Fonctionnel");
+});
+
+test("Excalidraw charge le véritable éditeur et sauvegarde une modification", async ({ page }) => {
+  await page.goto("/logiciels/excalidraw.html", { waitUntil: "domcontentloaded" });
+  await expect(page.getByRole("link", { name: /Retour aux logiciels/ })).toHaveAttribute("href", "./");
+  await expect(page.locator('freev-icon[app="Excalidraw"]')).toBeVisible();
+  await expect(page.locator("#excalidraw-root .excalidraw")).toBeVisible({ timeout: 20_000 });
+  await expect(page.locator(".App-toolbar-container")).toBeVisible();
+  await expectNoHorizontalOverflow(page, "/logiciels/excalidraw.html");
+
+  const canvas = page.locator("#excalidraw-root canvas").first();
+  await expect(canvas).toBeVisible();
+  const bounds = await canvas.boundingBox();
+  expect(bounds).not.toBeNull();
+  await page.mouse.move(bounds.x + 100, bounds.y + 120);
+  await page.mouse.down();
+  await page.mouse.move(bounds.x + 220, bounds.y + 200, { steps: 8 });
+  await page.mouse.up();
+  await expect(page.locator("#excalidraw-save-state")).toContainText("Sauvegardé", { timeout: 10_000 });
+  await expect.poll(() => page.evaluate(() => new Promise((resolve, reject) => {
+    const request = indexedDB.open("freev-excalidraw-v1", 1);
+    request.onsuccess = () => {
+      const database = request.result;
+      const read = database.transaction("scenes", "readonly").objectStore("scenes").get("current");
+      read.onsuccess = () => { database.close(); resolve(Boolean(read.result)); };
+      read.onerror = () => reject(read.error);
+    };
+    request.onerror = () => reject(request.error);
+  }))).toBe(true);
 });
 
 test("la page jeux rend les sept jeux, la sélection et la recherche", async ({ page }) => {

@@ -142,6 +142,18 @@
       "reconstructAnimationSymbol": true,
       "sourceSha256": "bf5ee95c5477123907030ff97b8799b7b95fe52cf99dcd2ee5a5bd5f55c29279",
       "symbolExtractionConfidence": 1.0
+    },
+    {
+      "id": "Excalidraw",
+      "label": "Excalidraw",
+      "kind": "software",
+      "shortName": "Excalidraw",
+      "animation": "pulse-play",
+      "animationLayers": 1,
+      "animationCover": true,
+      "reconstructAnimationSymbol": true,
+      "sourceSha256": "40c0f1ec1db774fbd4bae0b0d0a3b8cd6ef4be1cb48c431765761640a96a1067",
+      "symbolExtractionConfidence": 1.0
     }
   ]
 }

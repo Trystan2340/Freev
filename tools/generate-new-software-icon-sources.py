@@ -1,4 +1,4 @@
-"""Génère les cinq masters Freev et leurs masques de symbole pour le pipeline V2.7."""
+"""Génère les masters des logiciels open source pour le pipeline Freev V2.7."""
 
 from pathlib import Path
 from PIL import Image, ImageDraw, ImageFilter
@@ -83,11 +83,15 @@ def crop(draw: ImageDraw.ImageDraw) -> None:
     draw.polygon([(424, 548), (486, 486), (524, 524), (558, 486), (584, 548)], fill=255)
 
 
+def excalidraw(draw: ImageDraw.ImageDraw) -> None:
+    """Crayon et trait libre originaux, distincts du logo officiel Excalidraw."""
+    draw.rounded_rectangle((260, 250, 764, 774), radius=86, outline=255, width=36)
+    draw.line((340, 638, 414, 548, 478, 616, 554, 488, 622, 556, 694, 404), fill=255, width=38, joint="curve")
+    draw.polygon([(666, 332), (730, 300), (716, 370)], fill=255)
+    draw.line((334, 708, 690, 708), fill=255, width=30)
+
+
 if __name__ == "__main__":
     INCOMING.mkdir(parents=True, exist_ok=True)
-    save_icon("QR_Studio", qr, ((2, 28, 48), (10, 44, 78)))
-    save_icon("Markdown_Studio", markdown, ((27, 11, 61), (58, 20, 86)))
-    save_icon("CSV_Explorer", csv, ((2, 43, 42), (6, 70, 61)))
-    save_icon("Signature_Studio", signature, ((49, 10, 50), (87, 18, 58)))
-    save_icon("Crop_Studio", crop, ((58, 24, 7), (92, 37, 9)))
-    print("Cinq sources d’icônes Freev générées.")
+    save_icon("Excalidraw", excalidraw, ((21, 18, 62), (55, 29, 112)))
+    print("Source d’icône Excalidraw générée.")

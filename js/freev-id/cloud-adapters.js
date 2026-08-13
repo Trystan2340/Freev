@@ -18,6 +18,9 @@ const CONFIGURATIONS = Object.freeze({
   // synchronise le workspace de compatibilité ; l'export de projet reste la
   // voie fiable pour les actifs volumineux.
   "logiciels/codemaster.html": { pageId: "codemaster", pageTitle: "CodeMaster", pageKind: "logiciel", keys: ["codemaster_v4_workspace"] },
+  // La scène sans média volumineux peut suivre le cloud. Le projet complet,
+  // notamment les images, reste sauvegardé localement dans IndexedDB.
+  "logiciels/excalidraw.html": { pageId: "excalidraw", pageTitle: "Excalidraw", pageKind: "logiciel", keys: ["freev-excalidraw-cloud-v1"] },
 });
 
 function normalizePath(pathname) {
