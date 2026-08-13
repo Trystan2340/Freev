@@ -61,7 +61,7 @@ a { color: inherit; }
 
 .tool-grid { display: grid; grid-template-columns: minmax(0, 1fr) minmax(300px, .82fr); gap: 20px; }
 .tool-grid.equal { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-.tool-card { min-width: 0; border: 1px solid var(--tool-border); border-radius: 24px; padding: 22px; background: var(--tool-card); box-shadow: 0 24px 70px rgba(0, 0, 0, .26); backdrop-filter: blur(18px); }
+.tool-card { min-width: 0; max-width: 100%; overflow: hidden; border: 1px solid var(--tool-border); border-radius: 24px; padding: 22px; background: var(--tool-card); box-shadow: 0 24px 70px rgba(0, 0, 0, .26); backdrop-filter: blur(18px); }
 .tool-card h2 { margin: 0 0 16px; font-size: 1.05rem; }
 .tool-card-head { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 16px; }
 .tool-card-head h2 { margin: 0; }
@@ -106,7 +106,7 @@ a { color: inherit; }
 .tool-image-stage { min-height: 430px; overflow: hidden; border: 1px solid var(--tool-border); border-radius: 18px; background: #020617; }
 .tool-image-stage img { display: block; max-width: 100%; }
 .tool-qr { display: grid; min-height: 330px; place-items: center; overflow: auto; border-radius: 18px; padding: 22px; background: #fff; }
-.tool-qr img, .tool-qr canvas { max-width: 100%; height: auto !important; }
+.tool-qr img, .tool-qr canvas { width: 100% !important; max-width: 384px; height: auto !important; object-fit: contain; }
 .tool-footer { margin-top: 24px; color: #64748b; font-size: .72rem; line-height: 1.6; text-align: center; }
 .tool-footer a { color: #94a3b8; }
 .sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0, 0, 0, 0); white-space: nowrap; }
