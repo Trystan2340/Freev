@@ -67,6 +67,11 @@
       "label": "Signature Studio",
       "animation": "draw-pencil",
       "kind": "software"
+    },
+    "Excalidraw": {
+      "label": "Excalidraw",
+      "animation": "pulse-play",
+      "kind": "software"
     }
   },
   "themes": [

@@ -1,0 +1,60 @@
+:root {
+  color-scheme: dark;
+  --freev-excalidraw-bar: #050b16;
+  --freev-excalidraw-border: rgba(34, 211, 238, .25);
+}
+
+* { box-sizing: border-box; }
+html, body { width: 100%; min-width: 320px; height: 100%; margin: 0; overflow: hidden; }
+body { color: #e2e8f0; background: #020617; font-family: Inter, system-ui, sans-serif; }
+
+.excalidraw-shell { display: grid; width: 100%; height: 100%; grid-template-rows: 64px minmax(0, 1fr); }
+.excalidraw-topbar {
+  position: relative;
+  z-index: 20;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  border-bottom: 1px solid var(--freev-excalidraw-border);
+  padding: 8px 14px;
+  background: linear-gradient(90deg, rgba(5, 11, 22, .98), rgba(9, 20, 37, .96));
+  box-shadow: 0 8px 30px rgba(0, 0, 0, .28);
+}
+.excalidraw-brand, .excalidraw-actions { display: flex; min-width: 0; align-items: center; gap: 10px; }
+.excalidraw-brand { color: inherit; text-decoration: none; }
+.excalidraw-brand-copy { min-width: 0; }
+.excalidraw-brand strong, .excalidraw-brand span { display: block; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.excalidraw-brand strong { color: #f8fafc; font-size: .86rem; letter-spacing: .07em; }
+.excalidraw-brand span { color: #7dd3fc; font-size: .68rem; }
+.excalidraw-status { color: #94a3b8; font-size: .7rem; white-space: nowrap; }
+.excalidraw-status[data-kind="ok"] { color: #86efac; }
+.excalidraw-status[data-kind="large"] { color: #fde68a; }
+.excalidraw-status[data-kind="error"] { color: #fca5a5; }
+.excalidraw-link {
+  display: inline-flex;
+  min-height: 40px;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid rgba(255, 255, 255, .12);
+  border-radius: 12px;
+  padding: 8px 12px;
+  color: #e2e8f0;
+  background: rgba(255, 255, 255, .05);
+  font-size: .75rem;
+  font-weight: 800;
+  text-decoration: none;
+}
+.excalidraw-link:hover, .excalidraw-link:focus-visible { border-color: #22d3ee; outline: none; background: rgba(34, 211, 238, .1); }
+#excalidraw-root { position: relative; min-width: 0; min-height: 0; overflow: hidden; }
+#excalidraw-root > .excalidraw { width: 100%; height: 100%; }
+.excalidraw-loading { display: grid; height: 100%; place-items: center; color: #67e8f9; }
+.sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0, 0, 0, 0); white-space: nowrap; }
+
+@media (max-width: 720px) {
+  .excalidraw-shell { grid-template-rows: 58px minmax(0, 1fr); }
+  .excalidraw-topbar { gap: 8px; padding: 6px 8px; }
+  .excalidraw-brand span, .excalidraw-status, .source-link { display: none; }
+  .excalidraw-brand strong { max-width: 42vw; font-size: .72rem; }
+  .excalidraw-link { min-height: 38px; padding: 7px 9px; font-size: .68rem; }
+}

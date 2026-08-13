@@ -1,0 +1,2 @@
+# Le bundle tiers minifié contient des chaînes multiligne dont les espaces font partie des données.
+logiciels/vendor/excalidraw/app.js -whitespace

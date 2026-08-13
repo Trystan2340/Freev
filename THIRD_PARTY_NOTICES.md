@@ -9,5 +9,8 @@ Freev redistribue localement les bibliothèques suivantes. Les adaptations d’i
 | CSV Explorer | Papa Parse | 5.6.0 | MIT | https://github.com/mholt/PapaParse |
 | Signature Studio | Signature Pad | 5.1.4 | MIT | https://github.com/szimek/signature_pad |
 | Crop Studio | Cropper.js | 1.6.2 | MIT | https://github.com/fengyuanchen/cropperjs |
+| Excalidraw | Excalidraw | 0.18.1 (`abeeaeba`) | MIT | https://github.com/excalidraw/excalidraw |
 
 Les textes complets sont conservés dans chaque dossier `logiciels/vendor/<projet>/LICENSE`. Les avis de copyright présents dans les distributions minifiées sont également conservés.
+
+Excalidraw, ses crédits et son nom d’origine sont conservés dans l’interface Freev.

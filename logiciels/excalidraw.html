@@ -1,0 +1,33 @@
+<!doctype html>
+<html lang="fr" data-freev-theme="cyan">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <meta name="description" content="Excalidraw intégré à Freev : tableau blanc, dessin et diagrammes privés dans le navigateur.">
+  <title>Excalidraw — Freev</title>
+  <link rel="stylesheet" href="vendor/excalidraw/index.css?v=0.18.1">
+  <link rel="stylesheet" href="../css/freev-excalidraw.css?v=1.0.0">
+  <script type="module" src="../freev-icons/dist/freev-icon.js?v=2.7.1"></script>
+  <script type="module" src="../js/site-control.js?v=2.7.1"></script>
+</head>
+<body>
+  <main class="excalidraw-shell">
+    <header class="excalidraw-topbar">
+      <a class="excalidraw-brand" href="../index.html" aria-label="Accueil Freev">
+        <freev-icon app="Excalidraw" size="42" variant="glass" animation="none"></freev-icon>
+        <span class="excalidraw-brand-copy"><strong>FREEV · EXCALIDRAW</strong><span>Tableau blanc open source</span></span>
+      </a>
+      <div class="excalidraw-actions">
+        <span class="excalidraw-status" id="excalidraw-save-state" role="status" aria-live="polite">Chargement de la sauvegarde…</span>
+        <a class="excalidraw-link source-link" href="https://github.com/excalidraw/excalidraw" target="_blank" rel="noopener">Source GitHub</a>
+        <a class="excalidraw-link" href="./">← Retour aux logiciels</a>
+      </div>
+    </header>
+    <h1 class="sr-only">Excalidraw</h1>
+    <section id="excalidraw-root" aria-label="Éditeur Excalidraw"><p class="excalidraw-loading">Chargement d’Excalidraw…</p></section>
+  </main>
+  <script type="module" src="vendor/excalidraw/app.js?v=0.18.1-freev.1"></script>
+  <script type="module" src="../freev-cloud-save.js"></script>
+  <script defer src="../js/pwa-register.js?v=3.1.0"></script>
+</body>
+</html>

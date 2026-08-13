@@ -4,7 +4,7 @@ import { test } from "node:test";
 
 const read = (path) => readFile(new URL(`../${path}`, import.meta.url), "utf8");
 
-test("le catalogue utilise les treize icônes officielles distinctes", async () => {
+test("le catalogue utilise les quatorze icônes officielles distinctes", async () => {
   const [catalogSource, renderer, home, softwarePage, gitignore] = await Promise.all([
     read("data/catalog.json"),
     read("js/catalog-pages.js"),
@@ -14,8 +14,8 @@ test("le catalogue utilise les treize icônes officielles distinctes", async () 
   ]);
   const catalog = JSON.parse(catalogSource);
   const iconIds = catalog.softwares.map((software) => software.iconId);
-  assert.equal(iconIds.length, 13);
-  assert.equal(new Set(iconIds).size, 13);
+  assert.equal(iconIds.length, 14);
+  assert.equal(new Set(iconIds).size, 14);
   assert.match(renderer, /setAttribute\('variant', 'standard'\)/);
   assert.doesNotMatch(renderer, /setAttribute\('variant', 'glass'\)/);
   assert.match(home, /freev-icons\/dist\/freev-icon\.js/);
@@ -36,6 +36,24 @@ test("aucun joueur fictif ne reste dans le catalogue", async () => {
   assert.doesNotMatch(catalogSource, /NeoPlayer|PixelMaster|TronRider|CyberGhost/);
   assert.match(renderer, /loadArcadeLeaderboard/);
   assert.match(renderer, /Personne n’a encore de score/);
+});
+
+test("Excalidraw est auto-hébergé, crédité et raccordé au cloud borné", async () => {
+  const [page, notices, cloudAdapters, packageSource, version] = await Promise.all([
+    read("logiciels/excalidraw.html"),
+    read("THIRD_PARTY_NOTICES.md"),
+    read("js/freev-id/cloud-adapters.js"),
+    read("package.json"),
+    read("logiciels/vendor/excalidraw/VERSION.txt"),
+  ]);
+  const packageJson = JSON.parse(packageSource);
+  assert.equal(packageJson.dependencies["@excalidraw/excalidraw"], "0.18.1");
+  assert.match(page, /vendor\/excalidraw\/app\.js/);
+  assert.match(page, /Retour aux logiciels/);
+  assert.match(page, /app="Excalidraw"/);
+  assert.match(notices, /excalidraw\/excalidraw/);
+  assert.match(cloudAdapters, /freev-excalidraw-cloud-v1/);
+  assert.match(version, /abeeaeba217ab3b5193b78c8d8d63c373b518ced/);
 });
 
 test("chaque jeu publie son score via le module Firebase commun", async () => {

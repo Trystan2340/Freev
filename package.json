@@ -8,6 +8,7 @@
     "icons:check": "npm --prefix packages/freev-icon-system run icons:check",
     "icons:build": "npm --prefix packages/freev-icon-system run build",
     "icons:web": "node tools/build-icon-web-runtime.mjs",
+    "build:excalidraw": "node tools/build-excalidraw.mjs",
     "validate:catalog": "node tools/validate-catalog-icons.mjs",
     "build:css": "tailwindcss -c tailwind.config.cjs -i css/tailwind.input.css -o css/tailwind.generated.css --minify",
     "build:offline": "node tools/build-offline-manifest.mjs",
@@ -15,7 +16,7 @@
     "test:freev-id": "node --test tests/freev-id-*.test.mjs",
     "test:rules": "node tools/run-firebase-rules-tests.mjs",
     "test:browser": "playwright test",
-    "verify": "npm run icons:sync && npm run icons:check && npm run icons:build && npm run icons:web && npm run validate:catalog && npm run build:css && npm run build:offline && npm test && node tools/verify-static.mjs",
+    "verify": "npm run build:excalidraw && npm run icons:sync && npm run icons:check && npm run icons:build && npm run icons:web && npm run validate:catalog && npm run build:css && npm run build:offline && npm test && node tools/verify-static.mjs",
     "serve": "node tools/serve.mjs"
   },
   "engines": {
@@ -26,8 +27,23 @@
     "@firebase/rules-unit-testing": "^5.0.1",
     "@playwright/test": "^1.62.1",
     "autoprefixer": "^10.4.21",
+    "esbuild": "0.25.9",
     "firebase": "^12.17.0",
     "postcss": "^8.5.25",
     "tailwindcss": "^3.4.17"
+  },
+  "dependencies": {
+    "@excalidraw/excalidraw": "0.18.1",
+    "react": "18.3.1",
+    "react-dom": "18.3.1"
+  },
+  "overrides": {
+    "lodash-es": "4.18.1",
+    "@excalidraw/excalidraw": {
+      "nanoid": "3.3.18"
+    },
+    "@excalidraw/mermaid-to-excalidraw": {
+      "nanoid": "5.1.16"
+    }
   }
 }
