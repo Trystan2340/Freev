@@ -4,7 +4,7 @@ import { test } from "node:test";
 
 const read = (path) => readFile(new URL(`../${path}`, import.meta.url), "utf8");
 
-test("le catalogue utilise les huit icônes officielles distinctes", async () => {
+test("le catalogue utilise les treize icônes officielles distinctes", async () => {
   const [catalogSource, renderer, home, softwarePage, gitignore] = await Promise.all([
     read("data/catalog.json"),
     read("js/catalog-pages.js"),
@@ -14,8 +14,8 @@ test("le catalogue utilise les huit icônes officielles distinctes", async () =>
   ]);
   const catalog = JSON.parse(catalogSource);
   const iconIds = catalog.softwares.map((software) => software.iconId);
-  assert.equal(iconIds.length, 8);
-  assert.equal(new Set(iconIds).size, 8);
+  assert.equal(iconIds.length, 13);
+  assert.equal(new Set(iconIds).size, 13);
   assert.match(renderer, /setAttribute\('variant', 'standard'\)/);
   assert.doesNotMatch(renderer, /setAttribute\('variant', 'glass'\)/);
   assert.match(home, /freev-icons\/dist\/freev-icon\.js/);

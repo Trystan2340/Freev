@@ -42,6 +42,31 @@
       "label": "ResumeMaster",
       "animation": "resume-reveal",
       "kind": "software"
+    },
+    "Crop_Studio": {
+      "label": "Crop Studio",
+      "animation": "pixel-spark",
+      "kind": "software"
+    },
+    "CSV_Explorer": {
+      "label": "CSV Explorer",
+      "animation": "flow-cards",
+      "kind": "software"
+    },
+    "Markdown_Studio": {
+      "label": "Markdown Studio",
+      "animation": "glow-code",
+      "kind": "software"
+    },
+    "QR_Studio": {
+      "label": "QR Studio",
+      "animation": "pulse-play",
+      "kind": "software"
+    },
+    "Signature_Studio": {
+      "label": "Signature Studio",
+      "animation": "draw-pencil",
+      "kind": "software"
     }
   },
   "themes": [

@@ -28,11 +28,11 @@ async function expectNoHorizontalOverflow(page) {
   expect(sizes.content).toBeLessThanOrEqual(sizes.viewport + 1);
 }
 
-test("le catalogue logiciels rend les huit icônes officielles et filtre les cartes", async ({ page }) => {
+test("le catalogue logiciels rend les treize icônes officielles et filtre les cartes", async ({ page }) => {
   await page.goto("/logiciels/", { waitUntil: "domcontentloaded" });
-  await expect(page.locator("#software-grid .catalog-card")).toHaveCount(8);
+  await expect(page.locator("#software-grid .catalog-card")).toHaveCount(13);
   const icons = page.locator("#software-grid freev-icon");
-  await expect(icons).toHaveCount(8);
+  await expect(icons).toHaveCount(13);
   await expect.poll(() => icons.evaluateAll((elements) => elements.every((icon) => {
     const bounds = icon.getBoundingClientRect();
     return bounds.width >= 64 && bounds.height >= 64 && Boolean(icon.shadowRoot?.querySelector("canvas"));
@@ -46,14 +46,46 @@ test("le catalogue logiciels rend les huit icônes officielles et filtre les car
   await expectNoHorizontalOverflow(page);
 });
 
-test("l’accueil affiche les huit icônes officielles des logiciels", async ({ page }) => {
+test("l’accueil affiche les treize icônes officielles des logiciels", async ({ page }) => {
   await page.goto("/", { waitUntil: "domcontentloaded" });
   const icons = page.locator("#logiciels freev-icon");
-  await expect(icons).toHaveCount(8);
+  await expect(icons).toHaveCount(13);
   await expect.poll(() => icons.evaluateAll((elements) => elements.every((icon) => {
     const bounds = icon.getBoundingClientRect();
     return bounds.width === 64 && bounds.height === 64 && Boolean(icon.shadowRoot?.querySelector("canvas"));
   }))).toBe(true);
+});
+
+test("les cinq logiciels GitHub sont intégrés à Freev et restent utilisables", async ({ page }) => {
+  const tools = [
+    ["/logiciels/qrstudio.html", "QR Studio", "QR_Studio"],
+    ["/logiciels/markdownstudio.html", "Markdown Studio", "Markdown_Studio"],
+    ["/logiciels/csvexplorer.html", "CSV Explorer", "CSV_Explorer"],
+    ["/logiciels/signaturestudio.html", "Signature Studio", "Signature_Studio"],
+    ["/logiciels/cropstudio.html", "Crop Studio", "Crop_Studio"],
+  ];
+  for (const [route, title, iconId] of tools) {
+    const errors = [];
+    page.on("pageerror", (error) => errors.push(error.message));
+    await page.goto(route, { waitUntil: "domcontentloaded" });
+    await expect(page.getByRole("heading", { name: title, level: 1 })).toBeVisible();
+    await expect(page.getByRole("link", { name: /Retour aux logiciels/ })).toHaveAttribute("href", "./");
+    await expect(page.locator(`freev-icon[app="${iconId}"]`).first()).toBeVisible();
+    await expectNoHorizontalOverflow(page);
+    expect(errors).toEqual([]);
+  }
+});
+
+test("QR Studio et Markdown Studio exécutent leurs fonctions principales", async ({ page }) => {
+  await page.goto("/logiciels/qrstudio.html", { waitUntil: "domcontentloaded" });
+  await page.locator("#qr-content").fill("https://example.com/freev");
+  await page.locator("#qr-generate").click();
+  await expect(page.locator("#qr-output canvas, #qr-output img")).toHaveCount(2);
+
+  await page.goto("/logiciels/markdownstudio.html", { waitUntil: "domcontentloaded" });
+  await page.locator("#markdown-input").fill("# Test Freev\n\n**Fonctionnel**");
+  await expect(page.locator("#markdown-preview h1")).toHaveText("Test Freev");
+  await expect(page.locator("#markdown-preview strong")).toHaveText("Fonctionnel");
 });
 
 test("la page jeux rend les sept jeux, la sélection et la recherche", async ({ page }) => {

@@ -1,0 +1,16 @@
+<!doctype html>
+<html lang="fr" data-freev-theme="cyan">
+<head>
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="description" content="Créer et exporter des QR codes personnalisés directement dans le navigateur.">
+  <title>QR Studio — Freev</title>
+  <link rel="stylesheet" href="../css/freev-toolkit.css?v=1.0.0">
+  <script type="module" src="../freev-icons/dist/freev-icon.js?v=2.7.1"></script>
+  <script type="module" src="../js/site-control.js?v=2.7.1"></script>
+</head>
+<body><main class="tool-shell">
+  <nav class="tool-nav" aria-label="Navigation du logiciel"><a class="tool-brand" href="../index.html"><freev-icon app="QR_Studio" size="46" variant="glass" animation="none"></freev-icon><span class="tool-brand-copy"><strong>FREEV · QR STUDIO</strong><span>Générateur privé et local</span></span></a><a class="tool-back" href="./">← Retour aux logiciels</a></nav>
+  <header class="tool-hero"><freev-icon app="QR_Studio" size="104" variant="standard" animation="none"></freev-icon><div><span class="tool-kicker">Utilitaire open source</span><h1>QR Studio</h1><p>Transforme un lien, un texte ou un contact en QR code, personnalise les couleurs et exporte le résultat en PNG.</p></div></header>
+  <section class="tool-grid"><div class="tool-card tool-stack"><h2>Contenu et apparence</h2><div class="tool-field"><label for="qr-content">Texte ou adresse</label><textarea class="tool-textarea" id="qr-content" maxlength="1800" placeholder="https://freev.example/">https://trystan2340.github.io/Freev/</textarea></div><div class="tool-row"><div class="tool-field"><label for="qr-size">Taille</label><select class="tool-select" id="qr-size"><option value="256">256 px</option><option value="384" selected>384 px</option><option value="512">512 px</option></select></div><div class="tool-field"><label for="qr-dark">Modules</label><input class="tool-input" id="qr-dark" type="color" value="#071827"></div><div class="tool-field"><label for="qr-light">Fond</label><input class="tool-input" id="qr-light" type="color" value="#ffffff"></div></div><div class="tool-row"><button class="tool-button primary" id="qr-generate" type="button">Générer</button><button class="tool-button" id="qr-download" type="button">Télécharger PNG</button><button class="tool-button" id="qr-copy" type="button">Copier le texte</button></div><p class="tool-status" id="tool-status" role="status" aria-live="polite"></p></div><div class="tool-card"><div class="tool-qr" id="qr-output" aria-label="Aperçu du QR code"></div></div></section>
+  <footer class="tool-footer">Propulsé localement par <a href="https://github.com/davidshimjs/qrcodejs" target="_blank" rel="noopener">QRCode.js</a> (MIT). Aucune donnée n’est envoyée à un serveur.</footer>
+</main><script src="vendor/qrcodejs/qrcode.min.js"></script><script src="../js/freev-toolkit.js"></script><script src="../js/apps/qr-studio.js"></script><script type="module" src="../freev-cloud-save.js"></script><script defer src="../js/pwa-register.js?v=3.1.0"></script></body></html>

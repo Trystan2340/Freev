@@ -38,5 +38,30 @@
     "id": "ResumeMaster",
     "label": "ResumeMaster",
     "kind": "software"
+  },
+  {
+    "id": "Crop_Studio",
+    "label": "Crop Studio",
+    "kind": "software"
+  },
+  {
+    "id": "CSV_Explorer",
+    "label": "CSV Explorer",
+    "kind": "software"
+  },
+  {
+    "id": "Markdown_Studio",
+    "label": "Markdown Studio",
+    "kind": "software"
+  },
+  {
+    "id": "QR_Studio",
+    "label": "QR Studio",
+    "kind": "software"
+  },
+  {
+    "id": "Signature_Studio",
+    "label": "Signature Studio",
+    "kind": "software"
   }
 ]
