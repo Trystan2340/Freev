@@ -4,7 +4,7 @@ import { test } from "node:test";
 
 const read = (path) => readFile(new URL(`../${path}`, import.meta.url), "utf8");
 
-test("le catalogue utilise les quatorze icônes officielles distinctes", async () => {
+test("le catalogue utilise les quinze icônes officielles distinctes", async () => {
   const [catalogSource, renderer, home, softwarePage, gitignore] = await Promise.all([
     read("data/catalog.json"),
     read("js/catalog-pages.js"),
@@ -14,8 +14,8 @@ test("le catalogue utilise les quatorze icônes officielles distinctes", async (
   ]);
   const catalog = JSON.parse(catalogSource);
   const iconIds = catalog.softwares.map((software) => software.iconId);
-  assert.equal(iconIds.length, 14);
-  assert.equal(new Set(iconIds).size, 14);
+  assert.equal(iconIds.length, 15);
+  assert.equal(new Set(iconIds).size, 15);
   assert.match(renderer, /setAttribute\('variant', 'standard'\)/);
   assert.doesNotMatch(renderer, /setAttribute\('variant', 'glass'\)/);
   assert.match(home, /freev-icons\/dist\/freev-icon\.js/);
@@ -54,6 +54,25 @@ test("Excalidraw est auto-hébergé, crédité et raccordé au cloud borné", as
   assert.match(notices, /excalidraw\/excalidraw/);
   assert.match(cloudAdapters, /freev-excalidraw-cloud-v1/);
   assert.match(version, /abeeaeba217ab3b5193b78c8d8d63c373b518ced/);
+});
+
+test("OpenCut est auto-hébergé, crédité et adapté sans services serveur", async () => {
+  const [page, notices, cloudAdapters, version, license, catalogSource] = await Promise.all([
+    read("logiciels/opencut/index.html"),
+    read("THIRD_PARTY_NOTICES.md"),
+    read("js/freev-id/cloud-adapters.js"),
+    read("logiciels/opencut/VERSION.txt"),
+    read("logiciels/opencut/LICENSE"),
+    read("data/catalog.json"),
+  ]);
+  assert.match(page, /OpenCut — Freev/);
+  assert.match(page, /\.\/_next\/static\/chunks/);
+  assert.match(notices, /OpenCut-app\/OpenCut/);
+  assert.match(cloudAdapters, /freev-opencut-cloud-v1/);
+  assert.match(version, /f4bd689f51cf12a4dd0a32f602f761be314d9686/);
+  assert.match(version, /server, account, blog and API routes excluded/i);
+  assert.match(license, /Permission is hereby granted, free of charge/);
+  assert.match(catalogSource, /"iconId": "OpenCut"/);
 });
 
 test("chaque jeu publie son score via le module Firebase commun", async () => {

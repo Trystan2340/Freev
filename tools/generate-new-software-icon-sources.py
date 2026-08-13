@@ -91,7 +91,20 @@ def excalidraw(draw: ImageDraw.ImageDraw) -> None:
     draw.line((334, 708, 690, 708), fill=255, width=30)
 
 
+def opencut(draw: ImageDraw.ImageDraw) -> None:
+    """Pellicule et coupe originales, sans reprendre le logo officiel OpenCut."""
+    draw.rounded_rectangle((250, 292, 774, 732), radius=68, outline=255, width=38)
+    for x in (300, 416, 532, 648):
+        draw.rounded_rectangle((x, 326, x + 64, 390), radius=12, fill=255)
+        draw.rounded_rectangle((x, 634, x + 64, 698), radius=12, fill=255)
+    draw.line((330, 512, 694, 512), fill=255, width=34)
+    draw.ellipse((328, 438, 440, 550), outline=255, width=32)
+    draw.ellipse((584, 474, 696, 586), outline=255, width=32)
+    draw.line((414, 520, 612, 426), fill=255, width=34)
+    draw.line((414, 520, 612, 614), fill=255, width=34)
+
+
 if __name__ == "__main__":
     INCOMING.mkdir(parents=True, exist_ok=True)
-    save_icon("Excalidraw", excalidraw, ((21, 18, 62), (55, 29, 112)))
-    print("Source d’icône Excalidraw générée.")
+    save_icon("OpenCut", opencut, ((18, 14, 48), (72, 18, 72)))
+    print("Source d’icône OpenCut générée.")

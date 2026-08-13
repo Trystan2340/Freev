@@ -45,6 +45,9 @@ for (const path of candidates.sort()) {
   if (!(await stat(path)).isFile()) continue;
   const name = relative(root, path).split(sep).join("/");
   if (excluded.has(name)) continue;
+  // OpenCut charge à la demande son moteur vidéo de 63 Mo. Le précharger ferait
+  // échouer l’installation PWA sur les appareils dont le quota est réduit.
+  if (name.startsWith("logiciels/opencut/") && !name.endsWith(".html")) continue;
   const content = await readFile(path);
   hash.update(name).update("\0").update(content).update("\0");
   assets.push(`./${name}`);

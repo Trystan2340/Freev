@@ -1,0 +1,6 @@
+OpenCut 0.3.0
+Repository: https://github.com/OpenCut-app/OpenCut
+Source commit checked: f4bd689f51cf12a4dd0a32f602f761be314d9686
+License: MIT
+Freev adaptation: static browser editor; server, account, blog and API routes excluded.
+Projects and imported media remain private in browser IndexedDB.

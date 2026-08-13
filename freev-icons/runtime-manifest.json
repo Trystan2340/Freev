@@ -15,7 +15,8 @@
     "Markdown_Studio",
     "QR_Studio",
     "Signature_Studio",
-    "Excalidraw"
+    "Excalidraw",
+    "OpenCut"
   ],
   "publishedPaths": [
     "dist",

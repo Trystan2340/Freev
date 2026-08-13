@@ -154,6 +154,18 @@
       "reconstructAnimationSymbol": true,
       "sourceSha256": "40c0f1ec1db774fbd4bae0b0d0a3b8cd6ef4be1cb48c431765761640a96a1067",
       "symbolExtractionConfidence": 1.0
+    },
+    {
+      "id": "OpenCut",
+      "label": "OpenCut",
+      "kind": "software",
+      "shortName": "OpenCut",
+      "animation": "pulse-play",
+      "animationLayers": 1,
+      "animationCover": true,
+      "reconstructAnimationSymbol": true,
+      "sourceSha256": "4bb91fbfc71a7cc953d90f3bfef830171097fd198496d67fe6bc4cb1a334ef41",
+      "symbolExtractionConfidence": 1.0
     }
   ]
 }

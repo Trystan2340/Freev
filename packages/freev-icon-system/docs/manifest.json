@@ -72,6 +72,11 @@
       "label": "Excalidraw",
       "animation": "pulse-play",
       "kind": "software"
+    },
+    "OpenCut": {
+      "label": "OpenCut",
+      "animation": "pulse-play",
+      "kind": "software"
     }
   },
   "themes": [
