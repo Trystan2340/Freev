@@ -1,5 +1,5 @@
 self.FREEV_OFFLINE_MANIFEST = {
-  "version": "f348d9277df28ee8",
+  "version": "288563de1c33e2ec",
   "assets": [
     "./assets/catalog/games/astro-miner.png",
     "./assets/catalog/games/beatjump.png",

@@ -20,12 +20,12 @@ test.beforeEach(async ({ page }) => {
   });
 });
 
-async function expectNoHorizontalOverflow(page) {
+async function expectNoHorizontalOverflow(page, label = "page") {
   const sizes = await page.evaluate(() => ({
     viewport: document.documentElement.clientWidth,
     content: document.documentElement.scrollWidth,
   }));
-  expect(sizes.content).toBeLessThanOrEqual(sizes.viewport + 1);
+  expect(sizes.content, `${label}: largeur ${sizes.content}px pour un écran de ${sizes.viewport}px`).toBeLessThanOrEqual(sizes.viewport + 1);
 }
 
 test("le catalogue logiciels rend les treize icônes officielles et filtre les cartes", async ({ page }) => {
@@ -87,7 +87,7 @@ test("les cinq logiciels GitHub sont intégrés à Freev et restent utilisables"
     await expect(page.getByRole("heading", { name: title, level: 1 })).toBeVisible();
     await expect(page.getByRole("link", { name: /Retour aux logiciels/ })).toHaveAttribute("href", "./");
     await expect(page.locator(`freev-icon[app="${iconId}"]`).first()).toBeVisible();
-    await expectNoHorizontalOverflow(page);
+    await expectNoHorizontalOverflow(page, route);
     expect(errors).toEqual([]);
     page.off("pageerror", collectError);
   }
