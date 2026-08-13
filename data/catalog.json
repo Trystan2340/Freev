@@ -104,6 +104,71 @@
       "version": "v3.0 · export",
       "status": "available",
       "launchTarget": "../logiciels/resumemaster.html"
+    },
+    {
+      "id": "qr-studio",
+      "iconId": "QR_Studio",
+      "title": "QR Studio",
+      "description": "Générateur de QR codes personnalisés avec export PNG local.",
+      "category": "util",
+      "categoryLabel": "Utilitaires",
+      "tags": ["QR Code", "Export", "Hors ligne"],
+      "technology": "QRCode.js / Canvas",
+      "version": "v1.0 · open source",
+      "status": "available",
+      "launchTarget": "../logiciels/qrstudio.html"
+    },
+    {
+      "id": "markdown-studio",
+      "iconId": "Markdown_Studio",
+      "title": "Markdown Studio",
+      "description": "Éditeur Markdown avec aperçu sécurisé et export HTML.",
+      "category": "prod",
+      "categoryLabel": "Productivité",
+      "tags": ["Markdown", "Écriture", "HTML"],
+      "technology": "Marked / JavaScript",
+      "version": "v1.0 · open source",
+      "status": "available",
+      "launchTarget": "../logiciels/markdownstudio.html"
+    },
+    {
+      "id": "csv-explorer",
+      "iconId": "CSV_Explorer",
+      "title": "CSV Explorer",
+      "description": "Analyse, filtre et convertit des fichiers CSV en JSON.",
+      "category": "prod",
+      "categoryLabel": "Productivité",
+      "tags": ["CSV", "Données", "JSON"],
+      "technology": "Papa Parse / JavaScript",
+      "version": "v1.0 · open source",
+      "status": "available",
+      "launchTarget": "../logiciels/csvexplorer.html"
+    },
+    {
+      "id": "signature-studio",
+      "iconId": "Signature_Studio",
+      "title": "Signature Studio",
+      "description": "Crée des signatures manuscrites et exporte-les en PNG ou SVG.",
+      "category": "design",
+      "categoryLabel": "Design & Création",
+      "tags": ["Signature", "Stylet", "SVG"],
+      "technology": "Signature Pad / Canvas",
+      "version": "v1.0 · open source",
+      "status": "available",
+      "launchTarget": "../logiciels/signaturestudio.html"
+    },
+    {
+      "id": "crop-studio",
+      "iconId": "Crop_Studio",
+      "title": "Crop Studio",
+      "description": "Recadre, redresse et exporte tes images sans téléversement.",
+      "category": "design",
+      "categoryLabel": "Design & Création",
+      "tags": ["Photo", "Recadrage", "Export"],
+      "technology": "Cropper.js / Canvas",
+      "version": "v1.0 · open source",
+      "status": "available",
+      "launchTarget": "../logiciels/cropstudio.html"
     }
   ],
   "games": [

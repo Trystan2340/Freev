@@ -31,7 +31,12 @@ const manifest = {
 await writeFile(join(target, "runtime-manifest.json"), `${JSON.stringify(manifest, null, 2)}\n`, "utf8");
 
 const runtime = await stat(join(target, "dist", "freev-icon.js"));
-if (!runtime.isFile() || manifest.apps.length !== 8) {
+const generatedApps = await readFile(join(target, "dist", "generated-apps.js"), "utf8");
+const uniqueApps = new Set(manifest.apps);
+const registryIsComplete = manifest.apps.length > 0
+  && uniqueApps.size === manifest.apps.length
+  && manifest.apps.every((appId) => generatedApps.includes(`\"id\":\"${appId}\"`));
+if (!runtime.isFile() || !registryIsComplete) {
   throw new Error("Export Web FREEV V2.7 incomplet.");
 }
 console.log(`Runtime Web FREEV V2.7 publié : ${manifest.apps.length} applications, sans exports mobiles/desktop.`);

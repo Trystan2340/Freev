@@ -82,6 +82,66 @@
       "animationLayers": 1,
       "animationCover": true,
       "reconstructAnimationSymbol": false
+    },
+    {
+      "id": "Crop_Studio",
+      "label": "Crop Studio",
+      "kind": "software",
+      "shortName": "Crop Studio",
+      "animation": "pixel-spark",
+      "animationLayers": 1,
+      "animationCover": true,
+      "reconstructAnimationSymbol": true,
+      "sourceSha256": "75b453c8320656d4c53b9d9ecb1475fb1de9d83a24934ba545c028b5332ccb70",
+      "symbolExtractionConfidence": 1.0
+    },
+    {
+      "id": "CSV_Explorer",
+      "label": "CSV Explorer",
+      "kind": "software",
+      "shortName": "CSV Explorer",
+      "animation": "flow-cards",
+      "animationLayers": 1,
+      "animationCover": true,
+      "reconstructAnimationSymbol": true,
+      "sourceSha256": "f4a766b1ab9bf51cc7141ec294a4710bcebd8dd318a5a28b7061adefe2b8c921",
+      "symbolExtractionConfidence": 1.0
+    },
+    {
+      "id": "Markdown_Studio",
+      "label": "Markdown Studio",
+      "kind": "software",
+      "shortName": "Markdown",
+      "animation": "glow-code",
+      "animationLayers": 1,
+      "animationCover": true,
+      "reconstructAnimationSymbol": true,
+      "sourceSha256": "d29aba2aa92f7ca9a0f809445ab9acd07cac1d2871e6f46bd9985cbcefc66e86",
+      "symbolExtractionConfidence": 1.0
+    },
+    {
+      "id": "QR_Studio",
+      "label": "QR Studio",
+      "kind": "software",
+      "shortName": "QR Studio",
+      "animation": "pulse-play",
+      "animationLayers": 1,
+      "animationCover": true,
+      "reconstructAnimationSymbol": true,
+      "sourceSha256": "a19ae81a6de1652fa20227c9963fed8b9effc3e3507afaad8cb925747b8b06d9",
+      "symbolExtractionConfidence": 1.0
+    },
+    {
+      "id": "Signature_Studio",
+      "label": "Signature Studio",
+      "kind": "software",
+      "shortName": "Signature",
+      "animation": "draw-pencil",
+      "animationLayers": 1,
+      "animationCover": true,
+      "reconstructAnimationSymbol": true,
+      "sourceSha256": "bf5ee95c5477123907030ff97b8799b7b95fe52cf99dcd2ee5a5bd5f55c29279",
+      "symbolExtractionConfidence": 1.0
     }
   ]
 }
