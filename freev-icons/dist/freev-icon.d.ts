@@ -1,4 +1,4 @@
-export type FreevApp="CodeMaster_V2"|"StreamStudio_Pro"|"Freev_TaskFlow"|"Freev_Sketch_Pro"|"DataVault"|"Freev_Convert"|"PixelForge"|"ResumeMaster"|"Crop_Studio"|"CSV_Explorer"|"Markdown_Studio"|"QR_Studio"|"Signature_Studio"|"Excalidraw";
+export type FreevApp="CodeMaster_V2"|"StreamStudio_Pro"|"Freev_TaskFlow"|"Freev_Sketch_Pro"|"DataVault"|"Freev_Convert"|"PixelForge"|"ResumeMaster"|"Crop_Studio"|"CSV_Explorer"|"Markdown_Studio"|"QR_Studio"|"Signature_Studio"|"Excalidraw"|"OpenCut";
 export type FreevTheme="inherit"|"auto"|"cyan"|"purple"|"emerald"|"gold"|"ruby"|"rose"|"orange"|"graphite"|"ice";
 export type FreevMode="auto"|"light"|"dark";
 export type FreevVariant="standard"|"glass"|"transparent"|"monochrome-white"|"monochrome-black"|"monochrome-brand"|"small-simplified";

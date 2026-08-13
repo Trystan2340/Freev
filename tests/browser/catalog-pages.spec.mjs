@@ -28,11 +28,11 @@ async function expectNoHorizontalOverflow(page, label = "page") {
   expect(sizes.content, `${label}: largeur ${sizes.content}px pour un écran de ${sizes.viewport}px`).toBeLessThanOrEqual(sizes.viewport + 1);
 }
 
-test("le catalogue logiciels rend les quatorze icônes officielles et filtre les cartes", async ({ page }) => {
+test("le catalogue logiciels rend les quinze icônes officielles et filtre les cartes", async ({ page }) => {
   await page.goto("/logiciels/", { waitUntil: "domcontentloaded" });
-  await expect(page.locator("#software-grid .catalog-card")).toHaveCount(14);
+  await expect(page.locator("#software-grid .catalog-card")).toHaveCount(15);
   const icons = page.locator("#software-grid freev-icon");
-  await expect(icons).toHaveCount(14);
+  await expect(icons).toHaveCount(15);
   await expect.poll(() => icons.evaluateAll((elements) => elements.every((icon) => {
     const bounds = icon.getBoundingClientRect();
     return bounds.width >= 64 && bounds.height >= 64 && Boolean(icon.shadowRoot?.querySelector("canvas"));
@@ -46,10 +46,10 @@ test("le catalogue logiciels rend les quatorze icônes officielles et filtre les
   await expectNoHorizontalOverflow(page);
 });
 
-test("l’accueil affiche les quatorze icônes officielles des logiciels", async ({ page }) => {
+test("l’accueil affiche les quinze icônes officielles des logiciels", async ({ page }) => {
   await page.goto("/", { waitUntil: "domcontentloaded" });
   const icons = page.locator("#logiciels freev-icon");
-  await expect(icons).toHaveCount(14);
+  await expect(icons).toHaveCount(15);
   await expect.poll(() => icons.evaluateAll((elements) => elements.every((icon) => {
     const bounds = icon.getBoundingClientRect();
     return bounds.width === 64 && bounds.height === 64 && Boolean(icon.shadowRoot?.querySelector("canvas"));
@@ -132,6 +132,29 @@ test("Excalidraw charge le véritable éditeur et sauvegarde une modification", 
     };
     request.onerror = () => reject(request.error);
   }))).toBe(true);
+});
+
+test("OpenCut charge l’éditeur compatible ou une aide adaptée", async ({ page, browserName }) => {
+  await page.addInitScript(() => {
+    localStorage.setItem("hasSeenOnboarding", "true");
+    localStorage.setItem("mobile-acknowledged", "true");
+  });
+  await page.goto("/logiciels/opencut/", { waitUntil: "domcontentloaded" });
+  const usesCompatibilityPanel = browserName === "webkit" || (page.viewportSize()?.width ?? 0) < 768;
+  if (usesCompatibilityPanel) {
+    await expect(page.locator('[data-freev-opencut="compatibility"]')).toBeVisible();
+    await expect(page.getByRole("link", { name: "Retour aux logiciels Freev" })).toHaveAttribute("href", "../");
+    await expect(page.locator('img[src="../../freev-icons/masters/clean/OpenCut.png"]')).toBeVisible();
+    await expectNoHorizontalOverflow(page, "/logiciels/opencut/");
+    return;
+  }
+  await expect(page.locator('[data-freev-opencut="ready"]')).toBeVisible({ timeout: 30_000 });
+  await expect(page.getByRole("link", { name: "Retour aux logiciels Freev" })).toHaveAttribute("href", "../");
+  await expect(page.locator('img[src="../../freev-icons/masters/clean/OpenCut.png"]')).toBeVisible();
+  await expect(page.locator("canvas").first()).toBeVisible({ timeout: 20_000 });
+  await expect.poll(() => page.evaluate(() => Boolean(localStorage.getItem("freev-opencut-active-project")))).toBe(true);
+  await expect.poll(() => page.evaluate(() => JSON.parse(localStorage.getItem("freev-opencut-cloud-v1") || "null")?.app)).toBe("OpenCut");
+  await expectNoHorizontalOverflow(page, "/logiciels/opencut/");
 });
 
 test("la page jeux rend les sept jeux, la sélection et la recherche", async ({ page }) => {

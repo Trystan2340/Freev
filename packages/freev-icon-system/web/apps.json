@@ -68,5 +68,10 @@
     "id": "Excalidraw",
     "label": "Excalidraw",
     "kind": "software"
+  },
+  {
+    "id": "OpenCut",
+    "label": "OpenCut",
+    "kind": "software"
   }
 ]

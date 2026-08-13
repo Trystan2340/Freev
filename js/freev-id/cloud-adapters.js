@@ -21,6 +21,7 @@ const CONFIGURATIONS = Object.freeze({
   // La scène sans média volumineux peut suivre le cloud. Le projet complet,
   // notamment les images, reste sauvegardé localement dans IndexedDB.
   "logiciels/excalidraw.html": { pageId: "excalidraw", pageTitle: "Excalidraw", pageKind: "logiciel", keys: ["freev-excalidraw-cloud-v1"] },
+  "logiciels/opencut/index.html": { pageId: "opencut", pageTitle: "OpenCut", pageKind: "logiciel", keys: ["freev-opencut-cloud-v1"] },
 });
 
 function normalizePath(pathname) {

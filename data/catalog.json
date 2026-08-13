@@ -182,6 +182,19 @@
       "version": "v0.18.1 · open source",
       "status": "available",
       "launchTarget": "../logiciels/excalidraw.html"
+    },
+    {
+      "id": "opencut",
+      "iconId": "OpenCut",
+      "title": "OpenCut",
+      "description": "Monte tes vidéos dans un éditeur complet et privé, directement dans le navigateur.",
+      "category": "multi",
+      "categoryLabel": "Multimédia",
+      "tags": ["Montage vidéo", "Timeline", "Export"],
+      "technology": "OpenCut / React / FFmpeg WASM",
+      "version": "v0.3.0 · open source",
+      "status": "available",
+      "launchTarget": "../logiciels/opencut/"
     }
   ],
   "games": [
