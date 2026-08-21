@@ -3053,6 +3053,104 @@ html.perf-paused #freev-v20-navbar-host *::after{animation-play-state:paused !im
   will-change:auto !important;
 }
 
+/* === FREEV UI — AURORA GLASS BUTTONS : DÉBUT === */
+:where(#freev-type-actions > a, #logiciels .glass-card > a, #jeux .glass-card a[href^="jeux/"], #login-button, #register-button) {
+  --freev-button-accent: 34, 211, 238;
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  display: inline-flex !important;
+  align-items: center;
+  justify-content: center;
+  gap: .55rem;
+  min-height: 46px;
+  padding: .72rem 1.35rem !important;
+  border: 1px solid rgba(var(--freev-button-accent), .48) !important;
+  border-radius: 14px !important;
+  background:
+    linear-gradient(135deg, rgba(var(--freev-button-accent), .22), rgba(168, 85, 247, .12) 54%, rgba(5, 10, 20, .78)) !important;
+  color: #f5fbff !important;
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, .14),
+    0 8px 24px rgba(0, 0, 0, .24) !important;
+  backdrop-filter: blur(14px) saturate(135%);
+  -webkit-backdrop-filter: blur(14px) saturate(135%);
+  font-weight: 700;
+  letter-spacing: .01em;
+  text-decoration: none;
+  transform: translateY(0);
+  transition: transform .22s ease, border-color .22s ease, box-shadow .22s ease, background .22s ease !important;
+}
+
+:where(#freev-type-actions > a, #logiciels .glass-card > a, #jeux .glass-card a[href^="jeux/"], #login-button, #register-button)::before {
+  content: "";
+  position: absolute;
+  z-index: -1;
+  inset: 0;
+  background: linear-gradient(105deg, transparent 20%, rgba(255, 255, 255, .24) 48%, transparent 72%);
+  transform: translateX(-135%);
+  transition: transform .58s cubic-bezier(.22, .8, .25, 1);
+  pointer-events: none;
+}
+
+:where(#freev-type-actions > a, #logiciels .glass-card > a, #jeux .glass-card a[href^="jeux/"], #login-button, #register-button):hover {
+  border-color: rgba(var(--freev-button-accent), .84) !important;
+  background:
+    linear-gradient(135deg, rgba(var(--freev-button-accent), .3), rgba(168, 85, 247, .18) 54%, rgba(8, 16, 30, .86)) !important;
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, .2),
+    0 11px 30px rgba(var(--freev-button-accent), .16) !important;
+  transform: translateY(-2px);
+}
+
+:where(#freev-type-actions > a, #logiciels .glass-card > a, #jeux .glass-card a[href^="jeux/"], #login-button, #register-button):hover::before {
+  transform: translateX(135%);
+}
+
+:where(#freev-type-actions > a, #logiciels .glass-card > a, #jeux .glass-card a[href^="jeux/"], #login-button, #register-button):active {
+  transform: translateY(0) scale(.985);
+}
+
+:where(#freev-type-actions > a, #logiciels .glass-card > a, #jeux .glass-card a[href^="jeux/"], #login-button, #register-button):focus-visible {
+  outline: 2px solid rgba(103, 232, 249, .95);
+  outline-offset: 3px;
+}
+
+#freev-type-actions > a:first-child,
+#login-button {
+  --freev-button-accent: 34, 211, 238;
+}
+
+#freev-type-actions > a:nth-child(2),
+#register-button {
+  --freev-button-accent: 168, 85, 247;
+}
+
+#logiciels .glass-card > a,
+#jeux .glass-card a[href^="jeux/"] {
+  width: 100%;
+}
+
+#jeux .glass-card a[href^="jeux/"] {
+  --freev-button-accent: 168, 85, 247;
+  width: auto;
+  min-width: 132px;
+}
+
+@media (max-width: 639px) {
+  #freev-type-actions > a {
+    width: min(100%, 320px);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :where(#freev-type-actions > a, #logiciels .glass-card > a, #jeux .glass-card a[href^="jeux/"], #login-button, #register-button),
+  :where(#freev-type-actions > a, #logiciels .glass-card > a, #jeux .glass-card a[href^="jeux/"], #login-button, #register-button)::before {
+    transition: none !important;
+  }
+}
+/* === FREEV UI — AURORA GLASS BUTTONS : FIN === */
+
 </style>
 </head>
 <body class="font-sans antialiased selection:bg-brand-accent selection:text-brand-dark" data-freev-banner="aurora">
