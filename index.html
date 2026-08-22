@@ -6,11 +6,12 @@
 <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
 <title>Freev | V24</title>
 <!-- ═══ FAVICONS & PWA ═══ -->
-<link href="icons/favicon.ico" rel="icon" type="image/x-icon"/>
-<link href="icons/favicon-16x16.png" rel="icon" sizes="16x16" type="image/png"/>
-<link href="icons/favicon-32x32.png" rel="icon" sizes="32x32" type="image/png"/>
-<link href="icons/apple-touch-icon.png" rel="apple-touch-icon" sizes="180x180"/>
-<link href="manifest.json" rel="manifest"/>
+<link href="icons/favicon.ico?v=2.0.0" rel="icon" type="image/x-icon"/>
+<link href="icons/favicon-16x16.png?v=2.0.0" rel="icon" sizes="16x16" type="image/png"/>
+<link href="icons/favicon-32x32.png?v=2.0.0" rel="icon" sizes="32x32" type="image/png"/>
+<link href="icons/favicon-48x48.png?v=2.0.0" rel="icon" sizes="48x48" type="image/png"/>
+<link href="icons/apple-touch-icon.png?v=2.0.0" rel="apple-touch-icon" sizes="180x180"/>
+<link href="manifest.json?v=2.0.0" rel="manifest"/>
 <meta content="#0ea5e9" name="theme-color"/>
 <meta content="yes" name="apple-mobile-web-app-capable"/>
 <meta content="black-translucent" name="apple-mobile-web-app-status-bar-style"/>
@@ -18,49 +19,15 @@
 <meta content="yes" name="mobile-web-app-capable"/>
 <!-- ══════════════════════ -->
 <!-- Tailwind CSS -->
-<script src="https://cdn.tailwindcss.com"></script>
+<link href="css/tailwind.generated.css?v=2.0.0" rel="stylesheet"/>
 <!-- FontAwesome -->
+<link href="https://cdnjs.cloudflare.com" rel="preconnect"/>
 <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet"/>
 <!-- Google Fonts -->
-<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;800&amp;family=Poppins:wght@300;400;600&amp;display=swap" rel="stylesheet"/>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&amp;family=Space+Grotesk:wght@500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&amp;family=Montserrat:wght@400;600;800&amp;family=Poppins:wght@300;400;600&amp;family=Space+Grotesk:wght@500;600;700&amp;display=swap" rel="stylesheet"/>
 <link href="css/uiverse-buttons.css?v=1.1.0" rel="stylesheet"/>
-<!-- Marked.js for Markdown parsing -->
-<script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
-<script>
-        tailwind.config = {
-            theme: {
-                extend: {
-                    fontFamily: {
-                        sans: ['Poppins', 'sans-serif'],
-                        heading: ['Montserrat', 'sans-serif'],
-                    },
-                    colors: {
-                        brand: {
-                            dark: '#0f172a',
-                            primary: '#0ea5e9', // Sky blue
-                            secondary: '#a855f7', // Purple
-                            accent: '#22d3ee', // Cyan
-                        }
-                    },
-                    animation: {
-                        'float': 'float 6s ease-in-out infinite',
-                        'pulse-glow': 'pulse-glow 3s infinite',
-                    },
-                    keyframes: {
-                        float: {
-                            '0%, 100%': { transform: 'translateY(0)' },
-                            '50%': { transform: 'translateY(-20px)' },
-                        },
-                        'pulse-glow': {
-                            '0%, 100%': { boxShadow: '0 0 20px #0ea5e9' },
-                            '50%': { boxShadow: '0 0 40px #a855f7' },
-                        }
-                    }
-                }
-            }
-        }
-    </script>
 <style>
         .no-scrollbar { scrollbar-width: none; -ms-overflow-style: none; }
         .no-scrollbar::-webkit-scrollbar { display: none; }
@@ -3052,6 +3019,7 @@ Freev Brain V7 répond avec la base propre de Freev. Tu peux aussi connecter ta 
         const isLowPower = (navigator.hardwareConcurrency && navigator.hardwareConcurrency <= 4)
             || (navigator.deviceMemory && navigator.deviceMemory <= 4)
             || /Mobi|Android|iPhone|iPad/i.test(navigator.userAgent);
+        const canvasFrameInterval = 1000 / (isLowPower ? 30 : 45);
         let scrollOffset = window.scrollY || 0;
         window.addEventListener('scroll', updateScrollState, { passive: true });
         const LINK_DISTANCE = 190;
@@ -3316,8 +3284,8 @@ Freev Brain V7 répond avec la base propre de Freev. Tu peux aussi connecter ta 
 
         function initParticles() {
             particles = [];
-            const baseCount = window.innerWidth < 640 ? 42 : 74;
-            const count = isLowPower ? Math.round(baseCount * 0.6) : baseCount;
+            const baseCount = window.innerWidth < 640 ? 36 : 60;
+            const count = isLowPower ? Math.round(baseCount * 0.65) : baseCount;
             for (let i = 0; i < count; i++) particles.push(new Particle());
             particles.sort((a, b) => a.depth - b.depth); // lointain dessiné en premier
             [...particles].sort((a, b) => b.depth - a.depth).slice(0, Math.min(7, particles.length)).forEach((p) => { p.isHub = true; });
@@ -3620,16 +3588,22 @@ Freev Brain V7 répond avec la base propre de Freev. Tu peux aussi connecter ta 
             ctx.fillRect(0, 0, width, height);
         }
 
-        function animateCanvas() {
+        function animateCanvas(timestamp) {
             if (!canvasIsVisible || document.hidden) {
                 canvasFrameId = null;
                 return;
             }
 
+            const now = Number.isFinite(timestamp) ? timestamp : performance.now();
+            const elapsed = lastCanvasTime ? now - lastCanvasTime : canvasFrameInterval;
+            if (lastCanvasTime && elapsed < canvasFrameInterval) {
+                canvasFrameId = requestAnimationFrame(animateCanvas);
+                return;
+            }
+
             frameCount++;
-            const now = performance.now();
-            const frameDelta = lastCanvasTime ? Math.min(500, now - lastCanvasTime) : 16;
-            lastCanvasTime = now;
+            const frameDelta = Math.min(500, elapsed);
+            lastCanvasTime = now - (elapsed % canvasFrameInterval);
             canvasFrameDelta = frameDelta;
             hueShift = Math.sin(frameCount * 0.004) * 26;
             updateScrollState();
