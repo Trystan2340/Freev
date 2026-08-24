@@ -50,6 +50,10 @@
     while (walker.nextNode()) localize(walker.currentNode);
   };
   const start = () => {
+    const returnScript = document.createElement("script");
+    returnScript.src = "../freev-return.js";
+    returnScript.defer = true;
+    document.head.append(returnScript);
     document.documentElement.lang = "fr";
     localizeTree(document.body);
     new MutationObserver((records) => records.forEach((record) => {
