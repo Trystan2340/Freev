@@ -208,6 +208,19 @@
       "version": "open source · français",
       "status": "available",
       "launchTarget": "../logiciels/drawio/"
+    },
+    {
+      "id": "stirling-pdf",
+      "iconId": "Freev_Convert",
+      "title": "Freev PDF",
+      "description": "Fusionne, sépare, pivote et protège tes PDF avec Stirling PDF, en français.",
+      "category": "util",
+      "categoryLabel": "Utilitaires",
+      "tags": ["PDF", "Fusion", "Conversion"],
+      "technology": "Stirling PDF / Docker / Render",
+      "version": "2.14.3 · français · gratuit",
+      "status": "available",
+      "launchTarget": "https://freev-stirling-pdf.onrender.com"
     }
   ],
   "games": [

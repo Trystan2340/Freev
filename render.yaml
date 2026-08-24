@@ -1,0 +1,32 @@
+# Service Render indépendant pour Stirling PDF.
+# L'édition Ultra-Lite est choisie pour rester compatible avec le plan gratuit.
+services:
+  - type: web
+    name: freev-stirling-pdf
+    runtime: image
+    plan: free
+    region: frankfurt
+    image:
+      url: docker.io/stirlingtools/stirling-pdf:2.14.3-ultra-lite
+    healthCheckPath: /api/v1/info/status
+    envVars:
+      - key: SYSTEM_DEFAULTLOCALE
+        value: fr-FR
+      - key: UI_APPNAME
+        value: Freev PDF
+      - key: UI_APPNAMENAVBAR
+        value: Freev PDF
+      - key: UI_HOMEDESCRIPTION
+        value: Outils PDF essentiels intégrés à Freev.
+      - key: SECURITY_ENABLELOGIN
+        value: "false"
+      - key: DISABLE_ADDITIONAL_FEATURES
+        value: "true"
+      - key: SYSTEM_MAXFILESIZE
+        value: "25"
+      - key: METRICS_ENABLED
+        value: "false"
+      - key: SYSTEM_GOOGLEVISIBILITY
+        value: "false"
+      - key: SHOW_SURVEY
+        value: "false"
