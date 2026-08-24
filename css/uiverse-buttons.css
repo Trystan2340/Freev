@@ -1,0 +1,481 @@
+/*
+ * Adaptation Freev du composant Uiverse "Button" par mrhyddenn.
+ * Source : https://uiverse.io/mrhyddenn/cuddly-moth-41
+ * Licence MIT : Copyright (c) 2026 mrhyddenn.
+ */
+
+:where(
+  #freev-type-actions > a,
+  #logiciels .glass-card > a,
+  #jeux .glass-card a[href^="jeux/"],
+  #login-button,
+  #register-button,
+  .hero-actions .button,
+  .card-actions .button,
+  .featured-copy .button
+) {
+  --freev-uiverse-rgb: 34, 211, 238;
+  --freev-uiverse-rgb-alt: 168, 85, 247;
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  display: inline-flex !important;
+  align-items: center;
+  justify-content: center;
+  gap: .55rem;
+  min-height: 46px;
+  padding: .72rem 1.35rem !important;
+  border: 1px solid rgba(var(--freev-uiverse-rgb), .56) !important;
+  border-radius: 14px !important;
+  background:
+    linear-gradient(118deg,
+      rgba(var(--freev-uiverse-rgb), .32),
+      rgba(79, 70, 229, .3) 48%,
+      rgba(var(--freev-uiverse-rgb-alt), .3)) !important;
+  background-size: 180% 180% !important;
+  color: #f8fcff !important;
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, .2),
+    inset 0 -1px 0 rgba(0, 0, 0, .18),
+    0 10px 28px rgba(2, 6, 23, .32),
+    0 0 0 0 rgba(var(--freev-uiverse-rgb), 0) !important;
+  font-weight: 800;
+  letter-spacing: .012em;
+  text-decoration: none;
+  cursor: pointer;
+  transform: translateY(0) scale(1);
+  transition:
+    transform .24s cubic-bezier(.2, .8, .2, 1),
+    border-color .24s ease,
+    box-shadow .24s ease,
+    filter .24s ease,
+    background-position .5s ease !important;
+}
+
+:where(
+  #freev-type-actions > a,
+  #logiciels .glass-card > a,
+  #jeux .glass-card a[href^="jeux/"],
+  #login-button,
+  #register-button,
+  .hero-actions .button,
+  .card-actions .button,
+  .featured-copy .button
+)::before {
+  position: absolute;
+  z-index: -1;
+  inset: -2px;
+  content: "";
+  pointer-events: none;
+  background: linear-gradient(105deg, transparent 20%, rgba(255, 255, 255, .36) 48%, transparent 76%);
+  transform: translateX(-125%);
+  transition: transform .68s cubic-bezier(.2, .75, .2, 1);
+}
+
+:where(
+  #freev-type-actions > a,
+  #logiciels .glass-card > a,
+  #jeux .glass-card a[href^="jeux/"],
+  #login-button,
+  #register-button,
+  .hero-actions .button,
+  .card-actions .button,
+  .featured-copy .button
+):hover {
+  border-color: rgba(var(--freev-uiverse-rgb), .9) !important;
+  background-position: 100% 50% !important;
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, .26),
+    inset 0 -1px 0 rgba(0, 0, 0, .14),
+    0 14px 34px rgba(2, 6, 23, .38),
+    0 0 28px rgba(var(--freev-uiverse-rgb), .22) !important;
+  filter: brightness(1.12) saturate(1.08);
+  transform: translateY(-3px) scale(1.015);
+}
+
+:where(
+  #freev-type-actions > a,
+  #logiciels .glass-card > a,
+  #jeux .glass-card a[href^="jeux/"],
+  #login-button,
+  #register-button,
+  .hero-actions .button,
+  .card-actions .button,
+  .featured-copy .button
+):hover::before {
+  transform: translateX(125%);
+}
+
+:where(
+  #freev-type-actions > a,
+  #logiciels .glass-card > a,
+  #jeux .glass-card a[href^="jeux/"],
+  #login-button,
+  #register-button,
+  .hero-actions .button,
+  .card-actions .button,
+  .featured-copy .button
+):active {
+  filter: brightness(.98);
+  transform: translateY(0) scale(.975);
+}
+
+:where(
+  #freev-type-actions > a,
+  #logiciels .glass-card > a,
+  #jeux .glass-card a[href^="jeux/"],
+  #login-button,
+  #register-button,
+  .hero-actions .button,
+  .card-actions .button,
+  .featured-copy .button,
+  .filter,
+  .board-tab,
+  .header-action,
+  .mobile-toggle,
+  .close-button,
+  .chat-send,
+  .model-tools .button
+):focus-visible {
+  outline: 2px solid #67e8f9 !important;
+  outline-offset: 3px;
+  box-shadow: 0 0 0 5px rgba(34, 211, 238, .14) !important;
+}
+
+/* Variante violette pour les actions secondaires et les jeux. */
+:where(
+  #freev-type-actions > a:nth-child(2),
+  #register-button,
+  #jeux .glass-card a[href^="jeux/"],
+  body[data-page="jeux"] .hero-actions .button,
+  body[data-page="jeux"] .card-actions .button,
+  body[data-page="jeux"] .featured-copy .button
+) {
+  --freev-uiverse-rgb: 168, 85, 247;
+  --freev-uiverse-rgb-alt: 34, 211, 238;
+}
+
+#logiciels .glass-card > a,
+#jeux .glass-card a[href^="jeux/"],
+.card-actions .button {
+  width: 100%;
+}
+
+#jeux .glass-card a[href^="jeux/"] {
+  width: auto;
+  min-width: 132px;
+}
+
+/* Les petits contrôles gardent leur format, avec un retour visuel cohérent. */
+:where(.filter, .board-tab, .header-action, .mobile-toggle, .close-button, .chat-send, .model-tools .button) {
+  transition: transform .2s ease, border-color .2s ease, box-shadow .2s ease, filter .2s ease !important;
+}
+
+:where(.filter, .board-tab, .header-action, .mobile-toggle, .close-button, .chat-send, .model-tools .button):not(:disabled):hover {
+  box-shadow: 0 8px 22px rgba(34, 211, 238, .12);
+  filter: brightness(1.1);
+  transform: translateY(-2px);
+}
+
+/*
+ * Trois familles d'animation premium :
+ * - Logiciels : balayage circuit cyan.
+ * - Jeux : impulsion arcade violette et rose.
+ * - Profil : reflet précieux or, rose et violet.
+ */
+
+/* Logiciels — un balayage net qui évoque une piste électronique. */
+:where(
+  #logiciels .glass-card > a,
+  body[data-page="logiciels"] .hero-actions .button,
+  body[data-page="logiciels"] .card-actions .button
+)::before {
+  inset: 0;
+  background:
+    linear-gradient(90deg, transparent 0 38%, rgba(103, 232, 249, .18) 43%, rgba(255, 255, 255, .7) 50%, rgba(34, 211, 238, .2) 57%, transparent 62%),
+    repeating-linear-gradient(90deg, transparent 0 12px, rgba(103, 232, 249, .08) 12px 13px);
+  transform: translateX(-150%);
+}
+
+:where(
+  #logiciels .glass-card > a,
+  body[data-page="logiciels"] .hero-actions .button,
+  body[data-page="logiciels"] .card-actions .button
+):hover::before {
+  animation: freevSoftwareCircuit .82s cubic-bezier(.22, .75, .2, 1) both;
+}
+
+body[data-page="logiciels"] .filter:hover,
+body[data-page="logiciels"] .filter.active {
+  border-color: rgba(103, 232, 249, .62);
+  box-shadow: inset 0 0 18px rgba(34, 211, 238, .08), 0 8px 22px rgba(34, 211, 238, .1);
+}
+
+@keyframes freevSoftwareCircuit {
+  0% { transform: translateX(-150%); opacity: .25; }
+  45% { opacity: 1; }
+  100% { transform: translateX(150%); opacity: .35; }
+}
+
+/* Jeux — énergie arcade, mouvement plus nerveux et halo vivant. */
+:where(
+  #jeux .glass-card a[href^="jeux/"],
+  body[data-page="jeux"] .hero-actions .button,
+  body[data-page="jeux"] .card-actions .button,
+  body[data-page="jeux"] .featured-copy .button
+) {
+  background:
+    linear-gradient(120deg, rgba(168, 85, 247, .42), rgba(236, 72, 153, .32) 48%, rgba(34, 211, 238, .28)) !important;
+  background-size: 240% 240% !important;
+}
+
+:where(
+  #jeux .glass-card a[href^="jeux/"],
+  body[data-page="jeux"] .hero-actions .button,
+  body[data-page="jeux"] .card-actions .button,
+  body[data-page="jeux"] .featured-copy .button
+)::before {
+  inset: 0;
+  background:
+    repeating-linear-gradient(115deg, transparent 0 13px, rgba(255, 255, 255, .1) 13px 14px),
+    linear-gradient(105deg, transparent 24%, rgba(255, 255, 255, .48) 49%, transparent 74%);
+  transform: translateX(-135%) skewX(-8deg);
+}
+
+:where(
+  #jeux .glass-card a[href^="jeux/"],
+  body[data-page="jeux"] .hero-actions .button,
+  body[data-page="jeux"] .card-actions .button,
+  body[data-page="jeux"] .featured-copy .button
+):hover {
+  animation: freevGameEnergy 1.35s ease-in-out infinite;
+}
+
+:where(
+  #jeux .glass-card a[href^="jeux/"],
+  body[data-page="jeux"] .hero-actions .button,
+  body[data-page="jeux"] .card-actions .button,
+  body[data-page="jeux"] .featured-copy .button
+):hover::before {
+  animation: freevGameScan .72s cubic-bezier(.2, .75, .2, 1) both;
+}
+
+body[data-page="jeux"] .board-tab:hover,
+body[data-page="jeux"] .board-tab.active {
+  border-color: rgba(232, 121, 249, .55);
+  box-shadow: inset 0 0 16px rgba(168, 85, 247, .1), 0 0 20px rgba(236, 72, 153, .1);
+}
+
+@keyframes freevGameEnergy {
+  0%, 100% {
+    background-position: 0% 50%;
+    box-shadow: inset 0 1px 0 rgba(255,255,255,.25), 0 14px 34px rgba(2,6,23,.38), 0 0 20px rgba(168,85,247,.2);
+  }
+  50% {
+    background-position: 100% 50%;
+    box-shadow: inset 0 1px 0 rgba(255,255,255,.3), 0 16px 38px rgba(2,6,23,.42), 0 0 34px rgba(236,72,153,.3);
+  }
+}
+
+@keyframes freevGameScan {
+  from { transform: translateX(-135%) skewX(-8deg); opacity: .35; }
+  to { transform: translateX(135%) skewX(-8deg); opacity: .8; }
+}
+
+/* Profil — finition bijou, plus douce, avec un lustre doré. */
+:where(
+  #login-button,
+  #register-button,
+  #save-profile-button,
+  #logout-button,
+  #refresh-saves-button,
+  .profile-back
+) {
+  --freev-profile-gold: 250, 204, 21;
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 42px;
+  padding: .66rem 1.1rem !important;
+  border: 1px solid rgba(250, 204, 21, .42) !important;
+  border-radius: 13px !important;
+  background: linear-gradient(118deg, rgba(126, 34, 206, .34), rgba(236, 72, 153, .2) 46%, rgba(250, 204, 21, .2)) !important;
+  background-size: 220% 220% !important;
+  color: #fffaf0 !important;
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.2), 0 9px 26px rgba(2,6,23,.3) !important;
+  font-weight: 800;
+  text-decoration: none;
+  cursor: pointer;
+  transform: translateY(0);
+  transition: transform .24s ease, border-color .24s ease, box-shadow .24s ease, filter .24s ease !important;
+}
+
+:where(
+  #login-button,
+  #register-button,
+  #save-profile-button,
+  #logout-button,
+  #refresh-saves-button,
+  .profile-back
+)::after {
+  position: absolute;
+  inset: 0;
+  content: "";
+  pointer-events: none;
+  background: linear-gradient(105deg, transparent 25%, rgba(255, 248, 210, .62) 48%, transparent 72%);
+  transform: translateX(-135%);
+}
+
+:where(
+  #login-button,
+  #register-button,
+  #save-profile-button,
+  #logout-button,
+  #refresh-saves-button,
+  .profile-back
+):hover {
+  border-color: rgba(253, 224, 71, .76) !important;
+  filter: brightness(1.12) saturate(1.08);
+  transform: translateY(-2px);
+  animation: freevProfileAura 2.2s ease-in-out infinite;
+}
+
+:where(
+  #login-button,
+  #register-button,
+  #save-profile-button,
+  #logout-button,
+  #refresh-saves-button,
+  .profile-back
+):hover::after {
+  animation: freevProfileLustre 1.05s cubic-bezier(.2, .75, .2, 1) both;
+}
+
+:where(
+  #login-button,
+  #register-button,
+  #save-profile-button,
+  #logout-button,
+  #refresh-saves-button,
+  .profile-back
+):active {
+  transform: translateY(0) scale(.98);
+}
+
+:where(
+  #login-button,
+  #register-button,
+  #save-profile-button,
+  #logout-button,
+  #refresh-saves-button,
+  .profile-back
+):focus-visible {
+  outline: 2px solid #fde68a !important;
+  outline-offset: 3px;
+  box-shadow: 0 0 0 5px rgba(250, 204, 21, .13) !important;
+}
+
+@keyframes freevProfileAura {
+  0%, 100% {
+    background-position: 0% 50%;
+    box-shadow: inset 0 1px 0 rgba(255,255,255,.22), 0 11px 30px rgba(2,6,23,.34), 0 0 18px rgba(250,204,21,.12);
+  }
+  50% {
+    background-position: 100% 50%;
+    box-shadow: inset 0 1px 0 rgba(255,255,255,.28), 0 14px 34px rgba(2,6,23,.38), 0 0 28px rgba(236,72,153,.2);
+  }
+}
+
+@keyframes freevProfileLustre {
+  from { transform: translateX(-135%); opacity: .25; }
+  to { transform: translateX(135%); opacity: .85; }
+}
+
+#reset-password-button:hover {
+  color: #fde68a !important;
+  text-shadow: 0 0 14px rgba(250, 204, 21, .28);
+}
+
+:where(button, .button)[disabled],
+:where(button, .button)[aria-disabled="true"] {
+  cursor: not-allowed !important;
+  filter: grayscale(.25) !important;
+  opacity: .48 !important;
+  transform: none !important;
+}
+
+@media (max-width: 639px) {
+  #freev-type-actions > a {
+    width: min(100%, 320px);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :where(
+    #freev-type-actions > a,
+    #logiciels .glass-card > a,
+    #jeux .glass-card a[href^="jeux/"],
+    #login-button,
+    #register-button,
+    .hero-actions .button,
+    .card-actions .button,
+    .featured-copy .button,
+    .filter,
+    .board-tab,
+    .header-action,
+    .mobile-toggle,
+    .close-button,
+    .chat-send,
+    .model-tools .button
+  ),
+  :where(
+    #freev-type-actions > a,
+    #logiciels .glass-card > a,
+    #jeux .glass-card a[href^="jeux/"],
+    #login-button,
+    #register-button,
+    .hero-actions .button,
+    .card-actions .button,
+    .featured-copy .button
+  )::before {
+    transition: none !important;
+  }
+
+  :where(
+    #logiciels .glass-card > a,
+    #jeux .glass-card a[href^="jeux/"],
+    body[data-page="logiciels"] .button,
+    body[data-page="jeux"] .button,
+    #login-button,
+    #register-button,
+    #save-profile-button,
+    #logout-button,
+    #refresh-saves-button,
+    .profile-back
+  ),
+  :where(
+    #logiciels .glass-card > a,
+    #jeux .glass-card a[href^="jeux/"],
+    body[data-page="logiciels"] .button,
+    body[data-page="jeux"] .button,
+    #login-button,
+    #register-button,
+    #save-profile-button,
+    #logout-button,
+    #refresh-saves-button,
+    .profile-back
+  )::before,
+  :where(
+    #login-button,
+    #register-button,
+    #save-profile-button,
+    #logout-button,
+    #refresh-saves-button,
+    .profile-back
+  )::after {
+    animation: none !important;
+  }
+}
