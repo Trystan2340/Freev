@@ -1,3 +1,5 @@
+import "../logiciels/opencut/freev-fr.js";
+
 const FIREBASE_CONFIG = Object.freeze({
   apiKey: "AIzaSyBtcQrFenU9T0C2v1qcBUpF2DfVqC_V5sM",
   authDomain: "freev-52df2.firebaseapp.com",
