@@ -28,12 +28,19 @@
 
     const top = document.createElement('div');
     top.className = 'software-top';
-    const icon = document.createElement('freev-icon');
-    icon.setAttribute('app', item.iconId);
-    icon.setAttribute('variant', 'standard');
-    icon.setAttribute('animation', 'none');
-    icon.setAttribute('size', '72');
-    icon.setAttribute('label', `Icône ${item.title}`);
+    const icon = item.catalogMark ? document.createElement('div') : document.createElement('freev-icon');
+    if (item.catalogMark) {
+      icon.className = `github-project-mark github-project-mark-${item.id}`;
+      icon.setAttribute('role', 'img');
+      icon.setAttribute('aria-label', `Icône ${item.title}`);
+      icon.textContent = item.catalogMark;
+    } else {
+      icon.setAttribute('app', item.iconId);
+      icon.setAttribute('variant', 'standard');
+      icon.setAttribute('animation', 'none');
+      icon.setAttribute('size', '72');
+      icon.setAttribute('label', `Icône ${item.title}`);
+    }
     const copy = document.createElement('div');
     const category = document.createElement('span');
     category.className = 'tag';

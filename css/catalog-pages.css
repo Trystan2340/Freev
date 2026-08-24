@@ -123,6 +123,8 @@ h1 { max-width: 920px; margin: 20px 0 18px; font-size: clamp(46px, 8vw, 92px); l
 .catalog-card:hover::after { opacity: 1; }
 .software-top { position: relative; z-index: 1; display: flex; gap: 15px; align-items: flex-start; }
 .software-top freev-icon { flex: 0 0 auto; filter: drop-shadow(0 14px 26px rgba(0,0,0,.35)); }
+.github-project-mark { display:grid; place-items:center; flex:0 0 72px; width:72px; height:72px; border-radius:20px; border:1px solid rgba(255,255,255,.2); box-shadow:0 14px 26px rgba(0,0,0,.35); color:#fff; font:800 17px/1 system-ui,sans-serif; letter-spacing:-.04em; }
+.github-project-mark-opencut { background:linear-gradient(145deg,#ef4444,#7c2d12); }.github-project-mark-drawio { background:linear-gradient(145deg,#f59e0b,#b45309); }.github-project-mark-jspaint { background:linear-gradient(145deg,#ec4899,#7e22ce); }.github-project-mark-cyberchef { background:linear-gradient(145deg,#0891b2,#164e63); }.github-project-mark-mermaid { background:linear-gradient(145deg,#8b5cf6,#312e81); }.github-project-mark-stirling-pdf { background:linear-gradient(145deg,#dc2626,#7f1d1d); font-size:14px; }
 .catalog-card h3 { margin: 6px 0 7px; font-size: 19px; line-height: 1.18; }
 .catalog-card p { margin: 0; color: var(--muted); font-size: 13px; }
 .tag-row { position: relative; z-index: 1; display: flex; flex-wrap: wrap; gap: 6px; margin: 16px 0; }
