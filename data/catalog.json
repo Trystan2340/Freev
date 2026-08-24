@@ -236,6 +236,19 @@
       "launchTarget": "../logiciels/cyberchef/"
     },
     {
+      "id": "mermaid",
+      "iconId": "Excalidraw",
+      "title": "Freev Mermaid",
+      "description": "Crée des diagrammes, organigrammes et schémas à partir de texte, directement dans ton navigateur.",
+      "category": "design",
+      "categoryLabel": "Design & Création",
+      "tags": ["Diagrammes", "Organigrammes", "UML"],
+      "technology": "Mermaid Live Editor / Svelte / JavaScript",
+      "version": "v2.0.67 · français · open source",
+      "status": "available",
+      "launchTarget": "../logiciels/mermaid/"
+    },
+    {
       "id": "stirling-pdf",
       "iconId": "Freev_Convert",
       "title": "Freev PDF",
