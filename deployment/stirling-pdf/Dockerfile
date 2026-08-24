@@ -24,4 +24,3 @@ RUN set -eux; \
     sed -i 's#</head>#<script defer src="/freev-return.js"></script></head>#' /customFiles/static/index.html; \
     mv /tmp/freev-return.js /customFiles/static/freev-return.js; \
     chown -R stirlingpdfuser:stirlingpdfgroup /customFiles
-USER stirlingpdfuser
