@@ -52,7 +52,16 @@
   };
 
   const refresh = () => { translate(); addReturnButton(); };
-  new MutationObserver(refresh).observe(document.documentElement, { childList: true, subtree: true });
+  let refreshScheduled = false;
+  const scheduleRefresh = () => {
+    if (refreshScheduled) return;
+    refreshScheduled = true;
+    window.setTimeout(() => {
+      refreshScheduled = false;
+      refresh();
+    }, 250);
+  };
+  new MutationObserver(scheduleRefresh).observe(document.documentElement, { childList: true, subtree: true });
   window.addEventListener('DOMContentLoaded', refresh);
   refresh();
 })();
