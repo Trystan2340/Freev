@@ -210,6 +210,19 @@
       "launchTarget": "../logiciels/drawio/"
     },
     {
+      "id": "jspaint",
+      "iconId": "PixelForge",
+      "title": "Freev Paint",
+      "description": "Dessine, retouche et exporte tes images avec un éditeur complet inspiré de Paint.",
+      "category": "design",
+      "categoryLabel": "Design & Création",
+      "tags": ["Dessin", "Image", "Canvas"],
+      "technology": "JS Paint / JavaScript / Canvas",
+      "version": "1.1.0 · français · open source",
+      "status": "available",
+      "launchTarget": "../logiciels/jspaint/"
+    },
+    {
       "id": "cyberchef",
       "iconId": "DataVault",
       "title": "Freev CyberChef",
