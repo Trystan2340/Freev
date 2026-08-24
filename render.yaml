@@ -3,11 +3,11 @@
 services:
   - type: web
     name: freev-stirling-pdf
-    runtime: image
+    runtime: docker
     plan: free
     region: frankfurt
-    image:
-      url: docker.io/stirlingtools/stirling-pdf:2.14.3-ultra-lite
+    dockerfilePath: ./deployment/stirling-pdf/Dockerfile
+    dockerContext: ./deployment/stirling-pdf
     healthCheckPath: /api/v1/info/status
     envVars:
       - key: SYSTEM_DEFAULTLOCALE
