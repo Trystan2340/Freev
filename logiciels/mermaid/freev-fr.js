@@ -21,7 +21,8 @@
     for (const element of document.querySelectorAll('body *')) {
       if (element.children.length === 0) {
         const text = element.textContent?.trim();
-        if (text && translations.has(text)) element.textContent = translations.get(text);
+        const translatedText = text && translations.get(text);
+        if (translatedText && translatedText !== text) element.textContent = translatedText;
       }
       if (element instanceof HTMLInputElement && element.placeholder && translations.has(element.placeholder)) {
         element.placeholder = translations.get(element.placeholder);
