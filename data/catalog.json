@@ -210,6 +210,19 @@
       "launchTarget": "../logiciels/drawio/"
     },
     {
+      "id": "cyberchef",
+      "iconId": "DataVault",
+      "title": "Freev CyberChef",
+      "description": "Convertis, décode, chiffre et analyse tes données directement dans ton navigateur.",
+      "category": "util",
+      "categoryLabel": "Utilitaires",
+      "tags": ["Encodage", "Chiffrement", "Analyse"],
+      "technology": "CyberChef / JavaScript / Web Workers",
+      "version": "11.4.0 · français · open source",
+      "status": "available",
+      "launchTarget": "../logiciels/cyberchef/"
+    },
+    {
       "id": "stirling-pdf",
       "iconId": "Freev_Convert",
       "title": "Freev PDF",
