@@ -49,10 +49,19 @@
 		
 		<link href="./_app/immutable/assets/0.BB_uPqVJ.css" rel="stylesheet">
 		<link href="./_app/immutable/assets/2.Cjn3HSOQ.css" rel="stylesheet">
+    <style>
+      :root { color-scheme:dark; font-family:system-ui,sans-serif; background:#090b12; color:#eef3ff; } * { box-sizing:border-box; } body { margin:0; background:#090b12; } .freev-head { height:58px; padding:0 20px; display:flex; align-items:center; border-bottom:1px solid #26304b; background:#0e1320; font-weight:700; } .freev-grid { display:grid; grid-template-columns:minmax(280px,42%) 1fr; gap:16px; padding:16px; height:calc(100vh - 58px); } .freev-panel { min-height:0; display:flex; flex-direction:column; border:1px solid #26304b; border-radius:14px; overflow:hidden; background:#101625; } .freev-bar { display:flex; gap:8px; align-items:center; padding:11px; border-bottom:1px solid #26304b; } .freev-bar strong { margin-right:auto; } button,select { border:1px solid #3a4a74; border-radius:8px; background:#1a2440; color:white; padding:8px 10px; cursor:pointer; } button.freev-primary { background:#3867e8; } #freev-code { flex:1; width:100%; resize:none; padding:18px; border:0; outline:0; background:#0c1120; color:#f0f4ff; font:14px/1.55 ui-monospace,Consolas,monospace; } #freev-preview { flex:1; overflow:auto; padding:30px; display:flex; justify-content:center; align-items:flex-start; background:#f8fafc; color:#111827; } #freev-preview svg { max-width:100%; height:auto; } #freev-error { display:none; color:#ffb4b4; padding:10px; background:#3a1820; } #freev-return-to-catalog { position:fixed; left:16px; bottom:16px; z-index:9; padding:10px 14px; border-radius:10px; background:#171717; color:#fff; text-decoration:none; border:1px solid rgba(255,255,255,.24); font-weight:600; font-size:14px; } @media(max-width:760px){.freev-grid{grid-template-columns:1fr;height:auto;min-height:calc(100vh - 58px)}.freev-panel{min-height:420px}}
+    </style>
   </head>
   <body>
     <div id="svelte">
-			<script>
+      <div class="freev-head">Freev Mermaid — Éditeur de diagrammes</div><main class="freev-grid"><section class="freev-panel"><div class="freev-bar"><strong>Code du diagramme</strong><button id="freev-copy">Copier</button><button id="freev-render" class="freev-primary">Mettre à jour</button></div><textarea id="freev-code" spellcheck="false">flowchart TD
+    A[Idée] --> B{Une décision ?}
+    B -->|Oui| C[Action]
+    B -->|Non| D[Autre action]
+    C --> E[Terminé]
+    D --> E</textarea></section><section class="freev-panel"><div class="freev-bar"><strong>Aperçu</strong><select id="freev-theme"><option value="default">Clair</option><option value="dark">Sombre</option><option value="forest">Forêt</option></select><button id="freev-download">Télécharger SVG</button></div><div id="freev-error"></div><div id="freev-preview"></div></section></main><a id="freev-return-to-catalog" href="../">← Retour à Freev</a>
+			<script type="text/plain">
 				{
 					
 					__sveltekit_39m47t = {
@@ -71,5 +80,6 @@
 				}
 			</script>
 		</div>
+    <script src="./mermaid.min.js"></script><script>const code=document.querySelector('#freev-code'),preview=document.querySelector('#freev-preview'),error=document.querySelector('#freev-error'),theme=document.querySelector('#freev-theme');let n=0;async function renderDiagram(){error.style.display='none';try{mermaid.initialize({startOnLoad:false,theme:theme.value,securityLevel:'strict'});const result=await mermaid.render('freev-diagram-'+n++,code.value);preview.innerHTML=result.svg}catch(err){error.textContent='Erreur de syntaxe : '+(err.message||err);error.style.display='block'}}document.querySelector('#freev-render').onclick=renderDiagram;theme.onchange=renderDiagram;code.onkeydown=e=>{if((e.ctrlKey||e.metaKey)&&e.key==='Enter')renderDiagram()};document.querySelector('#freev-copy').onclick=()=>navigator.clipboard.writeText(code.value);document.querySelector('#freev-download').onclick=()=>{const svg=preview.querySelector('svg');if(!svg)return;const link=document.createElement('a');link.href=URL.createObjectURL(new Blob([svg.outerHTML],{type:'image/svg+xml'}));link.download='diagramme-freev.svg';link.click();URL.revokeObjectURL(link.href)};renderDiagram();</script>
   </body>
 </html>

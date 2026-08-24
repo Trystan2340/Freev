@@ -243,8 +243,8 @@
       "category": "design",
       "categoryLabel": "Design & Création",
       "tags": ["Diagrammes", "Organigrammes", "UML"],
-      "technology": "Mermaid Live Editor / Svelte / JavaScript",
-      "version": "v2.0.67 · français · open source",
+      "technology": "Mermaid / JavaScript / SVG",
+      "version": "v11.16.1 · français · open source",
       "status": "available",
       "launchTarget": "../logiciels/mermaid/"
     },
