@@ -195,6 +195,19 @@
       "version": "v0.3.0 · open source",
       "status": "available",
       "launchTarget": "../logiciels/opencut/"
+    },
+    {
+      "id": "drawio",
+      "iconId": "Excalidraw",
+      "title": "Draw.io",
+      "description": "Crée des diagrammes, organigrammes, maquettes et schémas techniques directement dans Freev.",
+      "category": "design",
+      "categoryLabel": "Design & Création",
+      "tags": ["Diagrammes", "UML", "Schémas"],
+      "technology": "Draw.io / JavaScript / Canvas",
+      "version": "open source · français",
+      "status": "available",
+      "launchTarget": "../logiciels/drawio/"
     }
   ],
   "games": [
