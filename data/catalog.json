@@ -193,6 +193,7 @@
       "tags": ["Montage vidéo", "Timeline", "Export"],
       "technology": "OpenCut / React / FFmpeg WASM",
       "version": "v0.3.0 · open source",
+      "githubStars": 85660,
       "status": "available",
       "launchTarget": "../logiciels/opencut/"
     },
@@ -206,6 +207,7 @@
       "tags": ["Diagrammes", "UML", "Schémas"],
       "technology": "Draw.io / JavaScript / Canvas",
       "version": "open source · français",
+      "githubStars": 7687,
       "status": "available",
       "launchTarget": "../logiciels/drawio/"
     },
@@ -219,6 +221,7 @@
       "tags": ["Dessin", "Image", "Canvas"],
       "technology": "JS Paint / JavaScript / Canvas",
       "version": "1.1.0 · français · open source",
+      "githubStars": 7859,
       "status": "available",
       "launchTarget": "../logiciels/jspaint/"
     },
@@ -232,6 +235,7 @@
       "tags": ["Encodage", "Chiffrement", "Analyse"],
       "technology": "CyberChef / JavaScript / Web Workers",
       "version": "11.4.0 · français · open source",
+      "githubStars": 35657,
       "status": "available",
       "launchTarget": "../logiciels/cyberchef/"
     },
@@ -245,6 +249,7 @@
       "tags": ["Diagrammes", "Organigrammes", "UML"],
       "technology": "Mermaid / JavaScript / SVG",
       "version": "v11.16.1 · français · open source",
+      "githubStars": 89916,
       "status": "available",
       "launchTarget": "../logiciels/mermaid/"
     },
@@ -258,6 +263,7 @@
       "tags": ["PDF", "Fusion", "Conversion"],
       "technology": "Stirling PDF / Docker / Render",
       "version": "2.14.3 · français · gratuit",
+      "githubStars": 90322,
       "status": "available",
       "launchTarget": "https://freev-stirling-pdf.onrender.com"
     }

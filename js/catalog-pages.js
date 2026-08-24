@@ -77,7 +77,7 @@
       const categoryMatches = state.filter === 'all' || item.category === state.filter;
       const haystack = normalized([item.title, item.description, item.categoryLabel, item.technology, ...item.tags].join(' '));
       return categoryMatches && (!query || haystack.includes(query));
-    });
+    }).sort((left, right) => (right.githubStars || 0) - (left.githubStars || 0));
     grid.replaceChildren(...items.map(softwareCard));
     if (!items.length) {
       const empty = document.createElement('p');
